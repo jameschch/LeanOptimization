@@ -62,5 +62,17 @@
       <Project>{338F614C-4CD7-418A-BD31-8C6A8690CFBF}</Project>
       <Name>QuantConnect.Interfaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Queues\QuantConnect.Queues.csproj">
+      <Project>{D6633172-1368-4DF6-9444-825C3E00C819}</Project>
+      <Name>QuantConnect.Queues</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messaging\QuantConnect.Messaging.csproj">
+      <Project>{F2E90E2D-BA25-40E2-B39A-0BA31E68F7F8}</Project>
+      <Name>QuantConnect.Messaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Api\QuantConnect.Api.csproj">
+      <Project>{C5D44209-49A0-4505-A870-043C5EF5FDDF}</Project>
+      <Name>QuantConnect.Api</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
