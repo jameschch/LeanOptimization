@@ -124,7 +124,6 @@ namespace Optimization
 			var sharpe_ratio = 0.0m;
 			var ratio = resultshandler.FinalStatistics ["Sharpe Ratio"];
 			Decimal.TryParse(ratio,out sharpe_ratio);
-			//_engine = null;
 			return sharpe_ratio;
 		}
 		private void LaunchLean()
@@ -161,18 +160,30 @@ namespace Optimization
 				Log.Error("Engine.Main(): Failed to load library: " + compositionException);
 				throw;
 			}
-			var _engine = new Engine (systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool ("live-mode"));
 			string algorithmPath;
-			var job = systemHandlers.JobQueue.NextJob(out algorithmPath);
-			_engine.Run(job, algorithmPath);
+			AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+			try
+			{
+				var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));
+				_engine.Run(job, algorithmPath);
+			}
+			finally
+			{
+				//Delete the message from the job queue:
+				//systemHandlers.JobQueue.AcknowledgeJob(job);
+				Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
 
+				// clean up resources
+				systemHandlers.Dispose();
+				leanEngineAlgorithmHandlers.Dispose();
+				Log.LogHandler.Dispose();
+			}
 		}
 
 	}
 
 	class MainClass
 	{
-		//private static RunClass rc;
 		private static readonly Random random = new Random();
 		private static AppDomainSetup _ads;
 		private static string _callingDomainName;
@@ -192,18 +203,10 @@ namespace Optimization
 		public static void Main (string[] args)
 		{
 
-//			Console.WriteLine("Running " + algorithm + "...");
-			//Config.Set("live-mode", "false");
-			//Config.Set("messaging-handler", "QuantConnect.Messaging.Messaging");
-			//Config.Set("job-queue-handler", "QuantConnect.Queues.JobQueue");
-			//Config.Set("api-handler", "QuantConnect.Api.Api");
-			//Config.Set("result-handler", "QuantConnect.Lean.Engine.Results.DesktopResultHandler");
-			//Config.Set ("EMA_VAR1", "10");
 		
 			_ads = SetupAppDomain ();
 
 
-			//rc = new RunClass();
 			const double crossoverProbability = 0.65;
 			const double mutationProbability = 0.08;
 			const int elitismPercentage = 5;
