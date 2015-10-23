@@ -35,28 +35,40 @@ namespace Optimization
 
 		public ConfigVarsOperator()
 		{
-			
+			Enabled = true;
 		}
 		public void Invoke(Population currentPopulation, 
 			ref Population newPopulation, FitnessFunction fitnesFunctionDelegate)
 		{
-			var num = 10;
-			var best = currentPopulation.GetTopPercent (num);
-			var cutoff = best [num - 1].Fitness;
-			var genecount = best [0].Genes.Count;
-			var config_vars = (ConfigVars)best[rand.Next(0,num-1)].Genes [rand.Next(0,genecount-1)].ObjectValue;
-			var key = config_vars.vars. ElementAt(rand.Next(0, config_vars.vars.Count-1)).Key;
-			foreach (var chromosome in currentPopulation.Solutions) {
-				if (chromosome.Fitness < cutoff) {
-					foreach (var gene in chromosome.Genes) {
-						var target_config_vars = (ConfigVars)gene.ObjectValue;
-						target_config_vars.vars [key] = config_vars.vars [key];
-					}
-				}
-				newPopulation.Solutions.Add (chromosome);
-			}
+			//take top 3 
+			var num = 3;
+			var min = System.Math.Min (num, currentPopulation.Solutions.Count);
 
-			_invoked++;
+			var best = currentPopulation.GetTop (min);
+			var cutoff = best [min-1].Fitness;
+			var genecount = best [0].Genes.Count;
+			try
+			{
+				
+				var config_vars = (ConfigVars)best[rand.Next(0,min-1)].Genes [rand.Next(0,genecount-1)].ObjectValue;
+				var index = rand.Next(0, config_vars.vars.Count-1);
+				var key = config_vars.vars. ElementAt(index).Key;
+				newPopulation.Solutions.Clear();
+				foreach (var chromosome in currentPopulation.Solutions) {
+					if (chromosome.Fitness < cutoff) {
+						foreach (var gene in chromosome.Genes) {
+							var target_config_vars = (ConfigVars)gene.ObjectValue;
+							target_config_vars.vars [key] = config_vars.vars [key];
+						}
+					}
+					newPopulation.Solutions.Add (chromosome);
+				}
+
+				_invoked++;
+			}
+			catch(Exception e) {
+				Console.WriteLine ("OOPS! " + e.Message + " " + e.StackTrace);
+			}
 		}
 
 		public int GetOperatorInvokedEvaluations()
@@ -219,11 +231,11 @@ namespace Optimization
 			var population = new Population();
 
 			//create the chromosomes
-			for (var p = 0; p < 100; p++)
+			for (var p = 0; p < 10; p++)
 			{
 
 				var chromosome = new Chromosome();
-				for (int i = 0; i < 100; i++) {
+				for (int i = 0; i < 2; i++) {
 					ConfigVars v = new ConfigVars ();
 					v.vars ["EMA_VAR1"] = RandomNumberBetweenInt (0, 20);
 					v.vars ["EMA_VAR2"] = RandomNumberBetweenInt (0, 100);
@@ -331,8 +343,10 @@ namespace Optimization
 		{
 
 			var sum_sharpe = 0.0;
+			var i = 0;
 			foreach (var gene in chromosome.Genes)
 			{
+				Console.WriteLine ("Running gene number {0}", i);
 				var val = (ConfigVars)gene.ObjectValue;
 				AppDomain ad = null;
 				RunClass rc = CreateRunClassInAppDomain (ref ad);
@@ -343,7 +357,9 @@ namespace Optimization
 				Console.WriteLine ("Sharpe ratio: {0}", res);
 				sum_sharpe += res;
 				AppDomain.Unload (ad);
+				Console.WriteLine ("Sum Sharpe ratio: {0}",sum_sharpe);
 
+				i++;
 			}
 
 			return sum_sharpe;
@@ -352,7 +368,7 @@ namespace Optimization
 		public static bool Terminate(Population population, 
 			int currentGeneration, long currentEvaluation)
 		{
-			return currentGeneration > 400;
+			return currentGeneration > 2;
 		}
 
 
