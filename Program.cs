@@ -53,7 +53,9 @@ namespace Optimization
 						target_config_vars.vars [key] = config_vars.vars [key];
 					}
 				}
+				newPopulation.Solutions.Add (chromosome);
 			}
+
 			_invoked++;
 		}
 
@@ -253,9 +255,9 @@ namespace Optimization
 			ga.OnGenerationComplete += ga_OnGenerationComplete;
 
 			//add the operators to the ga process pipeline 
-			ga.Operators.Add(elite);
-			ga.Operators.Add(crossover);
-			ga.Operators.Add(mutation);
+//			ga.Operators.Add(elite);
+//			ga.Operators.Add(crossover);
+//			ga.Operators.Add(mutation);
 
 			var cv_operator = new ConfigVarsOperator ();
 			ga.Operators.Add (cv_operator);
