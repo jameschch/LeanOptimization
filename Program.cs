@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Reflection;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using QuantConnect;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Lean.Engine.Results;
@@ -11,6 +14,7 @@ using QuantConnect.Interfaces;
 using QuantConnect.Queues;
 using QuantConnect.Messaging;
 using QuantConnect.Api;
+using QuantConnect.Logging;
 using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Lean.Engine.Setup;
 using QuantConnect.Lean.Engine.RealTime;
@@ -22,6 +26,75 @@ using GAF.Operators;
 
 namespace Optimization
 {
+
+	public class ConfigVarsOperator : IGeneticOperator
+	{
+		
+		private int _invoked = 0;
+		private static Random rand = new Random ();
+
+		public ConfigVarsOperator()
+		{
+			
+		}
+		public void Invoke(Population currentPopulation, 
+			ref Population newPopulation, FitnessFunction fitnesFunctionDelegate)
+		{
+			var num = 10;
+			var best = currentPopulation.GetTopPercent (num);
+			var cutoff = best [num - 1].Fitness;
+			var genecount = best [0].Genes.Count;
+			var config_vars = (ConfigVars)best[rand.Next(0,num-1)].Genes [rand.Next(0,genecount-1)].ObjectValue;
+			var key = config_vars.vars. ElementAt(rand.Next(0, config_vars.vars.Count-1)).Key;
+			foreach (var chromosome in currentPopulation.Solutions) {
+				if (chromosome.Fitness < cutoff) {
+					foreach (var gene in chromosome.Genes) {
+						var target_config_vars = (ConfigVars)gene.ObjectValue;
+						target_config_vars.vars [key] = config_vars.vars [key];
+					}
+				}
+			}
+			_invoked++;
+		}
+
+		public int GetOperatorInvokedEvaluations()
+		{
+			return _invoked;
+		}
+
+		public bool Enabled { get; set; }
+	}
+
+	[Serializable]
+	public class ConfigVars
+	{
+		public Dictionary<string,object> vars = new  Dictionary<string, object> ();
+		public override bool Equals(object obj) 
+		{ 
+			var item = obj as ConfigVars; 
+			return Equals(item); 
+		} 
+
+		protected bool Equals(ConfigVars other) 
+		{ 
+			foreach (KeyValuePair<string,object> kvp in vars) {
+				if (kvp.Value.ToString () != other.vars [kvp.Key].ToString ())
+					return false;
+			}
+			return true;
+		} 
+
+		public override int GetHashCode() 
+		{ 
+			unchecked 
+			{ 
+				int hashCode = 0;
+				foreach (KeyValuePair<string,object> kvp in vars)
+					hashCode = hashCode * kvp.Value.GetHashCode ();
+				return hashCode; 
+			} 
+		} 
+	}
 	public class RunClass: MarshalByRefObject
 	{
 		private Api _api;
@@ -41,25 +114,23 @@ namespace Optimization
 		{
 			
 		}
-		public decimal Run(int val)
+		public decimal Run(ConfigVars vars)
 		{
-			Config.Set ("EMA_VAR1", val.ToString ());
+			foreach(KeyValuePair<string,object> kvp in vars.vars)
+				Config.Set (kvp.Key, kvp.Value.ToString ());
+
 			LaunchLean ();
-			//_resultsHandler = _engine.AlgorithmHandlers.Results;
-			if (_resultshandler != null) {
-				DesktopResultHandler dsktophandler = (DesktopResultHandler)_resultshandler;
-				var sharpe_ratio = 0.0m;
-				var ratio = dsktophandler.FinalStatistics ["Sharpe Ratio"];
-				Decimal.TryParse(ratio,out sharpe_ratio);
-				//_engine = null;
-				return sharpe_ratio;
-			}
-			return -1.0m;
+			ConsoleResultHandler resultshandler = (ConsoleResultHandler)_resultshandler;
+			var sharpe_ratio = 0.0m;
+			var ratio = resultshandler.FinalStatistics ["Sharpe Ratio"];
+			Decimal.TryParse(ratio,out sharpe_ratio);
+			//_engine = null;
+			return sharpe_ratio;
 		}
 		private void LaunchLean()
 		{
 			
-			Config.Set ("environment", "desktop");
+			Config.Set ("environment", "backtesting");
 			string algorithm = "EMATest";
 
 			Config.Set("algorithm-type-name", algorithm);
@@ -73,13 +144,24 @@ namespace Optimization
 			_realTime = new BacktestingRealTimeHandler ();
 			_historyProvider = new SubscriptionDataReaderHistoryProvider ();
 			_transactions = new BacktestingTransactionHandler ();
-
 			var systemHandlers = new LeanEngineSystemHandlers (_jobQueue, _api, _notify);
 			systemHandlers.Initialize ();
 
-			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
+//			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
+			Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
 
-			var _engine = new Engine (systemHandlers, algorithmHandlers, Config.GetBool ("live-mode"));
+			LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
+			try
+			{
+				leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
+				_resultshandler = leanEngineAlgorithmHandlers.Results;
+			}
+			catch (CompositionException compositionException)
+			{
+				Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+				throw;
+			}
+			var _engine = new Engine (systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool ("live-mode"));
 			string algorithmPath;
 			var job = systemHandlers.JobQueue.NextJob(out algorithmPath);
 			_engine.Run(job, algorithmPath);
@@ -87,22 +169,36 @@ namespace Optimization
 		}
 
 	}
+
 	class MainClass
 	{
 		//private static RunClass rc;
+		private static readonly Random random = new Random();
 		private static AppDomainSetup _ads;
 		private static string _callingDomainName;
 		private static string _exeAssembly;
+		private static double RandomNumberBetween(double minValue, double maxValue)
+		{
+			var next = random.NextDouble();
+
+			return minValue + (next * (maxValue - minValue));
+		}
+		private static int RandomNumberBetweenInt(int minValue, int maxValue)
+		{
+			return random.Next (minValue,maxValue);
+
+		}
+
 		public static void Main (string[] args)
 		{
 
 //			Console.WriteLine("Running " + algorithm + "...");
-			Config.Set("live-mode", "false");
-			Config.Set("messaging-handler", "QuantConnect.Messaging.Messaging");
-			Config.Set("job-queue-handler", "QuantConnect.Queues.JobQueue");
-			Config.Set("api-handler", "QuantConnect.Api.Api");
-			Config.Set("result-handler", "QuantConnect.Lean.Engine.Results.DesktopResultHandler");
-			Config.Set ("EMA_VAR1", "10");
+			//Config.Set("live-mode", "false");
+			//Config.Set("messaging-handler", "QuantConnect.Messaging.Messaging");
+			//Config.Set("job-queue-handler", "QuantConnect.Queues.JobQueue");
+			//Config.Set("api-handler", "QuantConnect.Api.Api");
+			//Config.Set("result-handler", "QuantConnect.Lean.Engine.Results.DesktopResultHandler");
+			//Config.Set ("EMA_VAR1", "10");
 		
 			_ads = SetupAppDomain ();
 
@@ -122,8 +218,15 @@ namespace Optimization
 			{
 
 				var chromosome = new Chromosome();
-				for (int i = 0; i < 100; i++)
-					chromosome.Genes.Add (new Gene (i));
+				for (int i = 0; i < 100; i++) {
+					ConfigVars v = new ConfigVars ();
+					v.vars ["EMA_VAR1"] = RandomNumberBetweenInt (0, 20);
+					v.vars ["EMA_VAR2"] = RandomNumberBetweenInt (0, 100);
+					//v.vars ["LTD3"] = RandomNumberBetweenInt (0, 100);
+					//v.vars ["LTD4"] = RandomNumberBetweenInt (2, 200);
+
+					chromosome.Genes.Add (new Gene (v));
+				}
 				chromosome.Genes.ShuffleFast();
 				population.Solutions.Add(chromosome);
 			}
@@ -150,6 +253,9 @@ namespace Optimization
 			ga.Operators.Add(elite);
 			ga.Operators.Add(crossover);
 			ga.Operators.Add(mutation);
+
+			var cv_operator = new ConfigVarsOperator ();
+			ga.Operators.Add (cv_operator);
 
 			//run the GA 
 			ga.Run(Terminate);
@@ -197,7 +303,9 @@ namespace Optimization
 			var fittest = e.Population.GetTop(1)[0];
 			foreach (var gene in fittest.Genes)
 			{
-				Console.WriteLine((int)gene.RealValue);
+				ConfigVars v = (ConfigVars)gene.ObjectValue;
+				foreach(KeyValuePair<string,object> kvp in v.vars)
+					Console.WriteLine("Variable {0}:, value {1}",kvp.Key,kvp.Value.ToString());
 			}
 		}
 
@@ -205,7 +313,7 @@ namespace Optimization
 		{
 			var fittest = e.Population.GetTop(1)[0];
 			var sharpe = RunAlgorithm(fittest);
-			Console.WriteLine("Generation: {0}, Fitness: {1},Distance: {2}", e.Generation, fittest.Fitness, sharpe);                
+			Console.WriteLine("Generation: {0}, Fitness: {1},sharpe: {2}", e.Generation, fittest.Fitness, sharpe);                
 		}
 
 		public static double CalculateFitness(Chromosome chromosome)
@@ -220,12 +328,15 @@ namespace Optimization
 			var sum_sharpe = 0.0;
 			foreach (var gene in chromosome.Genes)
 			{
-				var val = (int)gene.ObjectValue;
+				var val = (ConfigVars)gene.ObjectValue;
 				AppDomain ad = null;
 				RunClass rc = CreateRunClassInAppDomain (ref ad);
-				Console.WriteLine("Running algorithm with value: {0}",val);                
-
-				sum_sharpe += (double)rc.Run (val);
+				foreach(KeyValuePair<string,object> kvp in val.vars)
+					Console.WriteLine("Running algorithm with variable {0}:, value {1}",kvp.Key,kvp.Value.ToString());
+				
+				var res = (double)rc.Run (val);
+				Console.WriteLine ("Sharpe ratio: {0}", res);
+				sum_sharpe += res;
 				AppDomain.Unload (ad);
 
 			}

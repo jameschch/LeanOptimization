@@ -39,6 +39,7 @@ namespace QuantConnect
 		//Set up the EMA Class:
 		ExponentialMovingAverage emaShort;
 		ExponentialMovingAverage emaLong;
+		private DateTime startTime;
 
 		//Initialize the data and resolution you require for your strategy:
 		public override void Initialize() 
@@ -48,11 +49,13 @@ namespace QuantConnect
 			SetCash(25000);
 			AddSecurity(SecurityType.Equity, symbol, Resolution.Daily);
 			var shortval = Config.GetInt ("EMA_VAR1",10);
+			var longval = Config.GetInt ("EMA_VAR2",50);
 			emaShort = EMA(symbol, shortval, Resolution.Daily);
-			emaLong = EMA(symbol, 50, Resolution.Daily);
+			emaLong = EMA(symbol, longval, Resolution.Daily);
 			for (int i = 0; i < MAXRETURNS; i++) {
 				_tradeReturns.Add(0);
 			}
+			startTime = DateTime.Now;
 		}
 		public override void OnOrderEvent(OrderEvent orderEvent)
 		{
@@ -64,6 +67,12 @@ namespace QuantConnect
 				if (_tradeReturns.Count > MAXRETURNS)
 					_tradeReturns.RemoveAt (0);
 			}
+		}
+		public override void OnEndOfAlgorithm()
+		{
+			Log(string.Format("\nAlgorithm Name: {0}\n Symbol: {1}\n Ending Portfolio Value: {2} \n Start Time: {3}\n End Time: {4}", this.GetType().Name, symbol, Portfolio.TotalPortfolioValue, startTime, DateTime.Now));
+			#region logging
+			#endregion
 		}
 
 

@@ -32,6 +32,7 @@
     <Reference Include="GAF">
       <HintPath>..\packages\GAF.2.1.1\lib\net40\GAF.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -73,6 +74,10 @@
     <ProjectReference Include="..\Api\QuantConnect.Api.csproj">
       <Project>{C5D44209-49A0-4505-A870-043C5EF5FDDF}</Project>
       <Name>QuantConnect.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Logging\QuantConnect.Logging.csproj">
+      <Project>{01911409-86BE-4E7D-9947-DF714138610D}</Project>
+      <Name>QuantConnect.Logging</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
