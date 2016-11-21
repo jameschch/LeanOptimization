@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class VariablesOperator : IGeneticOperator
+    public class CustomOperator : IGeneticOperator
     {
 
         private int _invoked = 0;
         private static Random rand = new Random();
 
-        public VariablesOperator()
+        public CustomOperator()
         {
             Enabled = true;
         }
@@ -31,8 +31,8 @@ namespace Optimization
             {
 
                 var config_vars = (Variables)best[rand.Next(0, min - 1)].Genes[rand.Next(0, genecount - 1)].ObjectValue;
-                var index = rand.Next(0, config_vars.vars.Count - 1);
-                var key = config_vars.vars.ElementAt(index).Key;
+                var index = rand.Next(0, config_vars.Items.Count - 1);
+                var key = config_vars.Items.ElementAt(index).Key;
                 newPopulation.Solutions.Clear();
                 foreach (var chromosome in currentPopulation.Solutions)
                 {
@@ -41,7 +41,7 @@ namespace Optimization
                         foreach (var gene in chromosome.Genes)
                         {
                             var target_config_vars = (Variables)gene.ObjectValue;
-                            target_config_vars.vars[key] = config_vars.vars[key];
+                            target_config_vars.Items[key] = config_vars.Items[key];
                         }
                     }
                     newPopulation.Solutions.Add(chromosome);

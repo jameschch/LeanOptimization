@@ -38,7 +38,7 @@ namespace Optimization
 
         public decimal Run(Variables vars)
         {
-            foreach (KeyValuePair<string, object> kvp in vars.vars)
+            foreach (KeyValuePair<string, object> kvp in vars.Items)
                 Config.Set(kvp.Key, kvp.Value.ToString());
 
             LaunchLean();
