@@ -26,187 +26,13 @@ using System.Threading;
 namespace Optimization
 {
 
-    public class ConfigVarsOperator : IGeneticOperator
-    {
-
-        private int _invoked = 0;
-        private static Random rand = new Random();
-
-        public ConfigVarsOperator()
-        {
-            Enabled = true;
-        }
-        public void Invoke(Population currentPopulation,
-            ref Population newPopulation, FitnessFunction fitnesFunctionDelegate)
-        {
-            //take top 3 
-            var num = 3;
-            var min = System.Math.Min(num, currentPopulation.Solutions.Count);
-
-            var best = currentPopulation.GetTop(min);
-            var cutoff = best[min - 1].Fitness;
-            var genecount = best[0].Genes.Count;
-            try
-            {
-
-                var config_vars = (ConfigVars)best[rand.Next(0, min - 1)].Genes[rand.Next(0, genecount - 1)].ObjectValue;
-                var index = rand.Next(0, config_vars.vars.Count - 1);
-                var key = config_vars.vars.ElementAt(index).Key;
-                newPopulation.Solutions.Clear();
-                foreach (var chromosome in currentPopulation.Solutions)
-                {
-                    if (chromosome.Fitness < cutoff)
-                    {
-                        foreach (var gene in chromosome.Genes)
-                        {
-                            var target_config_vars = (ConfigVars)gene.ObjectValue;
-                            target_config_vars.vars[key] = config_vars.vars[key];
-                        }
-                    }
-                    newPopulation.Solutions.Add(chromosome);
-                }
-
-                _invoked++;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("OOPS! " + e.Message + " " + e.StackTrace);
-            }
-        }
-
-        public int GetOperatorInvokedEvaluations()
-        {
-            return _invoked;
-        }
-
-        public bool Enabled { get; set; }
-    }
-
-    [Serializable]
-    public class ConfigVars
-    {
-        public Dictionary<string, object> vars = new Dictionary<string, object>();
-        public override bool Equals(object obj)
-        {
-            var item = obj as ConfigVars;
-            return Equals(item);
-        }
-
-        protected bool Equals(ConfigVars other)
-        {
-            foreach (KeyValuePair<string, object> kvp in vars)
-            {
-                if (kvp.Value.ToString() != other.vars[kvp.Key].ToString())
-                    return false;
-            }
-            return true;
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = 0;
-                foreach (KeyValuePair<string, object> kvp in vars)
-                    hashCode = hashCode * kvp.Value.GetHashCode();
-                return hashCode;
-            }
-        }
-    }
-
-    public class RunClass : MarshalByRefObject
-    {
-        private Api _api;
-        private Messaging _notify;
-        private JobQueue _jobQueue;
-        private IResultHandler _resultshandler;
-
-        private FileSystemDataFeed _dataFeed;
-        private ConsoleSetupHandler _setup;
-        private BacktestingRealTimeHandler _realTime;
-        private ITransactionHandler _transactions;
-        private IHistoryProvider _historyProvider;
-
-        private readonly Engine _engine;
-
-        public RunClass()
-        {
-
-        }
-        public decimal Run(ConfigVars vars)
-        {
-            foreach (KeyValuePair<string, object> kvp in vars.vars)
-                Config.Set(kvp.Key, kvp.Value.ToString());
-
-            LaunchLean();
-            BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
-            var sharpe_ratio = 0.0m;
-            var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
-            Decimal.TryParse(ratio, out sharpe_ratio);
-            return sharpe_ratio;
-        }
-        private void LaunchLean()
-        {
-
-            Config.Set("environment", "backtesting");
-            string algorithm = "CrudeIncident";
-
-            Config.Set("algorithm-type-name", algorithm);
-
-            _jobQueue = new JobQueue();
-            _notify = new Messaging();
-            _api = new Api();
-            _resultshandler = new DesktopResultHandler();
-            _dataFeed = new FileSystemDataFeed();
-            _setup = new ConsoleSetupHandler();
-            _realTime = new BacktestingRealTimeHandler();
-            _historyProvider = new SubscriptionDataReaderHistoryProvider();
-            _transactions = new BacktestingTransactionHandler();
-            var systemHandlers = new LeanEngineSystemHandlers(_jobQueue, _api, _notify);
-            systemHandlers.Initialize();
-
-            //			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
-            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
-
-            LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
-            try
-            {
-                leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                _resultshandler = leanEngineAlgorithmHandlers.Results;
-            }
-            catch (CompositionException compositionException)
-            {
-                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
-                throw;
-            }
-            string algorithmPath;
-            AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
-            try
-            {
-                var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));
-                _engine.Run(job, algorithmPath);
-            }
-            finally
-            {
-                //Delete the message from the job queue:
-                //systemHandlers.JobQueue.AcknowledgeJob(job);
-                Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
-
-                // clean up resources
-                systemHandlers.Dispose();
-                leanEngineAlgorithmHandlers.Dispose();
-                Log.LogHandler.Dispose();
-            }
-        }
-
-    }
-
-    class MainClass
+    class Program
     {
         private static readonly Random random = new Random();
         private static AppDomainSetup _ads;
         private static string _callingDomainName;
         private static string _exeAssembly;
+
         private static double RandomNumberBetween(double minValue, double maxValue)
         {
             var next = random.NextDouble();
@@ -214,12 +40,12 @@ namespace Optimization
             return minValue + (next * (maxValue - minValue));
         }
 
-        private static int RandomNumberBetweenInt(int minValue, int maxValue)
+        private static int RandomBetween(int minValue, int maxValue)
         {
             return random.Next(minValue, maxValue);
         }
 
-        private static double RandomNumberBetweenDouble(double minValue, double maxValue)
+        private static double RandomBetween(double minValue, double maxValue)
         {
             var rand = random.NextDouble() * (maxValue - minValue) + minValue;
             return System.Math.Round(rand, 3);
@@ -227,8 +53,6 @@ namespace Optimization
 
         public static void Main(string[] args)
         {
-
-
             _ads = SetupAppDomain();
 
 
@@ -248,18 +72,21 @@ namespace Optimization
                 var chromosome = new Chromosome();
                 for (int i = 0; i < 2; i++)
                 {
-                    ConfigVars v = new ConfigVars();
-                    v.vars["p1"] = RandomNumberBetweenDouble(0, 3.5);
-                    v.vars["p2"] = RandomNumberBetweenDouble(0, 3.5);
-                    v.vars["p3"] = RandomNumberBetweenDouble(0, 3.5);
+                    Variables v = new Variables();
+                    v.vars = new Dictionary<string, object>
+                    {
+                       // { "stop", RandomBetween(0.01, 0.06) },
+                        //{ "take", RandomBetween(0.01, 0.06) },
+                        { "stddev",  RandomBetween(2.5, 3.5) },
+                        { "period", RandomBetween(4, 48) },
+                        { "tickWindow", RandomBetween(1, 4) },
+                    };
 
                     chromosome.Genes.Add(new Gene(v));
                 }
                 chromosome.Genes.ShuffleFast();
                 population.Solutions.Add(chromosome);
             }
-
-
 
             //create the genetic operators 
             var elite = new Elite(elitismPercentage);
@@ -278,16 +105,17 @@ namespace Optimization
             ga.OnGenerationComplete += ga_OnGenerationComplete;
 
             //add the operators to the ga process pipeline 
-            //			ga.Operators.Add(elite);
-            //			ga.Operators.Add(crossover);
-            //			ga.Operators.Add(mutation);
+            ga.Operators.Add(elite);
+            ga.Operators.Add(crossover);
+            ga.Operators.Add(mutation);
 
-            var cv_operator = new ConfigVarsOperator();
+            var cv_operator = new VariablesOperator();
             ga.Operators.Add(cv_operator);
 
             //run the GA 
             ga.Run(Terminate);
         }
+
         static AppDomainSetup SetupAppDomain()
         {
             _callingDomainName = Thread.GetDomain().FriendlyName;
@@ -303,12 +131,11 @@ namespace Optimization
 
             ads.DisallowBindingRedirects = false;
             ads.DisallowCodeDownload = true;
-            ads.ConfigurationFile =
-                AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+            ads.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
             return ads;
         }
 
-        static RunClass CreateRunClassInAppDomain(ref AppDomain ad)
+        static Runner CreateRunClassInAppDomain(ref AppDomain ad)
         {
 
             // Create the second AppDomain.
@@ -317,10 +144,10 @@ namespace Optimization
 
             // Create an instance of MarshalbyRefType in the second AppDomain. 
             // A proxy to the object is returned.
-            RunClass rc =
-                (RunClass)ad.CreateInstanceAndUnwrap(
+            Runner rc =
+                (Runner)ad.CreateInstanceAndUnwrap(
                     _exeAssembly,
-                    typeof(RunClass).FullName
+                    typeof(Runner).FullName
                 );
 
             return rc;
@@ -331,7 +158,7 @@ namespace Optimization
             var fittest = e.Population.GetTop(1)[0];
             foreach (var gene in fittest.Genes)
             {
-                ConfigVars v = (ConfigVars)gene.ObjectValue;
+                Variables v = (Variables)gene.ObjectValue;
                 foreach (KeyValuePair<string, object> kvp in v.vars)
                     Console.WriteLine("Variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
             }
@@ -347,7 +174,7 @@ namespace Optimization
         public static double CalculateFitness(Chromosome chromosome)
         {
             var sharpe = RunAlgorithm(chromosome);
-            return sharpe;
+            return (sharpe + 10) / 20;
         }
 
         private static double RunAlgorithm(Chromosome chromosome)
@@ -358,9 +185,9 @@ namespace Optimization
             foreach (var gene in chromosome.Genes)
             {
                 Console.WriteLine("Running gene number {0}", i);
-                var val = (ConfigVars)gene.ObjectValue;
+                var val = (Variables)gene.ObjectValue;
                 AppDomain ad = null;
-                RunClass rc = CreateRunClassInAppDomain(ref ad);
+                Runner rc = CreateRunClassInAppDomain(ref ad);
                 foreach (KeyValuePair<string, object> kvp in val.vars)
                     Console.WriteLine("Running algorithm with variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
 
@@ -376,8 +203,7 @@ namespace Optimization
             return sum_sharpe;
         }
 
-        public static bool Terminate(Population population,
-            int currentGeneration, long currentEvaluation)
+        public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
         {
             return currentGeneration > 2;
         }
