@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -28,10 +28,51 @@
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="GAF">
-      <HintPath>..\packages\GAF.2.1.1\lib\net40\GAF.dll</HintPath>
+    <Reference Include="GAF, Version=2.2.5.40526, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\GAF.2.2.5\lib\net45\GAF.dll</HintPath>
+      <Private>True</Private>
     </Reference>
+    <Reference Include="QuantConnect.Algorithm, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Algorithm.CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Algorithm.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Api, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Common, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Configuration, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Indicators, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Indicators.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Lean.Engine, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Logging, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Messaging, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Messaging.dll</HintPath>
+    </Reference>
+    <Reference Include="QuantConnect.Queues, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Queues.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
   </ItemGroup>
   <ItemGroup>
@@ -43,41 +84,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Algorithm.CSharp\QuantConnect.Algorithm.CSharp.csproj">
-      <Project>{39A81C16-A1E8-425E-A8F2-1433ADB80228}</Project>
-      <Name>QuantConnect.Algorithm.CSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common\QuantConnect.csproj">
-      <Project>{2545C0B4-FABB-49C9-8DD1-9AD7EE23F86B}</Project>
-      <Name>QuantConnect</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Engine\QuantConnect.Lean.Engine.csproj">
-      <Project>{12156F46-D07E-4E3D-AD2B-7409E82AB62F}</Project>
-      <Name>QuantConnect.Lean.Engine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Configuration\QuantConnect.Configuration.csproj">
-      <Project>{0AEB4EA3-28C8-476E-89FD-926F06590B4C}</Project>
-      <Name>QuantConnect.Configuration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Interfaces\QuantConnect.Interfaces.csproj">
-      <Project>{338F614C-4CD7-418A-BD31-8C6A8690CFBF}</Project>
-      <Name>QuantConnect.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Queues\QuantConnect.Queues.csproj">
-      <Project>{D6633172-1368-4DF6-9444-825C3E00C819}</Project>
-      <Name>QuantConnect.Queues</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Messaging\QuantConnect.Messaging.csproj">
-      <Project>{F2E90E2D-BA25-40E2-B39A-0BA31E68F7F8}</Project>
-      <Name>QuantConnect.Messaging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Api\QuantConnect.Api.csproj">
-      <Project>{C5D44209-49A0-4505-A870-043C5EF5FDDF}</Project>
-      <Name>QuantConnect.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Logging\QuantConnect.Logging.csproj">
-      <Project>{01911409-86BE-4E7D-9947-DF714138610D}</Project>
-      <Name>QuantConnect.Logging</Name>
+    <ProjectReference Include="..\..\Lean\Launcher\QuantConnect.Lean.Launcher.csproj">
+      <Project>{09e7b916-e58b-4021-bd8b-c10b4446e226}</Project>
+      <Name>QuantConnect.Lean.Launcher</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
