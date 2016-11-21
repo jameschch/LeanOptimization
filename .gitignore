@@ -4,3 +4,6 @@
 
 /bin/Debug
 /obj/Debug
+*.suo
+/packages
+/.vs/config
