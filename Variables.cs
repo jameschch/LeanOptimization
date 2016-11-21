@@ -9,7 +9,7 @@ namespace Optimization
     [Serializable]
     public class Variables
     {
-        public Dictionary<string, object> vars = new Dictionary<string, object>();
+        public Dictionary<string, object> Items = new Dictionary<string, object>();
         public override bool Equals(object obj)
         {
             var item = obj as Variables;
@@ -18,9 +18,9 @@ namespace Optimization
 
         protected bool Equals(Variables other)
         {
-            foreach (KeyValuePair<string, object> kvp in vars)
+            foreach (KeyValuePair<string, object> kvp in Items)
             {
-                if (kvp.Value.ToString() != other.vars[kvp.Key].ToString())
+                if (kvp.Value.ToString() != other.Items[kvp.Key].ToString())
                     return false;
             }
             return true;
@@ -31,7 +31,7 @@ namespace Optimization
             unchecked
             {
                 int hashCode = 0;
-                foreach (KeyValuePair<string, object> kvp in vars)
+                foreach (KeyValuePair<string, object> kvp in Items)
                     hashCode = hashCode * kvp.Value.GetHashCode();
                 return hashCode;
             }

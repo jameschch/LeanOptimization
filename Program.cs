@@ -73,7 +73,7 @@ namespace Optimization
                 for (int i = 0; i < 2; i++)
                 {
                     Variables v = new Variables();
-                    v.vars = new Dictionary<string, object>
+                    v.Items = new Dictionary<string, object>
                     {
                        // { "stop", RandomBetween(0.01, 0.06) },
                         //{ "take", RandomBetween(0.01, 0.06) },
@@ -107,10 +107,10 @@ namespace Optimization
             //add the operators to the ga process pipeline 
             ga.Operators.Add(elite);
             ga.Operators.Add(crossover);
-            ga.Operators.Add(mutation);
+            //ga.Operators.Add(mutation);
 
-            var cv_operator = new VariablesOperator();
-            ga.Operators.Add(cv_operator);
+            //var cv_operator = new CustomOperator();
+            //ga.Operators.Add(cv_operator);
 
             //run the GA 
             ga.Run(Terminate);
@@ -159,7 +159,7 @@ namespace Optimization
             foreach (var gene in fittest.Genes)
             {
                 Variables v = (Variables)gene.ObjectValue;
-                foreach (KeyValuePair<string, object> kvp in v.vars)
+                foreach (KeyValuePair<string, object> kvp in v.Items)
                     Console.WriteLine("Variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
             }
         }
@@ -174,7 +174,7 @@ namespace Optimization
         public static double CalculateFitness(Chromosome chromosome)
         {
             var sharpe = RunAlgorithm(chromosome);
-            return (sharpe + 10) / 20;
+            return (sharpe + 10) / 200;
         }
 
         private static double RunAlgorithm(Chromosome chromosome)
@@ -188,7 +188,7 @@ namespace Optimization
                 var val = (Variables)gene.ObjectValue;
                 AppDomain ad = null;
                 Runner rc = CreateRunClassInAppDomain(ref ad);
-                foreach (KeyValuePair<string, object> kvp in val.vars)
+                foreach (KeyValuePair<string, object> kvp in val.Items)
                     Console.WriteLine("Running algorithm with variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
 
                 var res = (double)rc.Run(val);
