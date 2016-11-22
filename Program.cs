@@ -75,8 +75,8 @@ namespace Optimization
                     Variables v = new Variables();
                     v.Items = new Dictionary<string, object>
                     {
-                       // { "stop", RandomBetween(0.01, 0.06) },
-                        //{ "take", RandomBetween(0.01, 0.06) },
+                        { "stop", RandomBetween(0.01, 0.06) },
+                        { "take", RandomBetween(0.01, 0.06) },
                         { "stddev",  RandomBetween(2.5, 3.5) },
                         { "period", RandomBetween(4, 48) },
                         { "tickWindow", RandomBetween(1, 4) },
@@ -114,6 +114,8 @@ namespace Optimization
 
             //run the GA 
             ga.Run(Terminate);
+
+            Console.ReadKey();
         }
 
         static AppDomainSetup SetupAppDomain()
