@@ -25,7 +25,7 @@ namespace Optimization
     public class Runner : MarshalByRefObject
     {
 
-        string algorithm = "Blackfish";
+       // string algorithm = "Crude";
         private Api _api;
         private Messaging _notify;
         private JobQueue _jobQueue;
@@ -52,7 +52,7 @@ namespace Optimization
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
-            Config.Set("algorithm-type-name", algorithm);
+            //Config.Set("algorithm-type-name", algorithm);
 
             _jobQueue = new JobQueue();
             _notify = new Messaging();

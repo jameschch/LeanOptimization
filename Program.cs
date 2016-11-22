@@ -19,6 +19,7 @@ using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -32,29 +33,12 @@ namespace Optimization
         private static AppDomainSetup _ads;
         private static string _callingDomainName;
         private static string _exeAssembly;
-
-        private static double RandomNumberBetween(double minValue, double maxValue)
-        {
-            var next = random.NextDouble();
-
-            return minValue + (next * (maxValue - minValue));
-        }
-
-        private static int RandomBetween(int minValue, int maxValue)
-        {
-            return random.Next(minValue, maxValue);
-        }
-
-        private static double RandomBetween(double minValue, double maxValue)
-        {
-            var rand = random.NextDouble() * (maxValue - minValue) + minValue;
-            return System.Math.Round(rand, 3);
-        }
+        static StreamWriter writer;
 
         public static void Main(string[] args)
         {
             _ads = SetupAppDomain();
-
+            writer = System.IO.File.AppendText("optimzer.txt");
 
             const double crossoverProbability = 0.65;
             const double mutationProbability = 0.08;
@@ -70,21 +54,24 @@ namespace Optimization
             {
 
                 var chromosome = new Chromosome();
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 8; i++)
                 {
                     Variables v = new Variables();
                     v.Items = new Dictionary<string, object>
                     {
-                        { "stop", RandomBetween(0.01, 0.06) },
-                        { "take", RandomBetween(0.01, 0.06) },
-                        { "stddev",  RandomBetween(2.5, 3.5) },
-                        { "period", RandomBetween(4, 48) },
-                        { "tickWindow", RandomBetween(1, 4) },
+                        { "p1", RandomBetween(0.25, 3.25) },
+                        { "p2", RandomBetween(0.25, 3.25) },
+                        { "p3", RandomBetween(1, 12) },
+                        { "p4", RandomBetween(1, 12) },
+                        { "stop", RandomBetween(0.01, 0.05) },
+                        { "take", RandomBetween(0.02, 0.08) },
                     };
 
                     chromosome.Genes.Add(new Gene(v));
                 }
-                chromosome.Genes.ShuffleFast();
+
+                var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
+                chromosome.Genes.ShuffleFast(rnd);
                 population.Solutions.Add(chromosome);
             }
 
@@ -93,8 +80,10 @@ namespace Optimization
 
             var crossover = new Crossover(crossoverProbability, true)
             {
-                CrossoverType = CrossoverType.SinglePoint
+                CrossoverType = CrossoverType.DoublePoint
             };
+
+            var swap = new SwapMutate(0.02);
 
             var mutation = new BinaryMutate(mutationProbability, true);
 
@@ -103,17 +92,21 @@ namespace Optimization
 
             //subscribe to the GAs Generation Complete event 
             ga.OnGenerationComplete += ga_OnGenerationComplete;
+            ga.OnRunComplete += ga_OnRunComplete;
 
             //add the operators to the ga process pipeline 
             ga.Operators.Add(elite);
             ga.Operators.Add(crossover);
             //ga.Operators.Add(mutation);
+            ga.Operators.Add(swap);
 
             //var cv_operator = new CustomOperator();
             //ga.Operators.Add(cv_operator);
 
             //run the GA 
             ga.Run(Terminate);
+
+            writer.Close();
 
             Console.ReadKey();
         }
@@ -139,18 +132,13 @@ namespace Optimization
 
         static Runner CreateRunClassInAppDomain(ref AppDomain ad)
         {
-
             // Create the second AppDomain.
             var name = Guid.NewGuid().ToString("x");
             ad = AppDomain.CreateDomain(name, null, _ads);
 
             // Create an instance of MarshalbyRefType in the second AppDomain. 
             // A proxy to the object is returned.
-            Runner rc =
-                (Runner)ad.CreateInstanceAndUnwrap(
-                    _exeAssembly,
-                    typeof(Runner).FullName
-                );
+            Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
             return rc;
         }
@@ -162,7 +150,7 @@ namespace Optimization
             {
                 Variables v = (Variables)gene.ObjectValue;
                 foreach (KeyValuePair<string, object> kvp in v.Items)
-                    Console.WriteLine("Variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
+                    Output("{0}: value {1}", kvp.Key, kvp.Value.ToString());
             }
         }
 
@@ -170,13 +158,20 @@ namespace Optimization
         {
             var fittest = e.Population.GetTop(1)[0];
             var sharpe = RunAlgorithm(fittest);
-            Console.WriteLine("Generation: {0}, Fitness: {1},sharpe: {2}", e.Generation, fittest.Fitness, sharpe);
+            Output("Generation: {0}, Fitness: {1}, sharpe: {2}", e.Generation, fittest.Fitness, sharpe);
         }
 
         public static double CalculateFitness(Chromosome chromosome)
         {
-            var sharpe = RunAlgorithm(chromosome);
-            return (sharpe + 10) / 200;
+            try
+            {
+                var sharpe = RunAlgorithm(chromosome);
+                return (sharpe + 10) / 200;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
 
         private static double RunAlgorithm(Chromosome chromosome)
@@ -186,18 +181,21 @@ namespace Optimization
             var i = 0;
             foreach (var gene in chromosome.Genes)
             {
-                Console.WriteLine("Running gene number {0}", i);
                 var val = (Variables)gene.ObjectValue;
                 AppDomain ad = null;
                 Runner rc = CreateRunClassInAppDomain(ref ad);
+                string output = string.Format("Gene: {0}", i);
                 foreach (KeyValuePair<string, object> kvp in val.Items)
-                    Console.WriteLine("Running algorithm with variable {0}:, value {1}", kvp.Key, kvp.Value.ToString());
+                {
+                    output += string.Format(" {1}: {2}", i, kvp.Key, kvp.Value.ToString());
+                }
 
                 var res = (double)rc.Run(val);
-                Console.WriteLine("Sharpe ratio: {0}", res);
                 sum_sharpe += res;
                 AppDomain.Unload(ad);
-                Console.WriteLine("Sum Sharpe ratio: {0}", sum_sharpe);
+                output += string.Format(" Sharpe ratio: {0}, Sum Sharpe ratio: {1}", res, sum_sharpe);
+
+                Output(output);
 
                 i++;
             }
@@ -207,9 +205,41 @@ namespace Optimization
 
         public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
         {
-            return currentGeneration > 2;
+            bool canTerminate = currentGeneration > 16;
+            return canTerminate;
         }
 
+        private static double RandomNumberBetween(double minValue, double maxValue)
+        {
+            var next = random.NextDouble();
+
+            return minValue + (next * (maxValue - minValue));
+        }
+
+        private static int RandomBetween(int minValue, int maxValue)
+        {
+            return random.Next(minValue, maxValue);
+        }
+
+        private static double RandomBetween(double minValue, double maxValue)
+        {
+            var rand = random.NextDouble() * (maxValue - minValue) + minValue;
+            return System.Math.Round(rand, 3);
+        }
+
+        public static void Output(string line, params object[] format)
+        {
+            Output(string.Format(line, format));
+        }
+
+        public static void Output(string line)
+        {
+            writer.Write(DateTime.Now.ToString("u"));
+            writer.Write(line);
+            writer.Write(writer.NewLine);
+            writer.Flush();
+            Console.WriteLine(line);
+        }
 
     }
 }
