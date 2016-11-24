@@ -50,7 +50,7 @@ namespace Optimization
             var population = new Population();
 
             //create the chromosomes
-            for (var p = 0; p < 1; p++)
+            for (var p = 0; p < 2; p++)
             {
 
                 var chromosome = new Chromosome();
@@ -88,7 +88,7 @@ namespace Optimization
             //add the operators to the ga process pipeline 
             ga.Operators.Add(elite);
             ga.Operators.Add(crossover);
-            ga.Operators.Add(swap);
+            //ga.Operators.Add(swap);
 
             var bottom = new ReplaceBottomOperator(1);
             ga.Operators.Add(bottom);

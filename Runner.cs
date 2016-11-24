@@ -43,7 +43,16 @@ namespace Optimization
             LaunchLean();
             BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
             var sharpe_ratio = 0.0m;
-            var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
+            string ratio = "0.0";
+            if (resultshandler.FinalStatistics.ContainsKey("Sharpe Ratio"))
+            {
+                ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
+            }
+            else
+            {
+
+            }
+
             Decimal.TryParse(ratio, out sharpe_ratio);
             return sharpe_ratio;
         }
