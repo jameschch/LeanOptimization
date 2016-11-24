@@ -37,14 +37,16 @@ namespace Optimization
                     {
                         replacing = new Chromosome();
 
-                        foreach (Gene gene in chromosome.Genes)
-                        {
+                        var spawn = Variables.SpawnRandom();
+                        replacing.Genes.Add(new Gene(spawn.Items["p1"]));
+                        replacing.Genes.Add(new Gene(spawn.Items["p2"]));
+                        replacing.Genes.Add(new Gene(spawn.Items["p3"]));
+                        replacing.Genes.Add(new Gene(spawn.Items["p4"]));
+                        replacing.Genes.Add(new Gene(spawn.Items["stop"]));
+                        replacing.Genes.Add(new Gene(spawn.Items["take"]));
 
-                            var v = Variables.SpawnRandom();
-                            replacing.Genes.Add(new Gene(v));
-                        }
                     }
-                    replacing.Genes.ShuffleFast();
+                    //replacing.Genes.ShuffleFast();
                     replacing.ClearFitness();
                     newPopulation.Solutions.Add(replacing);
                 }

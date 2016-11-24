@@ -50,18 +50,21 @@ namespace Optimization
             var population = new Population();
 
             //create the chromosomes
-            for (var p = 0; p < 1; p++)
+            for (var p = 0; p < 12; p++)
             {
-
                 var chromosome = new Chromosome();
-                for (int i = 0; i < 3; i++)
-                {
-                    var v = Variables.SpawnRandom();
-                    chromosome.Genes.Add(new Gene(v));
-                }
+
+                var spawn = Variables.SpawnRandom();
+
+                chromosome.Genes.Add(new Gene(spawn.Items["p1"]));
+                chromosome.Genes.Add(new Gene(spawn.Items["p2"]));
+                chromosome.Genes.Add(new Gene(spawn.Items["p3"]));
+                chromosome.Genes.Add(new Gene(spawn.Items["p4"]));
+                chromosome.Genes.Add(new Gene(spawn.Items["stop"]));
+                chromosome.Genes.Add(new Gene(spawn.Items["take"]));
 
                 var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-                chromosome.Genes.ShuffleFast(rnd);
+                //chromosome.Genes.ShuffleFast(rnd);
                 population.Solutions.Add(chromosome);
             }
 
@@ -147,8 +150,8 @@ namespace Optimization
         private static void ga_OnGenerationComplete(object sender, GaEventArgs e)
         {
             var fittest = e.Population.GetTop(1)[0];
-            var sharpe = RunAlgorithm(fittest);
-            Output("Generation: {0}, Fitness: {1}, Sum Sharpe: {2}", e.Generation, fittest.Fitness, sharpe);
+            //var sharpe = RunAlgorithm(fittest);
+            Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", e.Generation, fittest.Fitness, (fittest.Fitness * 200) - 10);
         }
 
         public static double CalculateFitness(Chromosome chromosome)
@@ -167,30 +170,33 @@ namespace Optimization
         private static double RunAlgorithm(Chromosome chromosome)
         {
 
-            var sum_sharpe = 0.0;
             var i = 0;
-            foreach (var gene in chromosome.Genes)
-            {
-                var val = (Variables)gene.ObjectValue;
-                AppDomain ad = null;
-                Runner rc = CreateRunClassInAppDomain(ref ad);
-                string output = string.Format("Gene: {0}", i);
-                foreach (KeyValuePair<string, object> kvp in val.Items)
-                {
-                    output += string.Format(" {0}: {1}", kvp.Key, kvp.Value.ToString());
-                }
+            //foreach (var gene in chromosome.Genes)
+            //{
+            // var val = (Variables)gene.ObjectValue;
+            AppDomain ad = null;
+            Runner rc = CreateRunClassInAppDomain(ref ad);
+            string output = "";
 
-                var res = (double)rc.Run(val);
-                sum_sharpe += res;
-                AppDomain.Unload(ad);
-                output += string.Format(" Sharpe ratio: {0}, Sum Sharpe ratio: {1}", res, sum_sharpe);
+            output += " p1 " + chromosome.Genes.ElementAt(0).RealValue.ToString();
+            output += " p2 " + chromosome.Genes.ElementAt(1).RealValue.ToString();
+            output += " p3 " + chromosome.Genes.ElementAt(2).ObjectValue.ToString();
+            output += " p4 " + chromosome.Genes.ElementAt(3).ObjectValue.ToString();
+            output += " stop " + chromosome.Genes.ElementAt(4).RealValue.ToString();
+            output += " take " + chromosome.Genes.ElementAt(5).RealValue.ToString();
 
-                Output(output);
+            var sharpe = (double)rc.Run(chromosome.Genes);
 
-                i++;
-            }
+  
+            AppDomain.Unload(ad);
+            output += string.Format(" Sharpe:{0}", sharpe);
 
-            return sum_sharpe;
+            Output(output);
+
+            i++;
+            //}
+
+            return sharpe;
         }
 
         public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
@@ -201,13 +207,15 @@ namespace Optimization
 
         public static int RandomBetween(int minValue, int maxValue)
         {
+            //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
             return random.Next(minValue, maxValue);
         }
 
         public static double RandomBetween(double minValue, double maxValue, int rounding = 3)
         {
-            var rand = random.NextDouble() * (maxValue - minValue) + minValue;
-            return System.Math.Round(rand, rounding);
+            //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
+            var value = random.NextDouble() * (maxValue - minValue) + minValue;
+            return System.Math.Round(value, rounding);
         }
 
         public static void Output(string line, params object[] format)

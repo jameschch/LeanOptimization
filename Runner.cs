@@ -1,4 +1,5 @@
-﻿using QuantConnect.Api;
+﻿using GAF;
+using QuantConnect.Api;
 using QuantConnect.Configuration;
 using QuantConnect.Interfaces;
 using QuantConnect.Lean.Engine;
@@ -35,10 +36,15 @@ namespace Optimization
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
 
-        public decimal Run(Variables vars)
+        public decimal Run(IEnumerable<Gene> items)
         {
-            foreach (KeyValuePair<string, object> kvp in vars.Items)
-                Config.Set(kvp.Key, kvp.Value.ToString());
+
+            Config.Set("p1", items.ElementAt(0).RealValue.ToString());
+            Config.Set("p2", items.ElementAt(1).RealValue.ToString());
+            Config.Set("p3", items.ElementAt(2).BinaryValue.ToString());
+            Config.Set("p4", items.ElementAt(3).ObjectValue.ToString());
+            Config.Set("stop", items.ElementAt(4).ObjectValue.ToString());
+            Config.Set("take", items.ElementAt(5).RealValue.ToString());
 
             LaunchLean();
             BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
