@@ -38,10 +38,10 @@ namespace Optimization
         public static void Main(string[] args)
         {
             _ads = SetupAppDomain();
-            writer = System.IO.File.AppendText("optimzer.txt");
+            writer = System.IO.File.AppendText("optimizer.txt");
 
             const double crossoverProbability = 0.65;
-            const double mutationProbability = 0.08;
+            //const double mutationProbability = 0.08;
             const int elitismPercentage = 5;
 
             //create the population
@@ -50,23 +50,13 @@ namespace Optimization
             var population = new Population();
 
             //create the chromosomes
-            for (var p = 0; p < 10; p++)
+            for (var p = 0; p < 1; p++)
             {
 
                 var chromosome = new Chromosome();
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 3; i++)
                 {
-                    Variables v = new Variables();
-                    v.Items = new Dictionary<string, object>
-                    {
-                        { "p1", RandomBetween(0.25, 3.25) },
-                        { "p2", RandomBetween(0.25, 3.25) },
-                        { "p3", RandomBetween(1, 12) },
-                        { "p4", RandomBetween(1, 12) },
-                        { "stop", RandomBetween(0.01, 0.05) },
-                        { "take", RandomBetween(0.02, 0.08) },
-                    };
-
+                    var v = Variables.SpawnRandom();
                     chromosome.Genes.Add(new Gene(v));
                 }
 
@@ -85,7 +75,8 @@ namespace Optimization
 
             var swap = new SwapMutate(0.02);
 
-            var mutation = new BinaryMutate(mutationProbability, true);
+            //var mutation = new BinaryMutate(mutationProbability, true);
+            //var randomReplace = new RandomReplace(25, false);
 
             //create the GA itself 
             var ga = new GeneticAlgorithm(population, CalculateFitness);
@@ -97,11 +88,10 @@ namespace Optimization
             //add the operators to the ga process pipeline 
             ga.Operators.Add(elite);
             ga.Operators.Add(crossover);
-            //ga.Operators.Add(mutation);
             ga.Operators.Add(swap);
 
-            //var cv_operator = new CustomOperator();
-            //ga.Operators.Add(cv_operator);
+            var bottom = new ReplaceBottomOperator(1);
+            ga.Operators.Add(bottom);
 
             //run the GA 
             ga.Run(Terminate);
@@ -158,7 +148,7 @@ namespace Optimization
         {
             var fittest = e.Population.GetTop(1)[0];
             var sharpe = RunAlgorithm(fittest);
-            Output("Generation: {0}, Fitness: {1}, sharpe: {2}", e.Generation, fittest.Fitness, sharpe);
+            Output("Generation: {0}, Fitness: {1}, Sum Sharpe: {2}", e.Generation, fittest.Fitness, sharpe);
         }
 
         public static double CalculateFitness(Chromosome chromosome)
@@ -187,7 +177,7 @@ namespace Optimization
                 string output = string.Format("Gene: {0}", i);
                 foreach (KeyValuePair<string, object> kvp in val.Items)
                 {
-                    output += string.Format(" {1}: {2}", i, kvp.Key, kvp.Value.ToString());
+                    output += string.Format(" {0}: {1}", kvp.Key, kvp.Value.ToString());
                 }
 
                 var res = (double)rc.Run(val);
@@ -205,26 +195,19 @@ namespace Optimization
 
         public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
         {
-            bool canTerminate = currentGeneration > 16;
+            bool canTerminate = currentGeneration > 20;
             return canTerminate;
         }
 
-        private static double RandomNumberBetween(double minValue, double maxValue)
-        {
-            var next = random.NextDouble();
-
-            return minValue + (next * (maxValue - minValue));
-        }
-
-        private static int RandomBetween(int minValue, int maxValue)
+        public static int RandomBetween(int minValue, int maxValue)
         {
             return random.Next(minValue, maxValue);
         }
 
-        private static double RandomBetween(double minValue, double maxValue)
+        public static double RandomBetween(double minValue, double maxValue, int rounding = 3)
         {
             var rand = random.NextDouble() * (maxValue - minValue) + minValue;
-            return System.Math.Round(rand, 3);
+            return System.Math.Round(rand, rounding);
         }
 
         public static void Output(string line, params object[] format)

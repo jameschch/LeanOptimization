@@ -36,5 +36,21 @@ namespace Optimization
                 return hashCode;
             }
         }
+
+        public static Variables SpawnRandom()
+        {
+            Variables v = new Variables();
+            v.Items = new Dictionary<string, object>
+                    {
+                        { "p1", Program.RandomBetween(1.5, 3.25) },
+                        { "p2", Program.RandomBetween(0.25, 3.25) },
+                        { "p3", Program.RandomBetween(1, 12) },
+                        { "p4", Program.RandomBetween(1, 12) },
+                        { "stop", Program.RandomBetween(0.01, 0.05) },
+                        { "take", Program.RandomBetween(0.02, 0.08) },
+                    };
+
+            return v;
+        }
     }
 }
