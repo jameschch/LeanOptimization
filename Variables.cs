@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GAF;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,5 +53,19 @@ namespace Optimization
 
             return v;
         }
+
+        public static Chromosome Spawn()
+        {
+            var chromosome = new Chromosome();
+            var spawn = Variables.SpawnRandom();
+
+            foreach (var item in spawn.Items)
+            {
+                chromosome.Genes.Add(new Gene(item));
+            }
+
+            return chromosome;
+        }
+
     }
 }

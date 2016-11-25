@@ -40,7 +40,7 @@ namespace Optimization
             _ads = SetupAppDomain();
             writer = System.IO.File.AppendText("optimizer.txt");
 
-            const double crossoverProbability = 0.65;
+            const double crossoverProbability = 0.85;
             //const double mutationProbability = 0.08;
             const int elitismPercentage = 5;
 
@@ -52,18 +52,9 @@ namespace Optimization
             //create the chromosomes
             for (var p = 0; p < 12; p++)
             {
-                var chromosome = new Chromosome();
+                var chromosome = Variables.Spawn();
 
-                var spawn = Variables.SpawnRandom();
-
-                chromosome.Genes.Add(new Gene(spawn.Items["p1"]));
-                chromosome.Genes.Add(new Gene(spawn.Items["p2"]));
-                chromosome.Genes.Add(new Gene(spawn.Items["p3"]));
-                chromosome.Genes.Add(new Gene(spawn.Items["p4"]));
-                chromosome.Genes.Add(new Gene(spawn.Items["stop"]));
-                chromosome.Genes.Add(new Gene(spawn.Items["take"]));
-
-                var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
+                //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
                 //chromosome.Genes.ShuffleFast(rnd);
                 population.Solutions.Add(chromosome);
             }
@@ -71,12 +62,9 @@ namespace Optimization
             //create the genetic operators 
             var elite = new Elite(elitismPercentage);
 
-            var crossover = new Crossover(crossoverProbability, true)
-            {
-                CrossoverType = CrossoverType.DoublePoint
-            };
+            var crossover = new Crossover(crossoverProbability, true, CrossoverType.DoublePoint, ReplacementMethod.DeleteLast);
 
-            var swap = new SwapMutate(0.02);
+            //var swap = new SwapMutate(0.02);
 
             //var mutation = new BinaryMutate(mutationProbability, true);
             //var randomReplace = new RandomReplace(25, false);
@@ -89,11 +77,11 @@ namespace Optimization
             ga.OnRunComplete += ga_OnRunComplete;
 
             //add the operators to the ga process pipeline 
-            ga.Operators.Add(elite);
+            //ga.Operators.Add(elite);
             ga.Operators.Add(crossover);
-            ga.Operators.Add(swap);
+            //ga.Operators.Add(swap);
 
-            var bottom = new ReplaceBottomOperator(1);
+            var bottom = new ReplaceBottomOperator(3);
             ga.Operators.Add(bottom);
 
             //run the GA 
@@ -141,9 +129,8 @@ namespace Optimization
             var fittest = e.Population.GetTop(1)[0];
             foreach (var gene in fittest.Genes)
             {
-                Variables v = (Variables)gene.ObjectValue;
-                foreach (KeyValuePair<string, object> kvp in v.Items)
-                    Output("{0}: value {1}", kvp.Key, kvp.Value.ToString());
+                var pair = (KeyValuePair<string, object>)gene.ObjectValue;
+                Output("{0}: value {1}", pair.Key, pair.Value );
             }
         }
 
@@ -178,16 +165,15 @@ namespace Optimization
             Runner rc = CreateRunClassInAppDomain(ref ad);
             string output = "";
 
-            output += " p1 " + chromosome.Genes.ElementAt(0).RealValue.ToString();
-            output += " p2 " + chromosome.Genes.ElementAt(1).RealValue.ToString();
-            output += " p3 " + chromosome.Genes.ElementAt(2).ObjectValue.ToString();
-            output += " p4 " + chromosome.Genes.ElementAt(3).ObjectValue.ToString();
-            output += " stop " + chromosome.Genes.ElementAt(4).RealValue.ToString();
-            output += " take " + chromosome.Genes.ElementAt(5).RealValue.ToString();
+            foreach (var item in chromosome.Genes)
+            {
+                var pair = (KeyValuePair<string, object>)item.ObjectValue;
+                output += " " + pair.Key + " " + pair.Value.ToString();
+            }
 
             var sharpe = (double)rc.Run(chromosome.Genes);
 
-  
+
             AppDomain.Unload(ad);
             output += string.Format(" Sharpe:{0}", sharpe);
 
