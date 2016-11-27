@@ -62,7 +62,7 @@ namespace Optimization
             //create the genetic operators 
             var elite = new Elite(elitismPercentage);
 
-            var crossover = new Crossover(crossoverProbability, true, CrossoverType.DoublePoint, ReplacementMethod.DeleteLast);
+            var crossover = new Crossover(crossoverProbability, false, CrossoverType.DoublePoint, ReplacementMethod.DeleteLast);
 
             //var swap = new SwapMutate(0.02);
 
@@ -108,6 +108,10 @@ namespace Optimization
             ads.DisallowBindingRedirects = false;
             ads.DisallowCodeDownload = true;
             ads.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+
+            string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
+            System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
+
             return ads;
         }
 
@@ -137,7 +141,6 @@ namespace Optimization
         private static void ga_OnGenerationComplete(object sender, GaEventArgs e)
         {
             var fittest = e.Population.GetTop(1)[0];
-            //var sharpe = RunAlgorithm(fittest);
             Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", e.Generation, fittest.Fitness, (fittest.Fitness * 200) - 10);
         }
 
@@ -187,7 +190,7 @@ namespace Optimization
 
         public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
         {
-            bool canTerminate = currentGeneration > 20;
+            bool canTerminate = currentGeneration > 400;
             return canTerminate;
         }
 

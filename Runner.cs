@@ -17,6 +17,7 @@ using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,15 +48,19 @@ namespace Optimization
 
             LaunchLean();
             BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
-            var sharpe_ratio = 0.0m;
+            var sharpe_ratio = -10m;
             var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
             Decimal.TryParse(ratio, out sharpe_ratio);
-            return sharpe_ratio;
+
+            return System.Math.Max(sharpe_ratio, -10);
         }
 
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
+            string algorithm = ConfigurationManager.AppSettings["algorithmTypeName"];
+
+            Config.Set("algorithm-type-name", algorithm);
 
             _jobQueue = new JobQueue();
             _notify = new Messaging();

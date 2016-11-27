@@ -74,6 +74,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Variables.cs" />
@@ -84,12 +85,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Lean\Launcher\QuantConnect.Lean.Launcher.csproj">
-      <Project>{09e7b916-e58b-4021-bd8b-c10b4446e226}</Project>
-      <Name>QuantConnect.Lean.Launcher</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
