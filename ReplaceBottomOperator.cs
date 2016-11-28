@@ -35,7 +35,7 @@ namespace Optimization
                     var replacing = chromosome;
                     if (bottom.Contains(chromosome))
                     {
-                        replacing = Variables.Spawn();
+                        replacing = GeneFactory.Spawn();
                     }
                     //replacing.Genes.ShuffleFast();
                     //replacing.ClearFitness();

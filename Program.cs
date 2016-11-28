@@ -52,7 +52,7 @@ namespace Optimization
             //create the chromosomes
             for (var p = 0; p < 12; p++)
             {
-                var chromosome = Variables.Spawn();
+                var chromosome = GeneFactory.Spawn();
 
                 //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
                 //chromosome.Genes.ShuffleFast(rnd);
@@ -95,11 +95,9 @@ namespace Optimization
         static AppDomainSetup SetupAppDomain()
         {
             _callingDomainName = Thread.GetDomain().FriendlyName;
-            //Console.WriteLine(callingDomainName);
-
+            
             // Get and display the full name of the EXE assembly.
             _exeAssembly = Assembly.GetEntryAssembly().FullName;
-            //Console.WriteLine(exeAssembly);
 
             // Construct and initialize settings for a second AppDomain.
             AppDomainSetup ads = new AppDomainSetup();
@@ -134,7 +132,7 @@ namespace Optimization
             foreach (var gene in fittest.Genes)
             {
                 var pair = (KeyValuePair<string, object>)gene.ObjectValue;
-                Output("{0}: value {1}", pair.Key, pair.Value );
+                Output("{0}: value {1}", pair.Key, pair.Value);
             }
         }
 
@@ -159,11 +157,6 @@ namespace Optimization
 
         private static double RunAlgorithm(Chromosome chromosome)
         {
-
-            var i = 0;
-            //foreach (var gene in chromosome.Genes)
-            //{
-            // var val = (Variables)gene.ObjectValue;
             AppDomain ad = null;
             Runner rc = CreateRunClassInAppDomain(ref ad);
             string output = "";
@@ -176,14 +169,10 @@ namespace Optimization
 
             var sharpe = (double)rc.Run(chromosome.Genes);
 
-
             AppDomain.Unload(ad);
             output += string.Format(" Sharpe:{0}", sharpe);
 
             Output(output);
-
-            i++;
-            //}
 
             return sharpe;
         }
@@ -192,19 +181,6 @@ namespace Optimization
         {
             bool canTerminate = currentGeneration > 400;
             return canTerminate;
-        }
-
-        public static int RandomBetween(int minValue, int maxValue)
-        {
-            //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-            return random.Next(minValue, maxValue);
-        }
-
-        public static double RandomBetween(double minValue, double maxValue, int rounding = 3)
-        {
-            //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-            var value = random.NextDouble() * (maxValue - minValue) + minValue;
-            return System.Math.Round(value, rounding);
         }
 
         public static void Output(string line, params object[] format)

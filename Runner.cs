@@ -52,7 +52,7 @@ namespace Optimization
             var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
             Decimal.TryParse(ratio, out sharpe_ratio);
 
-            return System.Math.Max(sharpe_ratio, -10);
+            return System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
         }
 
         private void LaunchLean()
