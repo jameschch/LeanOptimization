@@ -36,9 +36,17 @@ namespace Optimization
         private BacktestingRealTimeHandler _realTime;
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
+        Dictionary<string, decimal> results = new Dictionary<string, decimal>();
 
         public decimal Run(IEnumerable<Gene> items)
         {
+            string hash = Newtonsoft.Json.JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None);
+
+            if (results.ContainsKey(hash))
+            {
+                return results[hash];
+            }
+
 
             foreach (var item in items)
             {
@@ -52,7 +60,11 @@ namespace Optimization
             var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
             Decimal.TryParse(ratio, out sharpe_ratio);
 
-            return System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
+            sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
+
+            results.Add(hash, sharpe_ratio);
+
+            return sharpe_ratio;
         }
 
         private void LaunchLean()

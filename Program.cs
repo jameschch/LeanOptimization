@@ -81,7 +81,7 @@ namespace Optimization
             ga.Operators.Add(crossover);
             //ga.Operators.Add(swap);
 
-            var bottom = new ReplaceBottomOperator(3);
+            var bottom = new ReplaceBottomOperator(0.25m);
             ga.Operators.Add(bottom);
 
             //run the GA 

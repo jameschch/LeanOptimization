@@ -8,19 +8,22 @@ using System.Threading.Tasks;
 namespace Optimization
 {
 
+    //todo: add actual
     [JsonConverter(typeof(GeneConverter))]
     public class GeneConfiguration
     {
 
         public string Key { get; set; }
 
-        public double? MinDouble { get; set; }
+        public decimal? MinDecimal { get; set; }
 
-        public double? MaxDouble { get; set; }
+        public decimal? MaxDecimal { get; set; }
 
         public int? MinInt { get; set; }
 
         public int? MaxInt { get; set; }
+
+        public int? Precision { get; set; }
 
     }
 }

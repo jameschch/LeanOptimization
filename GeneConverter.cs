@@ -24,10 +24,11 @@ namespace Optimization
             GeneConfiguration gene = new GeneConfiguration
             {
                 Key = json["key"].Value<string>(),
-                MinDouble = IsFractional(json, "min") ? json["min"].Value<double?>() : null,
-                MaxDouble = IsFractional(json, "max") ? json["max"].Value<double?>() : null,
+                MinDecimal = IsFractional(json, "min") ? json["min"].Value<decimal?>() : null,
+                MaxDecimal = IsFractional(json, "max") ? json["max"].Value<decimal?>() : null,
                 MinInt = IsFractional(json, "min") ? null : json["min"].Value<int?>(),
                 MaxInt = IsFractional(json, "max") ? null: json["max"].Value<int?>(),
+                Precision = json["precision"]?.Value<int?>()
             };
 
             return gene;

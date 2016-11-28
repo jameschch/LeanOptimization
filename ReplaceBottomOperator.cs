@@ -12,19 +12,22 @@ namespace Optimization
     {
 
         private int _invoked = 0;
-        private int _items = 1;
+        private decimal _percent = 1;
 
 
-        public ReplaceBottomOperator(int items)
+        public ReplaceBottomOperator(decimal percent)
         {
             Enabled = true;
-            _items = items;
+            _percent = percent;
         }
 
         public void Invoke(Population currentPopulation, ref Population newPopulation, FitnessFunction fitnesFunctionDelegate)
         {
             //replace bottom with random
-            var min = System.Math.Min(_items, currentPopulation.Solutions.Count);
+
+            int min = (int)System.Math.Round(currentPopulation.Solutions.Count * _percent);
+
+            min = System.Math.Min(min, currentPopulation.Solutions.Count);
 
             var bottom = currentPopulation.GetBottom(min);
             try
