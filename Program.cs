@@ -22,6 +22,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Caching;
 using System.Threading;
 
 namespace Optimization
@@ -34,10 +35,11 @@ namespace Optimization
         private static string _callingDomainName;
         private static string _exeAssembly;
         static StreamWriter writer;
-        public static Dictionary<string, decimal> Results = new Dictionary<string, decimal>();
+        public static Dictionary<string, decimal> Results;
 
         public static void Main(string[] args)
         {
+            Results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
             writer = System.IO.File.AppendText("optimizer.txt");
 
@@ -124,6 +126,8 @@ namespace Optimization
             // A proxy to the object is returned.
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
+            ad.SetData("Results", Results);
+
             return rc;
         }
 
@@ -169,6 +173,8 @@ namespace Optimization
             }
 
             var sharpe = (double)rc.Run(chromosome.Genes);
+
+            Results = (Dictionary<string, decimal>)ad.GetData("Results");
 
             AppDomain.Unload(ad);
             output += string.Format(" Sharpe:{0}", sharpe);

@@ -22,11 +22,13 @@ using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Optimization
 {
+
     public class Runner : MarshalByRefObject
     {
 
@@ -39,16 +41,17 @@ namespace Optimization
         private BacktestingRealTimeHandler _realTime;
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
-       
+
         public decimal Run(IEnumerable<Gene> items)
         {
             string hash = JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { ContractResolver = new GeneContractResolver() });
 
-            if (Program.Results.ContainsKey(hash))
-            {
-                return Program.Results[hash];
-            }
+            Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
 
+            if (results.ContainsKey(hash))
+            {
+                return results[hash];
+            }
 
             foreach (var item in items)
             {
@@ -64,7 +67,8 @@ namespace Optimization
 
             sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
 
-            Program.Results.Add(hash, sharpe_ratio);
+            results.Add(hash, sharpe_ratio);
+            AppDomain.CurrentDomain.SetData("Results", results);
 
             return sharpe_ratio;
         }
