@@ -27,13 +27,14 @@ using System.Threading;
 namespace Optimization
 {
 
-    class Program
+    public class Program
     {
         private static readonly Random random = new Random();
         private static AppDomainSetup _ads;
         private static string _callingDomainName;
         private static string _exeAssembly;
         static StreamWriter writer;
+        public static Dictionary<string, decimal> Results = new Dictionary<string, decimal>();
 
         public static void Main(string[] args)
         {

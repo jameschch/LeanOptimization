@@ -39,15 +39,14 @@ namespace Optimization
         private BacktestingRealTimeHandler _realTime;
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
-        Dictionary<string, decimal> results = new Dictionary<string, decimal>();
-
+       
         public decimal Run(IEnumerable<Gene> items)
         {
             string hash = JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { ContractResolver = new GeneContractResolver() });
 
-            if (results.ContainsKey(hash))
+            if (Program.Results.ContainsKey(hash))
             {
-                return results[hash];
+                return Program.Results[hash];
             }
 
 
@@ -65,7 +64,7 @@ namespace Optimization
 
             sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
 
-            results.Add(hash, sharpe_ratio);
+            Program.Results.Add(hash, sharpe_ratio);
 
             return sharpe_ratio;
         }
