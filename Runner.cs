@@ -1,4 +1,6 @@
 ﻿using GAF;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using QuantConnect.Api;
 using QuantConnect.Configuration;
 using QuantConnect.Interfaces;
@@ -19,6 +21,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Configuration;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,7 +43,7 @@ namespace Optimization
 
         public decimal Run(IEnumerable<Gene> items)
         {
-            string hash = Newtonsoft.Json.JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None);
+            string hash = JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { ContractResolver = new GeneContractResolver() });
 
             if (results.ContainsKey(hash))
             {
@@ -117,6 +120,19 @@ namespace Optimization
                 systemHandlers.Dispose();
                 leanEngineAlgorithmHandlers.Dispose();
                 Log.LogHandler.Dispose();
+            }
+        }
+
+        public class GeneContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                JsonProperty property = base.CreateProperty(member, memberSerialization);
+                if (property.PropertyType == typeof(Guid))
+                {
+                    property.Ignored = true;
+                }
+                return property;
             }
         }
 
