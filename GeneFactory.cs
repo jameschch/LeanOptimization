@@ -23,7 +23,7 @@ namespace Optimization
             {
                 if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
                 {
-                    list.Add(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value));
+                    list.Add(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision));
                 }
                 else
                 {
@@ -60,21 +60,21 @@ namespace Optimization
             return rnd.Next(minValue, maxValue);
         }
 
-        public static double RandomBetween(decimal minValue, decimal maxValue, int? rounding = null)
+        public static double RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
         {
-            if (!rounding.HasValue)
+            if (!precision.HasValue)
             {
-                rounding = BitConverter.GetBytes(decimal.GetBits(minValue)[3])[2];
+                precision = BitConverter.GetBytes(decimal.GetBits(minValue)[3])[2];
 
-                if (rounding <= 0)
+                if (precision <= 0)
                 {
-                    rounding = 3;
+                    precision = 3;
                 }
             }
 
             var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
             var value = rnd.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
-            return System.Math.Round(value, rounding.Value);
+            return System.Math.Round(value, precision.Value);
         }
 
 
