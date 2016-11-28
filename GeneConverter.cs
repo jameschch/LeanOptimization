@@ -21,14 +21,16 @@ namespace Optimization
 
             var json = JObject.Load(reader);
 
+            var precision = json["precision"]?.Value<int?>();
+
             GeneConfiguration gene = new GeneConfiguration
             {
                 Key = json["key"].Value<string>(),
-                MinDecimal = IsFractional(json, "min") ? json["min"].Value<decimal?>() : null,
-                MaxDecimal = IsFractional(json, "max") ? json["max"].Value<decimal?>() : null,
-                MinInt = IsFractional(json, "min") ? null : json["min"].Value<int?>(),
-                MaxInt = IsFractional(json, "max") ? null: json["max"].Value<int?>(),
-                Precision = json["precision"]?.Value<int?>()
+                MinDecimal = precision > 0 ? json["min"].Value<decimal?>() : null,
+                MaxDecimal = precision > 0 ? json["max"].Value<decimal?>() : null,
+                MinInt = precision > 0 ? null : json["min"].Value<int?>(),
+                MaxInt = precision > 0 ? null: json["max"].Value<int?>(),
+                Precision = precision
             };
 
             return gene;
@@ -38,12 +40,6 @@ namespace Optimization
         {
             throw new NotImplementedException();
         }
-
-        private bool IsFractional(JObject json, string name)
-        {
-            return json[name].Value<string>().Contains(".");
-        }
-
 
     }
 
