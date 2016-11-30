@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Optimization
 {
 
-    //todo: add actual
+    //todo: add actual starting value
     [JsonConverter(typeof(GeneConverter))]
     public class GeneConfiguration
     {

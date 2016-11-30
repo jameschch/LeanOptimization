@@ -14,6 +14,8 @@ namespace Optimization
     public class GeneFactory
     {
 
+        private static Random random = new Random();
+
         public static Chromosome Spawn()
         {
             var chromosome = new Chromosome();
@@ -56,8 +58,7 @@ namespace Optimization
 
         public static int RandomBetween(int minValue, int maxValue)
         {
-            var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-            return rnd.Next(minValue, maxValue);
+            return random.Next(minValue, maxValue);
         }
 
         public static double RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
@@ -72,8 +73,7 @@ namespace Optimization
                 }
             }
 
-            var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-            var value = rnd.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
+            var value = random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
             return System.Math.Round(value, precision.Value);
         }
 

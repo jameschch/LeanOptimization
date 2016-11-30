@@ -30,63 +30,62 @@ namespace Optimization
 
     public class Program
     {
+
+        #region Declarations
         private static readonly Random random = new Random();
         private static AppDomainSetup _ads;
         private static string _callingDomainName;
         private static string _exeAssembly;
         static StreamWriter writer;
         public static Dictionary<string, decimal> Results;
+        static OptimizerConfiguration config;
+        #endregion
 
         public static void Main(string[] args)
         {
             Results = new Dictionary<string, decimal>();
+            string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
+            System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
+            //todo: map from config
+            config = new OptimizerConfiguration();
+
             _ads = SetupAppDomain();
             writer = System.IO.File.AppendText("optimizer.txt");
 
-            const double crossoverProbability = 0.85;
-            //const double mutationProbability = 0.08;
-            const int elitismPercentage = 5;
 
             //create the population
-            //var population = new Population(100, 44, false, false);
-
             var population = new Population();
+            population.EvaluateInParallel = true;
 
             //create the chromosomes
-            for (var p = 0; p < 12; p++)
+            for (var p = 0; p < config.PopulationSize; p++)
             {
                 var chromosome = GeneFactory.Spawn();
-
-                //var rnd = GAF.Threading.RandomProvider.GetThreadRandom();
-                //chromosome.Genes.ShuffleFast(rnd);
                 population.Solutions.Add(chromosome);
             }
 
-            //create the genetic operators 
-            var elite = new Elite(elitismPercentage);
-
-            var crossover = new Crossover(crossoverProbability, false, CrossoverType.DoublePoint, ReplacementMethod.DeleteLast);
-
-            //var swap = new SwapMutate(0.02);
-
-            //var mutation = new BinaryMutate(mutationProbability, true);
-            //var randomReplace = new RandomReplace(25, false);
-
             //create the GA itself 
             var ga = new GeneticAlgorithm(population, CalculateFitness);
-
             //subscribe to the GAs Generation Complete event 
             ga.OnGenerationComplete += ga_OnGenerationComplete;
             ga.OnRunComplete += ga_OnRunComplete;
 
-            //add the operators to the ga process pipeline 
-            //ga.Operators.Add(elite);
-            ga.Operators.Add(crossover);
-            //ga.Operators.Add(swap);
-
-            var bottom = new ReplaceBottomOperator(0.25m);
-            ga.Operators.Add(bottom);
-
+            //create the genetic operators 
+            if (config.EliteEnabled)
+            {
+                var elite = new Elite(config.ElitePercent);
+                ga.Operators.Add(elite);
+            }
+            if (config.RandomReplaceEnabled)
+            {
+                var bottom = new ReplaceBottomOperator(0.25m);
+                ga.Operators.Add(bottom);
+            }
+            if (config.CrossoverEnabled)
+            {
+                var crossover = new Crossover(config.CrossoverPercent, true, CrossoverType.DoublePoint, ReplacementMethod.GenerationalReplacement);
+                ga.Operators.Add(crossover);
+            }
             //run the GA 
             ga.Run(Terminate);
 
@@ -98,7 +97,7 @@ namespace Optimization
         static AppDomainSetup SetupAppDomain()
         {
             _callingDomainName = Thread.GetDomain().FriendlyName;
-            
+
             // Get and display the full name of the EXE assembly.
             _exeAssembly = Assembly.GetEntryAssembly().FullName;
 
@@ -109,9 +108,6 @@ namespace Optimization
             ads.DisallowBindingRedirects = false;
             ads.DisallowCodeDownload = true;
             ads.ConfigurationFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-
-            string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
-            System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
             return ads;
         }
@@ -152,7 +148,7 @@ namespace Optimization
             try
             {
                 var sharpe = RunAlgorithm(chromosome);
-                return (sharpe + 10) / 200;
+                return (System.Math.Max(sharpe, -10) + 10) / 200;
             }
             catch (Exception)
             {
@@ -186,7 +182,7 @@ namespace Optimization
 
         public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
         {
-            bool canTerminate = currentGeneration > 400;
+            bool canTerminate = currentGeneration > config.Generations;
             return canTerminate;
         }
 

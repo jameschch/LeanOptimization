@@ -85,6 +85,7 @@
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
+    <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="ReplaceBottomOperator.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -92,7 +93,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="optimization.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
