@@ -19,7 +19,7 @@ namespace Optimization
 
         public bool RandomReplaceEnabled { get; set; } = true;
 
-        public double RandomReplacePercent { get; set; } = 0.25;
+        public double RandomReplacePercent { get; set; } = 0.5;
 
         public int PopulationSize { get; set; } = 12;
 

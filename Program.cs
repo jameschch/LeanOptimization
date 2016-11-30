@@ -78,7 +78,7 @@ namespace Optimization
             }
             if (config.RandomReplaceEnabled)
             {
-                var bottom = new ReplaceBottomOperator(0.25m);
+                var bottom = new ReplaceBottomOperator(config.RandomReplacePercent);
                 ga.Operators.Add(bottom);
             }
             if (config.CrossoverEnabled)

@@ -12,10 +12,10 @@ namespace Optimization
     {
 
         private int _invoked = 0;
-        private decimal _percent = 1;
+        private double _percent = 1;
 
 
-        public ReplaceBottomOperator(decimal percent)
+        public ReplaceBottomOperator(double percent)
         {
             Enabled = true;
             _percent = percent;
