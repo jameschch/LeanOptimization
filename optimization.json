@@ -1,0 +1,40 @@
+{
+  "genes": [
+    {
+      "key": "p1",
+      "min": 1.5,
+      "max": 3.25,
+      "precision": 2
+    },
+    {
+      "key": "p2",
+      "min": 0.25,
+      "max": 3.25,
+      "precision": 2
+    },
+    {
+      "key": "p3",
+      "min": 1,
+      "max": 12
+    },
+    {
+      "key": "p4",
+      "min": 1,
+      "max": 12
+    },
+    {
+      "key": "stop",
+      "min": 0.01,
+      "max": 0.05,
+      "precision": 2
+    },
+    {
+      "key": "take",
+      "min": 0.02,
+      "max": 0.08,
+      "precision": 2
+    }
+
+  ]
+
+}
