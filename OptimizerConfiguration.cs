@@ -11,7 +11,7 @@ namespace Optimization
 
         public bool EliteEnabled { get; set; } = true;
 
-        public int ElitePercent { get; set; } = 2;
+        public int ElitePercent { get; set; } = 5;
 
         public bool CrossoverEnabled { get; set; } = true;
 

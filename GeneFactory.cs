@@ -16,14 +16,32 @@ namespace Optimization
 
         private static Random random = new Random();
 
+        public static Chromosome SpawnRandom()
+        {
+            return Spawn(false);
+        }
+
         public static Chromosome Spawn()
+        {
+            return Spawn(true);
+        }
+
+        protected static Chromosome Spawn(bool isActual)
         {
             var chromosome = new Chromosome();
             var list = new Dictionary<string, object>();
 
             foreach (var item in Load())
             {
-                if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
+                if (isActual && item.ActualInt.HasValue)
+                {
+                    list.Add(item.Key, item.ActualInt);
+                }
+                else if (isActual && item.ActualDecimal.HasValue)
+                {
+                    list.Add(item.Key, item.ActualDecimal);
+                }
+                else if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
                 {
                     list.Add(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision));
                 }

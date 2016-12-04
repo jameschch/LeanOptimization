@@ -25,5 +25,9 @@ namespace Optimization
 
         public int? Precision { get; set; }
 
+        public int? ActualInt { get; set; }
+
+        public decimal? ActualDecimal { get; set; }
+
     }
 }

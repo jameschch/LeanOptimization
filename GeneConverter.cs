@@ -32,6 +32,23 @@ namespace Optimization
                 MaxInt = precision > 0 ? null: json["max"].Value<int?>(),
                 Precision = precision
             };
+            if (json["actual"] != null)
+            {
+
+                int parsed;
+                string raw = json["actual"].Value<string>();
+                if (int.TryParse(raw, out parsed))
+                {
+                    gene.ActualInt = parsed;
+                }
+
+                decimal decimalParsed;
+                raw = json["actual"].Value<string>();
+                if (decimal.TryParse(raw, out decimalParsed))
+                {
+                    gene.ActualDecimal = decimalParsed;
+                }
+            }
 
             return gene;
         }
