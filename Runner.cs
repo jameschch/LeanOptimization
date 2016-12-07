@@ -94,8 +94,8 @@ namespace Optimization
 
             //			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
-            Log.DebuggingEnabled = false;
-            Log.DebuggingLevel = 1;
+            //Log.DebuggingEnabled = false;
+            //Log.DebuggingLevel = 1;
 
             LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
             try
