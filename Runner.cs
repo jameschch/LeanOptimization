@@ -1,4 +1,4 @@
-﻿using GAF;
+﻿using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QuantConnect.Api;
@@ -23,6 +23,7 @@ using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,20 +43,19 @@ namespace Optimization
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
 
-        public decimal Run(IEnumerable<Gene> items)
+        public decimal Run(Dictionary<string, object> items)
         {
-            string hash = JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { ContractResolver = new GeneContractResolver() });
+            string plain = string.Join(",", items.Select(s => s.Value));
 
             Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
 
-            if (results.ContainsKey(hash))
+            if (results.ContainsKey(plain))
             {
-                return results[hash];
+                return results[plain];
             }
 
-            foreach (var item in items)
+            foreach (var pair in items)
             {
-                var pair = (KeyValuePair<string, object>)item.ObjectValue;
                 Config.Set(pair.Key, pair.Value.ToString());
             }
 
@@ -67,7 +67,7 @@ namespace Optimization
 
             sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
 
-            results.Add(hash, sharpe_ratio);
+            results.Add(plain, sharpe_ratio);
             AppDomain.CurrentDomain.SetData("Results", results);
 
             return sharpe_ratio;
@@ -92,7 +92,6 @@ namespace Optimization
             var systemHandlers = new LeanEngineSystemHandlers(_jobQueue, _api, _notify);
             systemHandlers.Initialize();
 
-            //			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
             Log.DebuggingEnabled = false;
             Log.DebuggingLevel = 1;
@@ -125,19 +124,6 @@ namespace Optimization
                 systemHandlers.Dispose();
                 leanEngineAlgorithmHandlers.Dispose();
                 Log.LogHandler.Dispose();
-            }
-        }
-
-        public class GeneContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                JsonProperty property = base.CreateProperty(member, memberSerialization);
-                if (property.PropertyType == typeof(Guid))
-                {
-                    property.Ignored = true;
-                }
-                return property;
             }
         }
 

@@ -1,4 +1,4 @@
-﻿using GAF;
+﻿using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,49 +16,6 @@ namespace Optimization
 
         private static Random random = new Random();
 
-        public static Chromosome SpawnRandom()
-        {
-            return Spawn(false);
-        }
-
-        public static Chromosome Spawn()
-        {
-            return Spawn(true);
-        }
-
-        protected static Chromosome Spawn(bool isActual)
-        {
-            var chromosome = new Chromosome();
-            var list = new Dictionary<string, object>();
-
-            foreach (var item in Load())
-            {
-                if (isActual && item.ActualInt.HasValue)
-                {
-                    list.Add(item.Key, item.ActualInt);
-                }
-                else if (isActual && item.ActualDecimal.HasValue)
-                {
-                    list.Add(item.Key, item.ActualDecimal);
-                }
-                else if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
-                {
-                    list.Add(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision));
-                }
-                else
-                {
-                    list.Add(item.Key, RandomBetween(item.MinInt.Value, item.MaxInt.Value));
-                }
-
-            }
-
-            foreach(var item in list)
-            {
-                chromosome.Genes.Add(new Gene(item));
-            }
-
-            return chromosome;
-        }
 
         public static GeneConfiguration[] Load()
         {
@@ -93,6 +50,58 @@ namespace Optimization
 
             var value = random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
             return System.Math.Round(value, precision.Value);
+        }
+
+        public class Chromosome : ChromosomeBase
+        {
+
+            GeneConfiguration[] _config;
+            bool _isActual;
+
+            public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
+            {
+                _isActual = isActual;
+                _config = config;
+
+                for (int i = 0; i < _config.Length; i++)
+                {
+                    ReplaceGene(i, GenerateGene(i));
+                }
+            }
+
+            public override Gene GenerateGene(int geneIndex)
+            {
+
+                var item = _config[geneIndex];
+
+                if (_isActual && item.ActualInt.HasValue)
+                {
+                    return new Gene(new KeyValuePair<string, object>(item.Key, item.ActualInt));
+                }
+                else if (_isActual && item.ActualDecimal.HasValue)
+                {
+                    return new Gene(new KeyValuePair<string, object>(item.Key, item.ActualDecimal));
+                }
+                else if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
+                {
+                    return new Gene(new KeyValuePair<string, object>(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision)));
+                }
+
+                return new Gene(new KeyValuePair<string, object>(item.Key, RandomBetween(item.MinInt.Value, item.MaxInt.Value)));
+            }
+
+            public override IChromosome CreateNew()
+            {
+                var config = Load();
+                return new Chromosome(false, config);
+            }
+
+            public override IChromosome Clone()
+            {
+                var clone = base.Clone() as Chromosome;
+
+                return clone;
+            }
         }
 
 
