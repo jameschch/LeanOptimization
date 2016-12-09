@@ -64,8 +64,12 @@ namespace Optimization
             var sharpe_ratio = -10m;
             var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
             Decimal.TryParse(ratio, out sharpe_ratio);
+            var apr = resultshandler.FinalStatistics["Compounding Annual Return"];
+            decimal parsedApr;
+            Decimal.TryParse(apr.Trim('%'), out parsedApr);
 
-            sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
+
+            sharpe_ratio = System.Math.Max(sharpe_ratio == 0 || parsedApr < 0 ? -10 : sharpe_ratio, -10);
 
             results.Add(plain, sharpe_ratio);
             AppDomain.CurrentDomain.SetData("Results", results);
