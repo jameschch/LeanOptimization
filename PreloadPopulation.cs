@@ -10,12 +10,12 @@ namespace Optimization
 {
     public class PreloadPopulation : Population
     {
-        private IList<IChromosome> preloadChromosome;
+        private IList<IChromosome> _preloading;
 
-        public PreloadPopulation(int minSize, int maxSize, IList<IChromosome> preloadChromosomes)
-            : base(minSize, maxSize, preloadChromosomes.FirstOrDefault())
+        public PreloadPopulation(int minSize, int maxSize, IList<IChromosome> preloading)
+            : base(minSize, maxSize, preloading.FirstOrDefault())
         {
-            preloadChromosome = preloadChromosomes;
+            _preloading = preloading;
         }
 
         public override void CreateInitialGeneration()
@@ -23,12 +23,12 @@ namespace Optimization
             Generations = new List<Generation>();
             GenerationsNumber = 0;
 
-            foreach (var c in preloadChromosome)
+            foreach (var c in _preloading)
             {
                 c.ValidateGenes();
             }
 
-            CreateNewGeneration(preloadChromosome);
+            CreateNewGeneration(_preloading);
         }
     }
 }

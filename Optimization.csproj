@@ -106,6 +106,7 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Chromosome.cs" />
     <Compile Include="Fitness.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />

@@ -8,3 +8,5 @@
 /packages
 /.vs/config
 *.user
+/bin/Release
+/obj/Release

@@ -14,7 +14,7 @@ namespace Optimization
     public class GeneFactory
     {
 
-        private static Random random = new Random();
+        private static Random _random = new Random();
 
 
         public static GeneConfiguration[] Load()
@@ -33,7 +33,7 @@ namespace Optimization
 
         public static int RandomBetween(int minValue, int maxValue)
         {
-            return random.Next(minValue, maxValue);
+            return _random.Next(minValue, maxValue);
         }
 
         public static double RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
@@ -48,62 +48,27 @@ namespace Optimization
                 }
             }
 
-            var value = random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
+            var value = _random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
             return System.Math.Round(value, precision.Value);
         }
 
-        public class Chromosome : ChromosomeBase
+        public static Gene Generate(GeneConfiguration config, bool isActual)
         {
-
-            GeneConfiguration[] _config;
-            bool _isActual;
-
-            public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
+            if (isActual && config.ActualInt.HasValue)
             {
-                _isActual = isActual;
-                _config = config;
-
-                for (int i = 0; i < _config.Length; i++)
-                {
-                    ReplaceGene(i, GenerateGene(i));
-                }
+                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualInt));
+            }
+            else if (isActual && config.ActualDecimal.HasValue)
+            {
+                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualDecimal));
+            }
+            else if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
+            {
+                return new Gene(new KeyValuePair<string, object>(config.Key, GeneFactory.RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value, config.Precision)));
             }
 
-            public override Gene GenerateGene(int geneIndex)
-            {
-
-                var item = _config[geneIndex];
-
-                if (_isActual && item.ActualInt.HasValue)
-                {
-                    return new Gene(new KeyValuePair<string, object>(item.Key, item.ActualInt));
-                }
-                else if (_isActual && item.ActualDecimal.HasValue)
-                {
-                    return new Gene(new KeyValuePair<string, object>(item.Key, item.ActualDecimal));
-                }
-                else if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
-                {
-                    return new Gene(new KeyValuePair<string, object>(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision)));
-                }
-
-                return new Gene(new KeyValuePair<string, object>(item.Key, RandomBetween(item.MinInt.Value, item.MaxInt.Value)));
-            }
-
-            public override IChromosome CreateNew()
-            {
-                var config = Load();
-                return new Chromosome(false, config);
-            }
-
-            public override IChromosome Clone()
-            {
-                var clone = base.Clone() as Chromosome;
-
-                return clone;
-            }
+            return new Gene(new KeyValuePair<string, object>(config.Key, GeneFactory.RandomBetween(config.MinInt.Value, config.MaxInt.Value)));
         }
-
 
     }
 }

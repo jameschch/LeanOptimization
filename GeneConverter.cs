@@ -9,7 +9,7 @@ namespace Optimization
     {
         public override bool CanConvert(Type objectType)
         {
-            return true;
+            return objectType == typeof(GeneConfiguration);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

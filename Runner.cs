@@ -60,21 +60,20 @@ namespace Optimization
             }
 
             LaunchLean();
-            BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
-            var sharpe_ratio = -10m;
-            var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
-            Decimal.TryParse(ratio, out sharpe_ratio);
-            var apr = resultshandler.FinalStatistics["Compounding Annual Return"];
-            decimal parsedApr;
-            Decimal.TryParse(apr.Trim('%'), out parsedApr);
+            BacktestingResultHandler resultsHandler = (BacktestingResultHandler)_resultshandler;
+            var sharpe = -10m;
+            var ratio = resultsHandler.FinalStatistics["Sharpe Ratio"];
+            Decimal.TryParse(ratio, out sharpe);
+            var compound = resultsHandler.FinalStatistics["Compounding Annual Return"];
+            decimal parsed;
+            Decimal.TryParse(compound.Trim('%'), out parsed);
 
+            sharpe = System.Math.Max(sharpe == 0 || parsed < 0 ? -10 : sharpe, -10);
 
-            sharpe_ratio = System.Math.Max(sharpe_ratio == 0 || parsedApr < 0 ? -10 : sharpe_ratio, -10);
-
-            results.Add(plain, sharpe_ratio);
+            results.Add(plain, sharpe);
             AppDomain.CurrentDomain.SetData("Results", results);
 
-            return sharpe_ratio;
+            return sharpe;
         }
 
         private void LaunchLean()
