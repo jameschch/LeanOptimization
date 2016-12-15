@@ -7,6 +7,8 @@ using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using QuantConnect.Api;
 using QuantConnect.Configuration;
 using QuantConnect.Interfaces;
@@ -45,30 +47,29 @@ namespace Optimization
         private static AppDomainSetup _ads;
         private static string _exeAssembly;
         static Dictionary<string, decimal> _results;
-        static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 2, MaxThreads = 8};
+        static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 2, MaxThreads = 8 };
         #endregion
 
         public static void Main(string[] args)
         {
             string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
             System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
-            //todo: map from config
-            _config = new OptimizerConfiguration();
+
+            _config = LoadConfig();
             _results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
-
             _writer = System.IO.File.AppendText("optimizer.txt");
-
+            _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
 
             IList<IChromosome> list = new List<IChromosome>();
             //create the population
             var geneConfig = GeneFactory.Load();
             for (int i = 0; i < _config.PopulationSize; i++)
             {
-               list.Add(new Chromosome(true, geneConfig));
+                list.Add(new Chromosome(true, geneConfig));
             }
 
-            _population = new PreloadPopulation(_config.PopulationSize, _config.PopulationSize*2, list);
+            _population = new PreloadPopulation(_config.PopulationSize, _config.PopulationSize * 2, list);
             _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
@@ -78,7 +79,7 @@ namespace Optimization
             ga.GenerationRan += ga_OnGenerationComplete;
             ga.TerminationReached += ga_OnRunComplete;
             ga.TaskExecutor = _executor;
-            ga.Termination = new GenerationNumberTermination(1000);
+            ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
             ga.Reinsertion = new ElitistReinsertion();
             //run the GA 
             ga.Start();
@@ -104,7 +105,7 @@ namespace Optimization
 
             var fittest = _population.BestChromosome;
             Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", _population.GenerationsNumber, fittest.Fitness, (fittest.Fitness * 200) - 10);
-        }     
+        }
 
         public static void Output(string line, params object[] format)
         {
@@ -179,6 +180,15 @@ namespace Optimization
             return sharpe;
         }
 
+        private static OptimizerConfiguration LoadConfig()
+        {
+            using (StreamReader file = File.OpenText("optimization.json"))
+            {
+                var document = (JObject)JsonConvert.DeserializeObject(file.ReadToEnd());
+                return JsonConvert.DeserializeObject<OptimizerConfiguration>(document["optimizer"].ToString());
+            }
+
+        }
+
     }
 }
-

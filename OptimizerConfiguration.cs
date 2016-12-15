@@ -13,5 +13,9 @@ namespace Optimization
 
         public int Generations { get; set; } = 1000;
 
+        public int StagnationGenerations { get; set; } = 10;
+
+        public int MaxThreads { get; set; } = 8;
+
     }
 }
