@@ -19,7 +19,6 @@ using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
@@ -36,19 +35,20 @@ namespace Optimization
         private Api _api;
         private Messaging _notify;
         private JobQueue _jobQueue;
-        private IResultHandler _resultshandler;
+        private BacktestingResultHandler _resultsHandler;
         private FileSystemDataFeed _dataFeed;
         private ConsoleSetupHandler _setup;
         private BacktestingRealTimeHandler _realTime;
         private ITransactionHandler _transactions;
         private IHistoryProvider _historyProvider;
+      
 
         public decimal Run(Dictionary<string, object> items)
         {
             string plain = string.Join(",", items.Select(s => s.Value));
 
             Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
-
+   
             if (results.ContainsKey(plain))
             {
                 return results[plain];
@@ -60,11 +60,11 @@ namespace Optimization
             }
 
             LaunchLean();
-            BacktestingResultHandler resultsHandler = (BacktestingResultHandler)_resultshandler;
+
             var sharpe = -10m;
-            var ratio = resultsHandler.FinalStatistics["Sharpe Ratio"];
+            var ratio = _resultsHandler.FinalStatistics["Sharpe Ratio"];
             Decimal.TryParse(ratio, out sharpe);
-            var compound = resultsHandler.FinalStatistics["Compounding Annual Return"];
+            var compound = _resultsHandler.FinalStatistics["Compounding Annual Return"];
             decimal parsed;
             Decimal.TryParse(compound.Trim('%'), out parsed);
 
@@ -79,14 +79,14 @@ namespace Optimization
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
-            string algorithm = ConfigurationManager.AppSettings["algorithmTypeName"];
+            string algorithm = (string)AppDomain.CurrentDomain.GetData("AlgorithmTypeName");
 
             Config.Set("algorithm-type-name", algorithm);
 
             _jobQueue = new JobQueue();
             _notify = new Messaging();
             _api = new Api();
-            _resultshandler = new DesktopResultHandler();
+            _resultsHandler = new BacktestingResultHandler();
             _dataFeed = new FileSystemDataFeed();
             _setup = new ConsoleSetupHandler();
             _realTime = new BacktestingRealTimeHandler();
@@ -103,7 +103,7 @@ namespace Optimization
             try
             {
                 leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                _resultshandler = leanEngineAlgorithmHandlers.Results;
+                _resultsHandler = (BacktestingResultHandler)leanEngineAlgorithmHandlers.Results;
             }
             catch (CompositionException compositionException)
             {

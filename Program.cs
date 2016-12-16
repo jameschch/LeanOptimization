@@ -52,10 +52,10 @@ namespace Optimization
 
         public static void Main(string[] args)
         {
-            string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
+            _config = LoadConfig();
+            string path = _config.ConfigPath;
             System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
-            _config = LoadConfig();
             _results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
             _writer = System.IO.File.AppendText("optimizer.txt");
@@ -149,6 +149,7 @@ namespace Optimization
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
             ad.SetData("Results", _results);
+            ad.SetData("AlgorithmTypeName", _config.AlgorithmTypeName);
 
             return rc;
         }
