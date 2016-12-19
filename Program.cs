@@ -47,7 +47,7 @@ namespace Optimization
         private static AppDomainSetup _ads;
         private static string _exeAssembly;
         static Dictionary<string, decimal> _results;
-        static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 2, MaxThreads = 8 };
+        static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1, MaxThreads = 8 };
         #endregion
 
         public static void Main(string[] args)

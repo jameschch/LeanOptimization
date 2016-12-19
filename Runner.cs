@@ -32,16 +32,7 @@ namespace Optimization
     public class Runner : MarshalByRefObject
     {
 
-        private Api _api;
-        private Messaging _notify;
-        private JobQueue _jobQueue;
         private BacktestingResultHandler _resultsHandler;
-        private FileSystemDataFeed _dataFeed;
-        private ConsoleSetupHandler _setup;
-        private BacktestingRealTimeHandler _realTime;
-        private ITransactionHandler _transactions;
-        private IHistoryProvider _historyProvider;
-      
 
         public decimal Run(Dictionary<string, object> items)
         {
@@ -83,16 +74,7 @@ namespace Optimization
 
             Config.Set("algorithm-type-name", algorithm);
 
-            _jobQueue = new JobQueue();
-            _notify = new Messaging();
-            _api = new Api();
-            _resultsHandler = new BacktestingResultHandler();
-            _dataFeed = new FileSystemDataFeed();
-            _setup = new ConsoleSetupHandler();
-            _realTime = new BacktestingRealTimeHandler();
-            _historyProvider = new SubscriptionDataReaderHistoryProvider();
-            _transactions = new BacktestingTransactionHandler();
-            var systemHandlers = new LeanEngineSystemHandlers(_jobQueue, _api, _notify);
+            var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
@@ -119,8 +101,6 @@ namespace Optimization
             }
             finally
             {
-                //Delete the message from the job queue:
-                //systemHandlers.JobQueue.AcknowledgeJob(job);
                 Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
 
                 // clean up resources
