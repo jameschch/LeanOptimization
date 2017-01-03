@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization", "Optimizatio
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BE73B50-BCC9-47BD-A83B-BFA05ABF4913}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationTests", "..\OptimizationTests\OptimizationTests.csproj", "{C06F45D0-D5AF-4F69-829D-F855BB496765}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptimizationTests", "OptimizationTests\OptimizationTests.csproj", "{C06F45D0-D5AF-4F69-829D-F855BB496765}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

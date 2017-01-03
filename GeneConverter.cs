@@ -42,11 +42,13 @@ namespace Optimization
                     gene.ActualInt = parsed;
                 }
 
-                decimal decimalParsed;
-                raw = json["actual"].Value<string>();
-                if (decimal.TryParse(raw, out decimalParsed))
+                if (!gene.ActualInt.HasValue)
                 {
-                    gene.ActualDecimal = decimalParsed;
+                    decimal decimalParsed;
+                    if (decimal.TryParse(raw, out decimalParsed))
+                    {
+                        gene.ActualDecimal = decimalParsed;
+                    }
                 }
             }
 

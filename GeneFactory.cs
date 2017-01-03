@@ -36,20 +36,15 @@ namespace Optimization
             return _random.Next(minValue, maxValue);
         }
 
-        public static double RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
+        public static decimal RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
         {
             if (!precision.HasValue)
             {
-                precision = BitConverter.GetBytes(decimal.GetBits(minValue)[3])[2];
-
-                if (precision <= 0)
-                {
-                    precision = 3;
-                }
+                precision = GetPrecision(minValue);
             }
 
             var value = _random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
-            return System.Math.Round(value, precision.Value);
+            return (decimal)System.Math.Round(value, precision.Value);
         }
 
         public static Gene Generate(GeneConfiguration config, bool isActual)
@@ -68,6 +63,11 @@ namespace Optimization
             }
 
             return new Gene(new KeyValuePair<string, object>(config.Key, GeneFactory.RandomBetween(config.MinInt.Value, config.MaxInt.Value)));
+        }
+
+        public static int? GetPrecision(decimal value)
+        {
+            return BitConverter.GetBytes(decimal.GetBits(value)[3])[2];
         }
 
     }
