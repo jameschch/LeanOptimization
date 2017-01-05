@@ -104,7 +104,8 @@ namespace Optimization
         {
 
             var fittest = _population.BestChromosome;
-            Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", _population.GenerationsNumber, fittest.Fitness, (fittest.Fitness * 200) - 10);
+            Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness, 
+                (fittest.Fitness * 200) - 10);
         }
 
         public static void Output(string line, params object[] format)
