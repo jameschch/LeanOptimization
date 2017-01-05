@@ -1,40 +1,25 @@
 {
   "genes": [
     {
-      "key": "p1",
-      "min": 1.5,
-      "max": 3.25,
-      "precision": 2
-    },
-    {
-      "key": "p2",
-      "min": 0.25,
-      "max": 3.25,
-      "precision": 2
-    },
-    {
-      "key": "p3",
-      "min": 1,
-      "max": 12
-    },
-    {
-      "key": "p4",
-      "min": 1,
-      "max": 12
-    },
-    {
       "key": "stop",
-      "min": 0.01,
+      "min": 0.02,
       "max": 0.05,
-      "precision": 2
+      "precision": 2,
     },
     {
       "key": "take",
-      "min": 0.02,
-      "max": 0.08,
-      "precision": 2
+      "min": 1,
+      "max": 3,
+      "actual": 2
     }
-
-  ]
+  ],
+  "optimizer": {
+    "populationSize": 24,
+    "generations": 1000,
+    "stagnationGenerations": 30,
+    "maxThreads": 8,
+    "configPath": "../../../../Lean/Launcher/config.json",
+    "algorithmTypeName":  "xxx"
+  }
 
 }

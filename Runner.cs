@@ -1,4 +1,4 @@
-﻿using GAF;
+﻿using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QuantConnect.Api;
@@ -19,10 +19,10 @@ using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Configuration;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,67 +32,51 @@ namespace Optimization
     public class Runner : MarshalByRefObject
     {
 
-        private Api _api;
-        private Messaging _notify;
-        private JobQueue _jobQueue;
-        private IResultHandler _resultshandler;
-        private FileSystemDataFeed _dataFeed;
-        private ConsoleSetupHandler _setup;
-        private BacktestingRealTimeHandler _realTime;
-        private ITransactionHandler _transactions;
-        private IHistoryProvider _historyProvider;
+        private BacktestingResultHandler _resultsHandler;
 
-        public decimal Run(IEnumerable<Gene> items)
+        public decimal Run(Dictionary<string, object> items)
         {
-            string hash = JsonConvert.SerializeObject(items, Newtonsoft.Json.Formatting.None, new JsonSerializerSettings { ContractResolver = new GeneContractResolver() });
+            string plain = string.Join(",", items.Select(s => s.Value));
 
             Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
-
-            if (results.ContainsKey(hash))
+   
+            if (results.ContainsKey(plain))
             {
-                return results[hash];
+                return results[plain];
             }
 
-            foreach (var item in items)
+            foreach (var pair in items)
             {
-                var pair = (KeyValuePair<string, object>)item.ObjectValue;
                 Config.Set(pair.Key, pair.Value.ToString());
             }
 
             LaunchLean();
-            BacktestingResultHandler resultshandler = (BacktestingResultHandler)_resultshandler;
-            var sharpe_ratio = -10m;
-            var ratio = resultshandler.FinalStatistics["Sharpe Ratio"];
-            Decimal.TryParse(ratio, out sharpe_ratio);
 
-            sharpe_ratio = System.Math.Max(sharpe_ratio == 0 ? -10 : sharpe_ratio, -10);
+            var sharpe = -10m;
+            var ratio = _resultsHandler.FinalStatistics["Sharpe Ratio"];
+            Decimal.TryParse(ratio, out sharpe);
+            var compound = _resultsHandler.FinalStatistics["Compounding Annual Return"];
+            decimal parsed;
+            Decimal.TryParse(compound.Trim('%'), out parsed);
 
-            results.Add(hash, sharpe_ratio);
+            sharpe = System.Math.Max(sharpe == 0 || parsed < 0 ? -10 : sharpe, -10);
+
+            results.Add(plain, sharpe);
             AppDomain.CurrentDomain.SetData("Results", results);
 
-            return sharpe_ratio;
+            return sharpe;
         }
 
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
-            string algorithm = ConfigurationManager.AppSettings["algorithmTypeName"];
+            string algorithm = (string)AppDomain.CurrentDomain.GetData("AlgorithmTypeName");
 
             Config.Set("algorithm-type-name", algorithm);
 
-            _jobQueue = new JobQueue();
-            _notify = new Messaging();
-            _api = new Api();
-            _resultshandler = new DesktopResultHandler();
-            _dataFeed = new FileSystemDataFeed();
-            _setup = new ConsoleSetupHandler();
-            _realTime = new BacktestingRealTimeHandler();
-            _historyProvider = new SubscriptionDataReaderHistoryProvider();
-            _transactions = new BacktestingTransactionHandler();
-            var systemHandlers = new LeanEngineSystemHandlers(_jobQueue, _api, _notify);
+            var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
-            //			var algorithmHandlers = new LeanEngineAlgorithmHandlers (_resultshandler, _setup, _dataFeed, _transactions, _realTime, _historyProvider);
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
             //Log.DebuggingEnabled = false;
             //Log.DebuggingLevel = 1;
@@ -101,7 +85,7 @@ namespace Optimization
             try
             {
                 leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                _resultshandler = leanEngineAlgorithmHandlers.Results;
+                _resultsHandler = (BacktestingResultHandler)leanEngineAlgorithmHandlers.Results;
             }
             catch (CompositionException compositionException)
             {
@@ -117,27 +101,12 @@ namespace Optimization
             }
             finally
             {
-                //Delete the message from the job queue:
-                //systemHandlers.JobQueue.AcknowledgeJob(job);
                 Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
 
                 // clean up resources
                 systemHandlers.Dispose();
                 leanEngineAlgorithmHandlers.Dispose();
                 Log.LogHandler.Dispose();
-            }
-        }
-
-        public class GeneContractResolver : DefaultContractResolver
-        {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-            {
-                JsonProperty property = base.CreateProperty(member, memberSerialization);
-                if (property.PropertyType == typeof(Guid))
-                {
-                    property.Ignored = true;
-                }
-                return property;
             }
         }
 

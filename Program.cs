@@ -1,6 +1,14 @@
-﻿using GAF;
-using GAF.Extensions;
-using GAF.Operators;
+﻿using GeneticSharp.Domain;
+using GeneticSharp.Domain.Chromosomes;
+using GeneticSharp.Domain.Crossovers;
+using GeneticSharp.Domain.Mutations;
+using GeneticSharp.Domain.Populations;
+using GeneticSharp.Domain.Reinsertions;
+using GeneticSharp.Domain.Selections;
+using GeneticSharp.Domain.Terminations;
+using GeneticSharp.Infrastructure.Threading;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using QuantConnect.Api;
 using QuantConnect.Configuration;
 using QuantConnect.Interfaces;
@@ -24,6 +32,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Threading;
+using static Optimization.GeneFactory;
 
 namespace Optimization
 {
@@ -32,72 +41,89 @@ namespace Optimization
     {
 
         #region Declarations
-        private static readonly Random random = new Random();
+        static StreamWriter _writer;
+        static OptimizerConfiguration _config;
+        static Population _population;
         private static AppDomainSetup _ads;
-        private static string _callingDomainName;
         private static string _exeAssembly;
-        static StreamWriter writer;
-        public static Dictionary<string, decimal> Results;
-        static OptimizerConfiguration config;
+        static Dictionary<string, decimal> _results;
+        static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1, MaxThreads = 8 };
         #endregion
 
         public static void Main(string[] args)
         {
-            Results = new Dictionary<string, decimal>();
-            string path = System.Configuration.ConfigurationManager.AppSettings["ConfigPath"];
+            _config = LoadConfig();
+            string path = _config.ConfigPath;
             System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
-            //todo: map from config
-            config = new OptimizerConfiguration();
 
+            _results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
-            writer = System.IO.File.AppendText("optimizer.txt");
+            _writer = System.IO.File.AppendText("optimizer.txt");
+            _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
 
-
+            IList<IChromosome> list = new List<IChromosome>();
             //create the population
-            var population = new Population();
-            population.EvaluateInParallel = true;
-
-            //create the chromosomes
-            for (var p = 0; p < config.PopulationSize; p++)
+            var geneConfig = GeneFactory.Load();
+            for (int i = 0; i < _config.PopulationSize; i++)
             {
-                var chromosome = GeneFactory.Spawn();
-                population.Solutions.Add(chromosome);
+                list.Add(new Chromosome(true, geneConfig));
             }
+
+            _population = new PreloadPopulation(_config.PopulationSize, _config.PopulationSize * 2, list);
+            _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
-            var ga = new GeneticAlgorithm(population, CalculateFitness);
+            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(), new TwoPointCrossover(), new UniformMutation(true));
+
             //subscribe to the GAs Generation Complete event 
-            ga.OnGenerationComplete += ga_OnGenerationComplete;
-            ga.OnRunComplete += ga_OnRunComplete;
-
-            //create the genetic operators 
-            if (config.EliteEnabled)
-            {
-                var elite = new Elite(config.ElitePercent);
-                ga.Operators.Add(elite);
-            }
-            if (config.RandomReplaceEnabled)
-            {
-                var bottom = new ReplaceBottomOperator(config.RandomReplacePercent);
-                ga.Operators.Add(bottom);
-            }
-            if (config.CrossoverEnabled)
-            {
-                var crossover = new Crossover(config.CrossoverPercent, true, CrossoverType.DoublePoint, ReplacementMethod.GenerationalReplacement);
-                ga.Operators.Add(crossover);
-            }
+            ga.GenerationRan += ga_OnGenerationComplete;
+            ga.TerminationReached += ga_OnRunComplete;
+            ga.TaskExecutor = _executor;
+            ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
+            ga.Reinsertion = new ElitistReinsertion();
             //run the GA 
-            ga.Run(Terminate);
+            ga.Start();
 
-            writer.Close();
+            _writer.Close();
 
             Console.ReadKey();
         }
 
+
+        static void ga_OnRunComplete(object sender, EventArgs e)
+        {
+            var fittest = _population.BestChromosome;
+            foreach (var gene in fittest.GetGenes())
+            {
+                var pair = (KeyValuePair<string, object>)gene.Value;
+                Output("{0}: value {1}", pair.Key, pair.Value);
+            }
+        }
+
+        static void ga_OnGenerationComplete(object sender, EventArgs e)
+        {
+
+            var fittest = _population.BestChromosome;
+            Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", _population.GenerationsNumber, fittest.Fitness, (fittest.Fitness * 200) - 10);
+        }
+
+        public static void Output(string line, params object[] format)
+        {
+            Output(string.Format(line, format));
+        }
+
+        public static void Output(string line)
+        {
+            _writer.Write(DateTime.Now.ToString("u"));
+            _writer.Write(" ");
+            _writer.Write(line);
+            _writer.Write(_writer.NewLine);
+            _writer.Flush();
+            Console.WriteLine(line);
+        }
+
         static AppDomainSetup SetupAppDomain()
         {
-            _callingDomainName = Thread.GetDomain().FriendlyName;
-
             // Get and display the full name of the EXE assembly.
             _exeAssembly = Assembly.GetEntryAssembly().FullName;
 
@@ -112,7 +138,7 @@ namespace Optimization
             return ads;
         }
 
-        static Runner CreateRunClassInAppDomain(ref AppDomain ad)
+        public static Runner CreateRunClassInAppDomain(ref AppDomain ad)
         {
             // Create the second AppDomain.
             var name = Guid.NewGuid().ToString("x");
@@ -122,84 +148,48 @@ namespace Optimization
             // A proxy to the object is returned.
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
-            ad.SetData("Results", Results);
+            ad.SetData("Results", _results);
+            ad.SetData("AlgorithmTypeName", _config.AlgorithmTypeName);
 
             return rc;
         }
 
-        static void ga_OnRunComplete(object sender, GaEventArgs e)
+        public static double RunAlgorithm(IChromosome chromosome)
         {
-            var fittest = e.Population.GetTop(1)[0];
-            foreach (var gene in fittest.Genes)
-            {
-                var pair = (KeyValuePair<string, object>)gene.ObjectValue;
-                Output("{0}: value {1}", pair.Key, pair.Value);
-            }
-        }
 
-        private static void ga_OnGenerationComplete(object sender, GaEventArgs e)
-        {
-            var fittest = e.Population.GetTop(1)[0];
-            Output("Generation: {0}, Fitness: {1}, Sharpe: {2}", e.Generation, fittest.Fitness, (fittest.Fitness * 200) - 10);
-        }
-
-        public static double CalculateFitness(Chromosome chromosome)
-        {
-            try
-            {
-                var sharpe = RunAlgorithm(chromosome);
-                return (System.Math.Max(sharpe, -10) + 10) / 200;
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
-
-        private static double RunAlgorithm(Chromosome chromosome)
-        {
             AppDomain ad = null;
             Runner rc = CreateRunClassInAppDomain(ref ad);
             string output = "";
 
-            foreach (var item in chromosome.Genes)
+            foreach (var item in chromosome.GetGenes())
             {
-                var pair = (KeyValuePair<string, object>)item.ObjectValue;
-                output += " " + pair.Key + " " + pair.Value.ToString();
+                var pair = (KeyValuePair<string, object>)item.Value;
+                output += pair.Key + " " + pair.Value.ToString() + " ";
             }
 
-            var sharpe = (double)rc.Run(chromosome.Genes);
+            output = output.TrimEnd(' ');
 
-            Results = (Dictionary<string, decimal>)ad.GetData("Results");
+            var sharpe = (double)rc.Run(chromosome.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value));
+
+            _results = (Dictionary<string, decimal>)ad.GetData("Results");
 
             AppDomain.Unload(ad);
-            output += string.Format(" Sharpe:{0}", sharpe);
+            output += string.Format(" sharpe {0}", sharpe);
 
-            Output(output);
+            Program.Output(output);
 
             return sharpe;
         }
 
-        public static bool Terminate(Population population, int currentGeneration, long currentEvaluation)
+        private static OptimizerConfiguration LoadConfig()
         {
-            bool canTerminate = currentGeneration > config.Generations;
-            return canTerminate;
-        }
+            using (StreamReader file = File.OpenText("optimization.json"))
+            {
+                var document = (JObject)JsonConvert.DeserializeObject(file.ReadToEnd());
+                return JsonConvert.DeserializeObject<OptimizerConfiguration>(document["optimizer"].ToString());
+            }
 
-        public static void Output(string line, params object[] format)
-        {
-            Output(string.Format(line, format));
-        }
-
-        public static void Output(string line)
-        {
-            writer.Write(DateTime.Now.ToString("u"));
-            writer.Write(line);
-            writer.Write(writer.NewLine);
-            writer.Flush();
-            Console.WriteLine(line);
         }
 
     }
 }
-

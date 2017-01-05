@@ -1,4 +1,4 @@
-﻿using GAF;
+﻿using GeneticSharp.Domain.Chromosomes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -14,51 +14,8 @@ namespace Optimization
     public class GeneFactory
     {
 
-        private static Random random = new Random();
+        private static Random _random = new Random();
 
-        public static Chromosome SpawnRandom()
-        {
-            return Spawn(false);
-        }
-
-        public static Chromosome Spawn()
-        {
-            return Spawn(true);
-        }
-
-        protected static Chromosome Spawn(bool isActual)
-        {
-            var chromosome = new Chromosome();
-            var list = new Dictionary<string, object>();
-
-            foreach (var item in Load())
-            {
-                if (isActual && item.ActualInt.HasValue)
-                {
-                    list.Add(item.Key, item.ActualInt);
-                }
-                else if (isActual && item.ActualDecimal.HasValue)
-                {
-                    list.Add(item.Key, item.ActualDecimal);
-                }
-                else if (item.MinDecimal.HasValue && item.MaxDecimal.HasValue)
-                {
-                    list.Add(item.Key, RandomBetween(item.MinDecimal.Value, item.MaxDecimal.Value, item.Precision));
-                }
-                else
-                {
-                    list.Add(item.Key, RandomBetween(item.MinInt.Value, item.MaxInt.Value));
-                }
-
-            }
-
-            foreach(var item in list)
-            {
-                chromosome.Genes.Add(new Gene(item));
-            }
-
-            return chromosome;
-        }
 
         public static GeneConfiguration[] Load()
         {
@@ -76,25 +33,42 @@ namespace Optimization
 
         public static int RandomBetween(int minValue, int maxValue)
         {
-            return random.Next(minValue, maxValue);
+            return _random.Next(minValue, maxValue);
         }
 
-        public static double RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
+        public static decimal RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
         {
             if (!precision.HasValue)
             {
-                precision = BitConverter.GetBytes(decimal.GetBits(minValue)[3])[2];
-
-                if (precision <= 0)
-                {
-                    precision = 3;
-                }
+                precision = GetPrecision(minValue);
             }
 
-            var value = random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
-            return System.Math.Round(value, precision.Value);
+            var value = _random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
+            return (decimal)System.Math.Round(value, precision.Value);
         }
 
+        public static Gene Generate(GeneConfiguration config, bool isActual)
+        {
+            if (isActual && config.ActualInt.HasValue)
+            {
+                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualInt));
+            }
+            else if (isActual && config.ActualDecimal.HasValue)
+            {
+                return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualDecimal));
+            }
+            else if (config.MinDecimal.HasValue && config.MaxDecimal.HasValue)
+            {
+                return new Gene(new KeyValuePair<string, object>(config.Key, GeneFactory.RandomBetween(config.MinDecimal.Value, config.MaxDecimal.Value, config.Precision)));
+            }
+
+            return new Gene(new KeyValuePair<string, object>(config.Key, GeneFactory.RandomBetween(config.MinInt.Value, config.MaxInt.Value)));
+        }
+
+        public static int? GetPrecision(decimal value)
+        {
+            return BitConverter.GetBytes(decimal.GetBits(value)[3])[2];
+        }
 
     }
 }
