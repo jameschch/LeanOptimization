@@ -73,7 +73,8 @@ namespace Optimization
             _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
-            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(), new TwoPointCrossover(), new UniformMutation(true));
+            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(), 
+                _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true));
 
             //subscribe to the GAs Generation Complete event 
             ga.GenerationRan += ga_OnGenerationComplete;
