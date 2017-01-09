@@ -78,8 +78,8 @@ namespace Optimization
             systemHandlers.Initialize();
 
             Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
-            Log.DebuggingEnabled = false;
-            Log.DebuggingLevel = 1;
+            //Log.DebuggingEnabled = false;
+            //Log.DebuggingLevel = 1;
 
             LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
             try
