@@ -69,7 +69,8 @@ namespace Optimization
                 list.Add(new Chromosome(true, geneConfig));
             }
 
-            _population = new PreloadPopulation(_config.PopulationSize, _config.PopulationSize * 2, list);
+            int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize : _config.PopulationSizeMaximum;
+            _population = new PreloadPopulation(_config.PopulationSize, max, list);
             _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 

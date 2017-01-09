@@ -11,6 +11,8 @@ namespace Optimization
 
         public int PopulationSize { get; set; } = 12;
 
+        public int PopulationSizeMaximum { get; set; } = 24;
+
         public int Generations { get; set; } = 1000;
 
         public int StagnationGenerations { get; set; } = 10;
