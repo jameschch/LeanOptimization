@@ -64,9 +64,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Algorithm.CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.CSharp.dll</HintPath>
+    <Reference Include="QuantConnect.Algorithm.CSharp">
+      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Algorithm.CSharp.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Api, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

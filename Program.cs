@@ -9,30 +9,12 @@ using GeneticSharp.Domain.Terminations;
 using GeneticSharp.Infrastructure.Threading;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QuantConnect.Api;
-using QuantConnect.Configuration;
-using QuantConnect.Interfaces;
-using QuantConnect.Lean.Engine;
-using QuantConnect.Lean.Engine.DataFeeds;
-using QuantConnect.Lean.Engine.HistoricalData;
-using QuantConnect.Lean.Engine.RealTime;
-using QuantConnect.Lean.Engine.Results;
-using QuantConnect.Lean.Engine.Setup;
-using QuantConnect.Lean.Engine.TransactionHandlers;
-using QuantConnect.Logging;
-using QuantConnect.Messaging;
-using QuantConnect.Packets;
-using QuantConnect.Queues;
 using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Caching;
-using System.Threading;
-using static Optimization.GeneFactory;
 
 namespace Optimization
 {
@@ -56,6 +38,12 @@ namespace Optimization
             string path = _config.ConfigPath;
             System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
+            path = _config.AlgorithmLocation;
+            if (!string.IsNullOrEmpty(path))
+            {
+                System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(path)), true);
+            }
+
             _results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
             _writer = System.IO.File.AppendText("optimizer.txt");
@@ -74,7 +62,7 @@ namespace Optimization
             _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
-            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(), 
+            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(),
                 _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true));
 
             //subscribe to the GAs Generation Complete event 
@@ -106,7 +94,7 @@ namespace Optimization
         {
 
             var fittest = _population.BestChromosome;
-            Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness, 
+            Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
                 (fittest.Fitness * 200) - 10);
         }
 
@@ -153,6 +141,10 @@ namespace Optimization
 
             ad.SetData("Results", _results);
             ad.SetData("AlgorithmTypeName", _config.AlgorithmTypeName);
+            if (!string.IsNullOrEmpty(_config.AlgorithmLocation))
+            {
+                ad.SetData("AlgorithmLocation", Path.GetFileName(_config.AlgorithmLocation));
+            }
 
             return rc;
         }

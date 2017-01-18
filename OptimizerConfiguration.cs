@@ -24,6 +24,8 @@ namespace Optimization
         public string ConfigPath { get; set; } = "../../../../Lean/Launcher/config.json";
 
         public bool OnePointCrossover { get; set; } = false;
+    
+        public string AlgorithmLocation { get; set; }
 
     }
 }

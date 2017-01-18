@@ -1,30 +1,13 @@
-﻿using GeneticSharp.Domain.Chromosomes;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using QuantConnect.Api;
-using QuantConnect.Configuration;
-using QuantConnect.Interfaces;
+﻿using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
-using QuantConnect.Lean.Engine.DataFeeds;
-using QuantConnect.Lean.Engine.HistoricalData;
-using QuantConnect.Lean.Engine.RealTime;
 using QuantConnect.Lean.Engine.Results;
-using QuantConnect.Lean.Engine.Setup;
-using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Logging;
-using QuantConnect.Messaging;
 using QuantConnect.Packets;
-using QuantConnect.Queues;
 using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Caching;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Optimization
 {
@@ -39,7 +22,7 @@ namespace Optimization
             string plain = string.Join(",", items.Select(s => s.Value));
 
             Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
-   
+
             if (results.ContainsKey(plain))
             {
                 return results[plain];
@@ -71,9 +54,13 @@ namespace Optimization
         {
             Config.Set("environment", "backtesting");
             string algorithm = (string)AppDomain.CurrentDomain.GetData("AlgorithmTypeName");
+            string path = (string)AppDomain.CurrentDomain.GetData("AlgorithmLocation");
 
             Config.Set("algorithm-type-name", algorithm);
-
+            if (!string.IsNullOrEmpty(path))
+            {
+                Config.Set("algorithm-location", path);
+            }
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 

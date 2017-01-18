@@ -4,7 +4,7 @@
       "key": "stop",
       "min": 0.02,
       "max": 0.05,
-      "precision": 2,
+      "precision": 2
     },
     {
       "key": "take",
@@ -19,7 +19,8 @@
     "stagnationGenerations": 30,
     "maxThreads": 8,
     "configPath": "../../../../Lean/Launcher/config.json",
-    "algorithmTypeName":  "xxx"
+    "algorithmTypeName": "MovingAverageCrossAlgorithm",
+    "algorithmLocation": ""
   }
 
 }
