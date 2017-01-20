@@ -86,10 +86,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
-    <Reference Include="QuantConnect.Algorithm.CSharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Algorithm.CSharp\bin\Debug\QuantConnect.Algorithm.CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="QuantConnect.Api, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Api.dll</HintPath>
@@ -154,7 +150,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="README.md" />
   </ItemGroup>
   <Import Project="packages\Accord.3.3.0\build\Accord.targets" Condition="Exists('packages\Accord.3.3.0\build\Accord.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

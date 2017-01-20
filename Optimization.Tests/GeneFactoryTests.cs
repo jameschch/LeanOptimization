@@ -2,6 +2,7 @@
 using Optimization;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,11 @@ namespace Optimization.Tests
     public class GeneFactoryTests
     {
 
+        [SetUp]
+        public void Setup()
+        { 
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+        }
 
         [Test()]
         public void LoadTest()
@@ -39,15 +45,13 @@ namespace Optimization.Tests
         {
             var config = GeneFactory.Load();
 
-            var actual = GeneFactory.Generate(config.First(), false);
-            Assert.AreEqual(2, GeneFactory.GetPrecision((decimal)((KeyValuePair<string, object>)actual.Value).Value));
+            var actual = GeneFactory.Generate(config.Where(c => c.Key == "slow").Single(), true);
+            Assert.AreEqual(200, (int)((KeyValuePair<string, object>)actual.Value).Value);
 
-            actual = GeneFactory.Generate(config.Last(), false);
-            int parsed;
-            Assert.IsTrue(int.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out parsed));
-
-            actual = GeneFactory.Generate(config.Last(), true);
-            Assert.AreEqual((int)((KeyValuePair<string, object>)actual.Value).Value, 2);
+            actual = GeneFactory.Generate(config.Where(c => c.Key == "take").Single(), false);
+            decimal parsed;
+            Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out parsed));
+            Assert.AreEqual(2, GeneFactory.GetPrecision(parsed));
 
         }
     }

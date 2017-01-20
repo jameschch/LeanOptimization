@@ -6,8 +6,8 @@
     <ProjectGuid>{C06F45D0-D5AF-4F69-829D-F855BB496765}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OptimizationTests</RootNamespace>
-    <AssemblyName>OptimizationTests</AssemblyName>
+    <RootNamespace>Optimization.Tests</RootNamespace>
+    <AssemblyName>Optimization.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -87,11 +87,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="optimization.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Optimization.csproj">
-      <Project>{89D0362E-9AED-4718-B35E-BCAE2949848D}</Project>
+    <ProjectReference Include="..\Optimization\Optimization.csproj">
+      <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
       <Name>Optimization</Name>
     </ProjectReference>
   </ItemGroup>
