@@ -25,11 +25,15 @@ namespace Optimization
         #region Declarations
         static StreamWriter _writer;
         static OptimizerConfiguration _config;
-        static Population _population;
-        private static AppDomainSetup _ads;
-        private static string _exeAssembly;
-        static Dictionary<string, decimal> _results;
+        static AppDomainSetup _ads;
+        static string _exeAssembly;
         static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1, MaxThreads = 8 };
+        static object resultsLocker = new object();
+        #endregion
+
+        #region Properties
+        public static Population Population { get; private set; }
+        public static Dictionary<string, decimal> Results { get; private set; }
         #endregion
 
         public static void Main(string[] args)
@@ -44,7 +48,7 @@ namespace Optimization
                 System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(path)), true);
             }
 
-            _results = new Dictionary<string, decimal>();
+            Results = new Dictionary<string, decimal>();
             _ads = SetupAppDomain();
             _writer = System.IO.File.AppendText("optimizer.txt");
             _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
@@ -58,11 +62,11 @@ namespace Optimization
             }
 
             int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize : _config.PopulationSizeMaximum;
-            _population = new PreloadPopulation(_config.PopulationSize, max, list);
-            _population.GenerationStrategy = new PerformanceGenerationStrategy();
+            Population = new PreloadPopulation(_config.PopulationSize, max, list);
+            Population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
-            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(),
+            var ga = new GeneticAlgorithm(Population, new Fitness(), new TournamentSelection(),
                 _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true));
 
             //subscribe to the GAs Generation Complete event 
@@ -70,7 +74,8 @@ namespace Optimization
             ga.TerminationReached += ga_OnRunComplete;
             ga.TaskExecutor = _executor;
             ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
-            ga.Reinsertion = new ElitistReinsertion();
+            ga.Reinsertion = new BayesReinsertion();
+            //ga.Reinsertion = new ElitistReinsertion();
             //run the GA 
             ga.Start();
 
@@ -82,7 +87,7 @@ namespace Optimization
 
         static void ga_OnRunComplete(object sender, EventArgs e)
         {
-            var fittest = _population.BestChromosome;
+            var fittest = Population.BestChromosome;
             foreach (var gene in fittest.GetGenes())
             {
                 var pair = (KeyValuePair<string, object>)gene.Value;
@@ -93,8 +98,8 @@ namespace Optimization
         static void ga_OnGenerationComplete(object sender, EventArgs e)
         {
 
-            var fittest = _population.BestChromosome;
-            Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
+            var fittest = Population.BestChromosome;
+            Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, Population.GenerationsNumber, fittest.Fitness,
                 (fittest.Fitness * 200) - 10);
         }
 
@@ -139,7 +144,7 @@ namespace Optimization
             // A proxy to the object is returned.
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
-            ad.SetData("Results", _results);
+            ad.SetData("Results", Results);
             ad.SetData("AlgorithmTypeName", _config.AlgorithmTypeName);
             if (!string.IsNullOrEmpty(_config.AlgorithmLocation))
             {
@@ -166,7 +171,16 @@ namespace Optimization
 
             var sharpe = (double)rc.Run(chromosome.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value));
 
-            _results = (Dictionary<string, decimal>)ad.GetData("Results");
+            lock (resultsLocker)
+            {
+                foreach (var item in (Dictionary<string, decimal>)ad.GetData("Results"))
+                {
+                    if (!Results.ContainsKey(item.Key))
+                    {
+                        Results.Add(item.Key, item.Value);
+                    }
+                }
+            }
 
             AppDomain.Unload(ad);
             output += string.Format(" sharpe {0}", sharpe);
