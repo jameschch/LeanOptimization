@@ -26,10 +26,11 @@ namespace Optimization
         static StreamWriter _writer;
         static OptimizerConfiguration _config;
         static Population _population;
-        private static AppDomainSetup _ads;
-        private static string _exeAssembly;
+        static AppDomainSetup _ads;
+        static string _exeAssembly;
         static Dictionary<string, decimal> _results;
         static readonly SmartThreadPoolTaskExecutor _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1, MaxThreads = 8 };
+        static object resultsLocker = new object();
         #endregion
 
         public static void Main(string[] args)
@@ -71,6 +72,7 @@ namespace Optimization
             ga.TaskExecutor = _executor;
             ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
             ga.Reinsertion = new ElitistReinsertion();
+
             //run the GA 
             ga.Start();
 
@@ -166,7 +168,16 @@ namespace Optimization
 
             var sharpe = (double)rc.Run(chromosome.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value));
 
-            _results = (Dictionary<string, decimal>)ad.GetData("Results");
+            lock (resultsLocker)
+            {
+                foreach (var item in (Dictionary<string, decimal>)ad.GetData("Results"))
+                {
+                    if (!_results.ContainsKey(item.Key))
+                    {
+                        _results.Add(item.Key, item.Value);
+                    }
+                }
+            }
 
             AppDomain.Unload(ad);
             output += string.Format(" sharpe {0}", sharpe);
