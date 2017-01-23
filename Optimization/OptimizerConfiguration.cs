@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class OptimizerConfiguration
+    public class OptimizerConfiguration : IOptimizerConfiguration
     {
         /// <summary>
         /// The initial size of the population

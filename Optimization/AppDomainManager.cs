@@ -15,9 +15,9 @@ namespace Optimization
         static string _exeAssembly;
         static Dictionary<string, decimal> _results;
         static object _resultsLocker;
-        static OptimizerConfiguration _config;
+        static IOptimizerConfiguration _config;
 
-        public static void Initialize(OptimizerConfiguration config)
+        public static void Initialize(IOptimizerConfiguration config)
         {
             _config = config;
             _results = new Dictionary<string, decimal>();

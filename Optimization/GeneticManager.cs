@@ -1,6 +1,7 @@
 ﻿using GeneticSharp.Domain;
 using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Crossovers;
+using GeneticSharp.Domain.Fitnesses;
 using GeneticSharp.Domain.Mutations;
 using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Reinsertions;
@@ -18,13 +19,17 @@ namespace Optimization
     public class GeneticManager
     {
 
-        OptimizerConfiguration _config;
+        IOptimizerConfiguration _config;
         SmartThreadPoolTaskExecutor _executor;
         Population _population;
+        IFitness _fitness;
+        ILogManager _logManager;
 
-        public GeneticManager(OptimizerConfiguration config)
+        public GeneticManager(IOptimizerConfiguration config, IFitness fitness, ILogManager logManager)
         {
             _config = config;
+            _fitness = fitness;
+            _logManager = logManager;
         }
 
         public void Start()
@@ -40,12 +45,12 @@ namespace Optimization
                 list.Add(new Chromosome(true, geneConfig));
             }
 
-            int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize : _config.PopulationSizeMaximum;
+            int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
             _population = new PreloadPopulation(_config.PopulationSize, max, list);
             _population.GenerationStrategy = new PerformanceGenerationStrategy();
 
             //create the GA itself 
-            var ga = new GeneticAlgorithm(_population, new Fitness(), new TournamentSelection(),
+            var ga = new GeneticAlgorithm(_population, _fitness, new TournamentSelection(),
                 _config.OnePointCrossover ? new OnePointCrossover() : new TwoPointCrossover(), new UniformMutation(true));
 
             //subscribe to events
@@ -61,7 +66,7 @@ namespace Optimization
 
         void TerminationReached(object sender, EventArgs e)
         {
-            Program.Output("Termination reached.");
+            _logManager.Output("Termination reached.");
             string output = "";
 
             var fittest = _population.BestChromosome;
@@ -71,14 +76,14 @@ namespace Optimization
                 output += item.Key + ": " + item.Value.ToString() + ", ";
             }
 
-            output += string.Format("sharpe: {0}", (fittest.Fitness * 200) - 10); 
-            Program.Output(output);
+            output += string.Format("sharpe: {0}", (fittest.Fitness * 200) - 10);
+            _logManager.Output(output);
         }
 
         void GenerationRan(object sender, EventArgs e)
         {
             var fittest = _population.BestChromosome;
-            Program.Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
+            _logManager.Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
                 (fittest.Fitness * 200) - 10);
         }
 

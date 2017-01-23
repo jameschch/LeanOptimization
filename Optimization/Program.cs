@@ -35,7 +35,7 @@ namespace Optimization
             {
                 AppDomainManager.Initialize(_config);
 
-                var manager = new GeneticManager(_config);
+                var manager = new GeneticManager(_config, new Fitness(), new LogManager());
                 manager.Start();
             }
 

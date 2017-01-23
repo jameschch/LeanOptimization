@@ -135,6 +135,9 @@
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
     <Compile Include="GeneticManager.cs" />
+    <Compile Include="ILogManager.cs" />
+    <Compile Include="IOptimizerConfiguration.cs" />
+    <Compile Include="LogManager.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="PreloadPopulation.cs" />
     <Compile Include="Program.cs" />

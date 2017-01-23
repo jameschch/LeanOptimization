@@ -22,9 +22,6 @@ namespace QuantConnect.Algorithm.CSharp
 {
     public class ParameterizedAlgorithm : QCAlgorithm
     {
-        // we place attributes on top of our fields or properties that should receive
-        // their values from the job. The values 100 and 200 are just default values that
-        // or only used if the parameters do not exist
 
         public int FastPeriod = Config.GetInt("fast", 13);
 
