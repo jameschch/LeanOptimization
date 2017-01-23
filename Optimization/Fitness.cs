@@ -17,7 +17,7 @@ namespace Optimization
         {
             try
             {
-                var sharpe = Program.RunAlgorithm(chromosome);
+                var sharpe = AppDomainManager.RunAlgorithm(((Chromosome)chromosome).ToDictionary());
                 return (System.Math.Max(sharpe, -10) + 10) / 200;
             }
             catch (Exception ex)

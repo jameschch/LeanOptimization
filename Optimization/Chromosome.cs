@@ -43,6 +43,11 @@ namespace Optimization
             return clone;
         }
 
+        public Dictionary<string, object> ToDictionary()
+        {
+            return this.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
+        }
+
     }
 
 }

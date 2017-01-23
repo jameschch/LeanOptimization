@@ -128,11 +128,13 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="Fitness.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
+    <Compile Include="GeneticManager.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="PreloadPopulation.cs" />
     <Compile Include="Program.cs" />
