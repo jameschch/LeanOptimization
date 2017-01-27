@@ -53,5 +53,10 @@ namespace Optimization
         /// </summary>
         public string AlgorithmLocation { get; set; }
 
+        /// <summary>
+        /// By default results with negative Sharpe or CAR are ignored
+        /// </summary>
+        public bool IncludeNegativeReturn { get; set; }
+
     }
 }

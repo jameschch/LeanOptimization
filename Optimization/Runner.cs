@@ -42,7 +42,15 @@ namespace Optimization
             decimal parsed;
             Decimal.TryParse(compound.Trim('%'), out parsed);
 
-            sharpe = System.Math.Max(sharpe == 0 || parsed < 0 ? -10 : sharpe, -10);
+            bool includeNegativeReturn = (bool)AppDomain.CurrentDomain.GetData("IncludeNegativeReturn");
+            if (!includeNegativeReturn)
+            {
+                sharpe = System.Math.Max(sharpe <= 0 || parsed < 0 ? -10 : sharpe, -10);
+            }
+            else
+            {
+                sharpe = System.Math.Max(sharpe, -10);
+            }
 
             results.Add(plain, sharpe);
             AppDomain.CurrentDomain.SetData("Results", results);

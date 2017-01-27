@@ -12,6 +12,7 @@ namespace Optimization
         #region Declarations
         static StreamWriter _writer;
         static OptimizerConfiguration _config;
+        static object _writerLock;
         #endregion
 
         public static void Main(string[] args)
@@ -31,6 +32,8 @@ namespace Optimization
                 }
             }
 
+            _writerLock = new object();
+
             using (_writer = System.IO.File.AppendText("optimizer.txt"))
             {
                 AppDomainManager.Initialize(_config);
@@ -49,10 +52,13 @@ namespace Optimization
 
         public static void Output(string line)
         {
-            _writer.Write(DateTime.Now.ToString("u"));
-            _writer.Write(" ");
-            _writer.Write(line);
-            _writer.Write(_writer.NewLine);
+            lock (_writerLock)
+            {
+                _writer.Write(DateTime.Now.ToString("u"));
+                _writer.Write(" ");
+                _writer.Write(line);
+                _writer.Write(_writer.NewLine);
+            }
             _writer.Flush();
             Console.WriteLine(line);
         }
