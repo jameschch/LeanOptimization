@@ -22,10 +22,10 @@ namespace Optimization
         IOptimizerConfiguration _config;
         SmartThreadPoolTaskExecutor _executor;
         Population _population;
-        IFitness _fitness;
+        OptimizerFitness _fitness;
         ILogManager _logManager;
 
-        public GeneticManager(IOptimizerConfiguration config, IFitness fitness, ILogManager logManager)
+        public GeneticManager(IOptimizerConfiguration config, OptimizerFitness fitness, ILogManager logManager)
         {
             _config = config;
             _fitness = fitness;
@@ -76,15 +76,15 @@ namespace Optimization
                 output += item.Key + ": " + item.Value.ToString() + ", ";
             }
 
-            output += string.Format("sharpe: {0}", (fittest.Fitness * 200) - 10);
+            output += string.Format("{0}: {1}", _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness));
             _logManager.Output(output);
         }
 
         void GenerationRan(object sender, EventArgs e)
         {
             var fittest = _population.BestChromosome;
-            _logManager.Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, Sharpe: {3}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
-                (fittest.Fitness * 200) - 10);
+            _logManager.Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
+                _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness));
         }
 
     }

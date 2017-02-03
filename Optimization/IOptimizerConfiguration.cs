@@ -2,6 +2,7 @@
 {
     public interface IOptimizerConfiguration
     {
+
         string AlgorithmLocation { get; set; }
         string AlgorithmTypeName { get; set; }
         string ConfigPath { get; set; }
@@ -12,5 +13,7 @@
         int PopulationSizeMaximum { get; set; }
         int StagnationGenerations { get; set; }
         bool IncludeNegativeReturn { get; set; }
+        string FitnessTypeName { get; set; }
+
     }
 }

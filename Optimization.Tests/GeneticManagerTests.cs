@@ -26,7 +26,7 @@ namespace Optimization.Tests
         {
             var config = new Mock<IOptimizerConfiguration>();
             config.Setup(c => c.PopulationSize).Returns(2);
-            var fitness = new Mock<IFitness>();
+            var fitness = new Mock<OptimizerFitness>();
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Verifiable();
             var unit = new GeneticManager(config.Object, fitness.Object, Mock.Of<ILogManager>());
 

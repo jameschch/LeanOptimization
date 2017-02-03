@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
+    [Serializable]
     public class OptimizerConfiguration : IOptimizerConfiguration
     {
         /// <summary>
@@ -57,6 +58,11 @@ namespace Optimization
         /// By default results with negative Sharpe or CAR are ignored
         /// </summary>
         public bool IncludeNegativeReturn { get; set; }
+
+        /// <summary>
+        /// Type name of fitness function. Defaults to fitness based on Sharpe Ratio
+        /// </summary>
+        public string FitnessTypeName { get; set; } = "Optimization.OptimizerFitness";
 
     }
 }

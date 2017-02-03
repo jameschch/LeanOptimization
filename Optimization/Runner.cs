@@ -16,12 +16,14 @@ namespace Optimization
     {
 
         private BacktestingResultHandler _resultsHandler;
+        IOptimizerConfiguration _config;
 
-        public decimal Run(Dictionary<string, object> items)
+        public Dictionary<string, string> Run(Dictionary<string, object> items)
         {
             string plain = string.Join(",", items.Select(s => s.Value));
 
-            Dictionary<string, decimal> results = (Dictionary<string, decimal>)AppDomain.CurrentDomain.GetData("Results");
+            Dictionary<string, Dictionary<string, string>> results = AppDomainManager.GetResults(AppDomain.CurrentDomain);
+            _config = AppDomainManager.GetConfig(AppDomain.CurrentDomain);
 
             if (results.ContainsKey(plain))
             {
@@ -35,34 +37,17 @@ namespace Optimization
 
             LaunchLean();
 
-            var sharpe = -10m;
-            var ratio = _resultsHandler.FinalStatistics["Sharpe Ratio"];
-            Decimal.TryParse(ratio, out sharpe);
-            var compound = _resultsHandler.FinalStatistics["Compounding Annual Return"];
-            decimal parsed;
-            Decimal.TryParse(compound.Trim('%'), out parsed);
+            results.Add(plain, _resultsHandler.FinalStatistics);
+            AppDomainManager.SetResults(AppDomain.CurrentDomain, results);
 
-            bool includeNegativeReturn = (bool)AppDomain.CurrentDomain.GetData("IncludeNegativeReturn");
-            if (!includeNegativeReturn)
-            {
-                sharpe = System.Math.Max(sharpe <= 0 || parsed < 0 ? -10 : sharpe, -10);
-            }
-            else
-            {
-                sharpe = System.Math.Max(sharpe, -10);
-            }
-
-            results.Add(plain, sharpe);
-            AppDomain.CurrentDomain.SetData("Results", results);
-
-            return sharpe;
+            return _resultsHandler.FinalStatistics;
         }
 
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
-            string algorithm = (string)AppDomain.CurrentDomain.GetData("AlgorithmTypeName");
-            string path = (string)AppDomain.CurrentDomain.GetData("AlgorithmLocation");
+            string algorithm = _config.AlgorithmTypeName;
+            string path = _config.AlgorithmLocation;
 
             Config.Set("algorithm-type-name", algorithm);
             if (!string.IsNullOrEmpty(path))

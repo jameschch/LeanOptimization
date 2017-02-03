@@ -28,7 +28,8 @@
     "configPath": "../../../../Lean/Launcher/config.json",
     "algorithmTypeName": "ParameterizedAlgorithm",
     "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-    "onePointCrossover": "true"
+    "onePointCrossover": "true",
+    "fitnessTypeName": "Optimization.OptimizerFitness"
   }
 
 }

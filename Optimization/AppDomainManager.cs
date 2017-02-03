@@ -13,14 +13,14 @@ namespace Optimization
 
         static AppDomainSetup _ads;
         static string _exeAssembly;
-        static Dictionary<string, decimal> _results;
+        static Dictionary<string, Dictionary<string, string>> _results;
         static object _resultsLocker;
         static IOptimizerConfiguration _config;
 
         public static void Initialize(IOptimizerConfiguration config)
         {
             _config = config;
-            _results = new Dictionary<string, decimal>();
+            _results = new Dictionary<string, Dictionary<string, string>>();
             _ads = SetupAppDomain();
             _resultsLocker = new object();
         }
@@ -51,35 +51,25 @@ namespace Optimization
             // A proxy to the object is returned.
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
 
-            ad.SetData("Results", _results);
-            ad.SetData("AlgorithmTypeName", _config.AlgorithmTypeName);
-            if (!string.IsNullOrEmpty(_config.AlgorithmLocation))
-            {
-                ad.SetData("AlgorithmLocation", Path.GetFileName(_config.AlgorithmLocation));
-            }
+            SetResults(ad, _results);
+            SetConfig(ad, _config);
 
             return rc;
         }
 
-        public static double RunAlgorithm(Dictionary<string, object> list)
+        public static Dictionary<string, string> RunAlgorithm(Dictionary<string, object> list)
         {
 
             AppDomain ad = null;
             Runner rc = CreateRunClassInAppDomain(ref ad);
-            string output = "";
+            
 
-            foreach (var item in list)
-            {
-                output += item.Key + ": " + item.Value.ToString() + ", ";
-            }
-
-            var sharpe = (double)rc.Run(list);
-            output += string.Format("sharpe: {0}", sharpe);
-            Program.Output(output);
+            var result = (Dictionary<string, string>)rc.Run(list);
+            
 
             lock (_resultsLocker)
             {
-                foreach (var item in (Dictionary<string, decimal>)ad.GetData("Results"))
+                foreach (var item in GetResults(ad))
                 {
                     if (!_results.ContainsKey(item.Key))
                     {
@@ -90,8 +80,39 @@ namespace Optimization
 
             AppDomain.Unload(ad);
 
-            return sharpe;
+            return result;
+        }
+
+        public static Dictionary<string, Dictionary<string, string>> GetResults(AppDomain ad)
+        {
+            return GetData<Dictionary<string, Dictionary<string, string>>>(ad, "Results");
+        }
+
+        public static IOptimizerConfiguration GetConfig(AppDomain ad)
+        {
+            return GetData<IOptimizerConfiguration>(ad, "Config");
+        }
+
+        public static T GetData<T>(AppDomain ad, string key)
+        {
+           return (T)ad.GetData(key);
+        }
+
+        public static void SetResults(AppDomain ad, object item)
+        {
+            SetData(ad, "Results", item);
+        }
+
+        public static void SetConfig(AppDomain ad, object item)
+        {
+            SetData(ad, "Config", item);
+        }
+
+        public static void SetData(AppDomain ad, string key, object item)
+        {
+            ad.SetData(key, item);
         }
 
     }
+
 }

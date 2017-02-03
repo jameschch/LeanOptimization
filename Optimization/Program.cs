@@ -1,7 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using GeneticSharp.Domain.Fitnesses;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QuantConnect.Util;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Optimization
 {
@@ -38,7 +41,10 @@ namespace Optimization
             {
                 AppDomainManager.Initialize(_config);
 
-                var manager = new GeneticManager(_config, new Fitness(), new LogManager());
+                OptimizerFitness instance = (OptimizerFitness)System.Reflection.Assembly.GetExecutingAssembly().CreateInstance(_config.FitnessTypeName, false, BindingFlags.Default, null,
+                    new[] { _config }, null, null);
+
+                var manager = new GeneticManager(_config, instance, new LogManager());
                 manager.Start();
             }
 

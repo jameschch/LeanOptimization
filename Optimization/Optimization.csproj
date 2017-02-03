@@ -130,7 +130,6 @@
   <ItemGroup>
     <Compile Include="AppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
-    <Compile Include="Fitness.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
@@ -138,11 +137,13 @@
     <Compile Include="ILogManager.cs" />
     <Compile Include="IOptimizerConfiguration.cs" />
     <Compile Include="LogManager.cs" />
+    <Compile Include="OptimizerFitness.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="PreloadPopulation.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
+    <Compile Include="TotalTradesFitness.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
