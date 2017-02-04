@@ -7,6 +7,7 @@ using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
 
 namespace Optimization
@@ -52,7 +53,7 @@ namespace Optimization
             Config.Set("algorithm-type-name", algorithm);
             if (!string.IsNullOrEmpty(path))
             {
-                Config.Set("algorithm-location", path);
+                Config.Set("algorithm-location", Path.GetFileName(path));
             }
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
