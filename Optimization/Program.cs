@@ -20,7 +20,7 @@ namespace Optimization
 
         public static void Main(string[] args)
         {
-            _config = LoadConfig();
+            _config = LoadConfig(args);
             string path = _config.ConfigPath;
             System.IO.File.Copy(path, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
@@ -69,9 +69,15 @@ namespace Optimization
             Console.WriteLine(line);
         }
 
-        private static OptimizerConfiguration LoadConfig()
+        private static OptimizerConfiguration LoadConfig(string[] args)
         {
-            using (StreamReader file = File.OpenText("optimization.json"))
+            string path = "optimization.json";
+            if (args != null && args.Length > 0 && !string.IsNullOrEmpty(args[0]))
+            {
+                path = args[0];
+            }
+
+            using (StreamReader file = File.OpenText(path))
             {
                 var document = (JObject)JsonConvert.DeserializeObject(file.ReadToEnd());
                 return JsonConvert.DeserializeObject<OptimizerConfiguration>(document["optimizer"].ToString());
