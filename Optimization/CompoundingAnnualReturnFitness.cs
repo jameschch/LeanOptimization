@@ -14,7 +14,7 @@ namespace Optimization
 
         double scale = 0.01;
 
-        //Fitness based on total trades
+        //Fitness based on Compounding Annual Return
         protected override FitnessResult CalculateFitness(Dictionary<string, string> result)
         {
             this.Name = "Return";
