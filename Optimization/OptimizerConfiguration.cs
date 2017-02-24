@@ -64,5 +64,10 @@ namespace Optimization
         /// </summary>
         public string FitnessTypeName { get; set; } = "Optimization.OptimizerFitness";
 
+        /// <summary>
+        /// Override config.json setting
+        /// </summary>
+        public string DataFolder { get; set; }
+
     }
 }

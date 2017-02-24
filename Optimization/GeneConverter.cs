@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Globalization;
 
 namespace Optimization
 {
@@ -46,6 +47,10 @@ namespace Optimization
                 {
                     decimal decimalParsed;
                     if (decimal.TryParse(raw, out decimalParsed))
+                    {
+                        gene.ActualDecimal = decimalParsed;
+                    }
+                    if (decimal.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out decimalParsed))
                     {
                         gene.ActualDecimal = decimalParsed;
                     }

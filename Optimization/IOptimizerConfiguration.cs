@@ -14,6 +14,7 @@
         int StagnationGenerations { get; set; }
         bool IncludeNegativeReturn { get; set; }
         string FitnessTypeName { get; set; }
+        string DataFolder { get; set; }
 
     }
 }

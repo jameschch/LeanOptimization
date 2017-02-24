@@ -47,14 +47,22 @@ namespace Optimization
         private void LaunchLean()
         {
             Config.Set("environment", "backtesting");
-            string algorithm = _config.AlgorithmTypeName;
-            string path = _config.AlgorithmLocation;
 
-            Config.Set("algorithm-type-name", algorithm);
-            if (!string.IsNullOrEmpty(path))
+            if (!string.IsNullOrEmpty(_config.AlgorithmTypeName))
             {
-                Config.Set("algorithm-location", Path.GetFileName(path));
+                Config.Set("algorithm-type-name", _config.AlgorithmTypeName);
             }
+
+            if (!string.IsNullOrEmpty(_config.AlgorithmLocation))
+            {
+                Config.Set("algorithm-location", Path.GetFileName(_config.AlgorithmLocation));
+            }
+
+            if (!string.IsNullOrEmpty(_config.DataFolder))
+            {
+                Config.Set("data-folder", _config.DataFolder);
+            }
+
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
