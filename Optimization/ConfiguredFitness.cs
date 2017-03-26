@@ -26,7 +26,7 @@ namespace Optimization
             this.Name = Config.Fitness.Name;
         }
 
-        //Fitness based on config trades
+        //Fitness based on config settings
         protected override FitnessResult CalculateFitness(Dictionary<string, string> result)
         {
             var fitness = new FitnessResult();

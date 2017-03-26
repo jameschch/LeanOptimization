@@ -90,6 +90,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="ConfiguredFitnessTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
     <Compile Include="GeneticManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
