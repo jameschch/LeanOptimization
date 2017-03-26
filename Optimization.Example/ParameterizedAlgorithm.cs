@@ -13,12 +13,14 @@
  * limitations under the License.
 */
 
+using QuantConnect;
+using QuantConnect.Algorithm;
 using QuantConnect.Configuration;
 using QuantConnect.Data.Market;
 using QuantConnect.Indicators;
 using QuantConnect.Parameters;
 
-namespace QuantConnect.Algorithm.CSharp
+namespace Optimization.Example
 {
     public class ParameterizedAlgorithm : QCAlgorithm
     {

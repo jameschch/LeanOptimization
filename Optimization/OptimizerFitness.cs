@@ -12,13 +12,13 @@ namespace Optimization
     {
 
         public string Name { get; protected set; }
-        IOptimizerConfiguration _config;
+       protected IOptimizerConfiguration Config;
 
         double scale = 0.02;
 
         public OptimizerFitness(IOptimizerConfiguration config)
         {
-            _config = config;
+            Config = config;
         }
 
         public virtual double Evaluate(IChromosome chromosome)
@@ -61,7 +61,7 @@ namespace Optimization
             decimal parsed;
             Decimal.TryParse(compound.Trim('%'), out parsed);
 
-            if (!_config.IncludeNegativeReturn)
+            if (!Config.IncludeNegativeReturn)
             {
                 sharpe = System.Math.Max(sharpe <= 0 || parsed < 0 ? -10 : sharpe, -10);
             }

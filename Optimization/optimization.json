@@ -29,7 +29,15 @@
     "algorithmTypeName": "ParameterizedAlgorithm",
     "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
     "onePointCrossover": "true",
-    "fitnessTypeName": "Optimization.OptimizerFitness"
+    "fitnessTypeName": "Optimization.OptimizerFitness",
+    "dataFolder": "../../../../Lean_base/Data",
+    //"fitnessTypeName": "Optimization.ConfiguredFitness",
+    //"fitness": {
+    //  "scale": 1,
+    //  "modifier": -1,
+    //  "resultKey": "Beta",
+    //  "name": "MinimizeBeta"
+    //}
   }
 
 }

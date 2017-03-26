@@ -15,6 +15,15 @@
         bool IncludeNegativeReturn { get; set; }
         string FitnessTypeName { get; set; }
         string DataFolder { get; set; }
-
+        FitnessConfiguration Fitness { get; set; }
     }
+
+    public interface IFitnessConfiguration
+    {
+        string Name { get; set; }
+        string ResultKey { get; set; }
+        double? Scale { get; set; }
+        double? Modifier { get; set; }
+    }
+
 }
