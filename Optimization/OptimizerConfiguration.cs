@@ -9,6 +9,12 @@ namespace Optimization
     [Serializable]
     public class OptimizerConfiguration : IOptimizerConfiguration
     {
+
+        /// <summary>
+        /// The settings to generate gene values
+        /// </summary>
+        public GeneConfiguration[] Genes { get; set; }
+
         /// <summary>
         /// The initial size of the population
         /// </summary>
@@ -73,6 +79,16 @@ namespace Optimization
         /// Settings for use with the ConfiguredFitness
         /// </summary>
         public FitnessConfiguration Fitness { get; set; }
+
+        /// <summary>
+        /// Algorithm backtest start date
+        /// </summary>
+        public DateTime StartDate { get; set; }
+
+        /// <summary>
+        /// Algorithm backtest end date
+        /// </summary>
+        public DateTime EndDate { get; set; }
     }
 
     [Serializable]

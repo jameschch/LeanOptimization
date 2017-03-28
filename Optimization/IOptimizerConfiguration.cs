@@ -1,8 +1,10 @@
-﻿namespace Optimization
+﻿using System;
+
+namespace Optimization
 {
     public interface IOptimizerConfiguration
     {
-
+        GeneConfiguration[] Genes { get; set; }
         string AlgorithmLocation { get; set; }
         string AlgorithmTypeName { get; set; }
         string ConfigPath { get; set; }
@@ -16,6 +18,8 @@
         string FitnessTypeName { get; set; }
         string DataFolder { get; set; }
         FitnessConfiguration Fitness { get; set; }
+        DateTime StartDate { get; set; }
+        DateTime EndDate { get; set; }
     }
 
     public interface IFitnessConfiguration

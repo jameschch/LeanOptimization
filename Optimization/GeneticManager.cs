@@ -18,7 +18,7 @@ namespace Optimization
 {
     public class GeneticManager
     {
-
+        public const string Termination = "Termination Reached.";
         IOptimizerConfiguration _config;
         SmartThreadPoolTaskExecutor _executor;
         Population _population;
@@ -66,7 +66,7 @@ namespace Optimization
 
         void TerminationReached(object sender, EventArgs e)
         {
-            _logManager.Output("Termination reached.");
+            _logManager.Output(Termination);
             string output = "";
 
             var fittest = _population.BestChromosome;

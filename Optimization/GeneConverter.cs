@@ -62,7 +62,29 @@ namespace Optimization
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var gene = (GeneConfiguration)value;
+
+            serializer.Serialize(writer, gene.Key);
+            serializer.Serialize(writer, gene.Precision);
+            if (gene.ActualDecimal.HasValue)
+            {
+                writer.WritePropertyName("min");
+                writer.WriteValue(gene.MinDecimal);
+                writer.WritePropertyName("max");
+                writer.WriteValue(gene.MaxDecimal);
+                writer.WritePropertyName("actual");
+                writer.WriteValue(gene.ActualDecimal);
+            }
+            if (gene.ActualInt.HasValue)
+            {
+                writer.WritePropertyName("min");
+                writer.WriteValue(gene.MinInt);
+                writer.WritePropertyName("max");
+                writer.WriteValue(gene.MaxInt);
+                writer.WritePropertyName("actual");
+                writer.WriteValue(gene.ActualInt);
+            }
+
         }
 
     }
