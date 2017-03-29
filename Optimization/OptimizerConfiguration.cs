@@ -83,12 +83,12 @@ namespace Optimization
         /// <summary>
         /// Algorithm backtest start date
         /// </summary>
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         /// <summary>
         /// Algorithm backtest end date
         /// </summary>
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 
     [Serializable]

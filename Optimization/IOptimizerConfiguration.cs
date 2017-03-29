@@ -18,8 +18,8 @@ namespace Optimization
         string FitnessTypeName { get; set; }
         string DataFolder { get; set; }
         FitnessConfiguration Fitness { get; set; }
-        DateTime StartDate { get; set; }
-        DateTime EndDate { get; set; }
+        DateTime? StartDate { get; set; }
+        DateTime? EndDate { get; set; }
     }
 
     public interface IFitnessConfiguration
