@@ -4,19 +4,19 @@
       "key": "take",
       "min": 0.02,
       "max": 0.1,
-      "precision": 2,
+      "precision": 2
     },
     {
       "key": "fast",
       "min": 6,
       "max": 48,
       "precision": 0,
+      "actual": 13
     },
     {
       "key": "slow",
       "min": 48,
       "max": 500,
-      "actual":  200
     }
   ],
   "optimizer": {
@@ -28,7 +28,12 @@
     "configPath": "../../../../Lean/Launcher/config.json",
     "algorithmTypeName": "ParameterizedAlgorithm",
     "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-    "onePointCrossover": "true"
+    "onePointCrossover": "true",
+    "fitnessTypeName": "Optimization.OptimizerFitness",
+    "dataFolder": "../../../../Lean_base/Data",
+    "fitness": null,
+    "startDate": null,
+    "endDate": null
   }
 
 }

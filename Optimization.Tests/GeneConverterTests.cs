@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using NUnit.Framework;
 using Optimization;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,16 @@ namespace Optimization.Tests
         [Test()]
         public void WriteJsonTest()
         {
+            string expected = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.json"));
+            var config = JsonConvert.DeserializeObject<OptimizerConfiguration>(expected);
+
+            var actual = JsonConvert.SerializeObject(config, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+            expected = expected.Replace("\n", "").Replace(" ", "").Replace("\r", "");
+
+
+            Assert.AreEqual(expected, actual);
+
+
         }
     }
 }

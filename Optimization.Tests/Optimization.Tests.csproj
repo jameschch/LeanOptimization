@@ -103,7 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="optimization.json">
+    <Content Include="test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Optimization;
+using Newtonsoft.Json.Serialization;
 
 namespace Optimization.Batcher
 {
@@ -32,6 +33,7 @@ namespace Optimization.Batcher
             var config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("DynastyConfiguration.json"));
 
             OptimizerConfiguration current = null;
+            var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
             for (var i = config.StartDate; i <= config.EndDate; i = i.AddDays(config.DurationDays).AddHours(config.DurationHours))
             {
@@ -44,7 +46,9 @@ namespace Optimization.Batcher
                 current.StartDate = i;
                 current.EndDate = i.AddDays(config.DurationDays).AddHours(config.DurationHours);
 
-                _file.File.WriteAllText(configFilename, JsonConvert.SerializeObject(current));
+                string json = JsonConvert.SerializeObject(current, settings);
+
+                _file.File.WriteAllText(configFilename, json);
 
                 var info = new ProcessStartInfo("Optimization.exe", configFilename)
                 {

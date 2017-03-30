@@ -30,7 +30,7 @@ namespace Optimization
                 MinDecimal = precision > 0 ? json["min"].Value<decimal?>() : null,
                 MaxDecimal = precision > 0 ? json["max"].Value<decimal?>() : null,
                 MinInt = precision > 0 ? null : json["min"].Value<int?>(),
-                MaxInt = precision > 0 ? null: json["max"].Value<int?>(),
+                MaxInt = precision > 0 ? null : json["max"].Value<int?>(),
                 Precision = precision
             };
             if (json["actual"] != null)
@@ -64,26 +64,46 @@ namespace Optimization
         {
             var gene = (GeneConfiguration)value;
 
-            serializer.Serialize(writer, gene.Key);
-            serializer.Serialize(writer, gene.Precision);
-            if (gene.ActualDecimal.HasValue)
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("key");
+            writer.WriteValue(gene.Key);
+
+            if (gene.MinDecimal.HasValue)
             {
                 writer.WritePropertyName("min");
                 writer.WriteValue(gene.MinDecimal);
                 writer.WritePropertyName("max");
                 writer.WriteValue(gene.MaxDecimal);
-                writer.WritePropertyName("actual");
-                writer.WriteValue(gene.ActualDecimal);
             }
-            if (gene.ActualInt.HasValue)
+
+            if (gene.MinInt.HasValue)
             {
                 writer.WritePropertyName("min");
                 writer.WriteValue(gene.MinInt);
                 writer.WritePropertyName("max");
                 writer.WriteValue(gene.MaxInt);
+            }
+
+            if (gene.Precision.HasValue)
+            {
+                writer.WritePropertyName("precision");
+                writer.WriteValue(gene.Precision);
+            }
+            if (gene.ActualInt.HasValue)
+            {
                 writer.WritePropertyName("actual");
                 writer.WriteValue(gene.ActualInt);
             }
+            if (gene.ActualDecimal.HasValue)
+            {
+                writer.WritePropertyName("actual");
+                writer.WriteValue(gene.ActualDecimal);
+            }
+
+
+            writer.WriteEndObject();
 
         }
 
