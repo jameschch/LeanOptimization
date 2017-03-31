@@ -14,7 +14,7 @@ namespace Optimization.Batcher
 
         public string ReadLine()
         {
-             return _instance.StandardOutput.ReadLine();
+             return _instance?.StandardOutput.ReadLine();
         }
 
         public void Kill()

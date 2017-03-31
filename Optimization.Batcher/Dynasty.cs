@@ -16,7 +16,7 @@ namespace Optimization.Batcher
 
         readonly IFileSystem _file;
         readonly IProcessWrapper _process;
-        const string configFilename = "optimization.json";
+        const string configFilename = "optimization_walkForward.json";
 
         public Dynasty(IFileSystem file, IProcessWrapper process)
         {
@@ -37,7 +37,6 @@ namespace Optimization.Batcher
 
             for (var i = config.StartDate; i <= config.EndDate; i = i.AddDays(config.DurationDays).AddHours(config.DurationHours))
             {
-
                 if (current == null)
                 {
                     current = JsonConvert.DeserializeObject<OptimizerConfiguration>(_file.File.ReadAllText(configFilename));
@@ -52,7 +51,8 @@ namespace Optimization.Batcher
 
                 var info = new ProcessStartInfo("Optimization.exe", configFilename)
                 {
-                    RedirectStandardOutput = true
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false
                 };
 
                 _process.Start(info);
@@ -60,10 +60,19 @@ namespace Optimization.Batcher
                 FixedSizedQueue<string> queue = new FixedSizedQueue<string>(1);
                 while ((output = _process.ReadLine()) != null)
                 {
+                    if (output == null)
+                    {
+                        break;
+                    }
+
                     queue.Enqueue(output);
 
                     if (queue.First() == GeneticManager.Termination)
                     {
+                        Console.WriteLine($"{current.StartDate} {current.EndDate}");
+                        Console.WriteLine(queue.First());
+                        Console.WriteLine(queue.Last());
+
                         if (config.WalkForward)
                         {
                             var split = queue.Last().Split(',');
@@ -89,8 +98,8 @@ namespace Optimization.Batcher
                                 }
                             }
                         }
+                        _process.Kill();
                     }
-                    _process.Kill();
                 }
             }
         }

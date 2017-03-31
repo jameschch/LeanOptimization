@@ -20,18 +20,24 @@ namespace Optimization.Tests
         {
             var process = new Mock<IProcessWrapper>();
             var file = new Mock<IFileSystem>();
+            var q = new Queue<string>();
 
-            file.Setup(f => f.File.ReadAllText(It.IsAny<string>())).Returns((string path) => { return System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path)); });
-            file.Setup(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Callback((string path, string contents) => { System.IO.File.WriteAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path), contents); });
+            file.Setup(f => f.File.ReadAllText(It.IsAny<string>())).Returns((string path) => 
+            {
+                return System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path));
+            });
+            file.Setup(f => f.File.WriteAllText(It.IsAny<string>(), It.IsAny<string>())).Callback((string path, string contents) => 
+            {
+                q.Enqueue("utyvoiuhpoih[j[09u875");
+                q.Enqueue(GeneticManager.Termination);
+                q.Enqueue("take: 1.1, fast: 12, slow: 123.456, sharpe: 1.23");
+                q.Enqueue(null);
+
+                System.IO.File.WriteAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, path), contents);
+            });
 
             process.Setup(p => p.Start(It.IsAny<ProcessStartInfo>()));
             process.Setup(p => p.Kill()).Verifiable();
-
-            var q = new Queue<string>();
-            q.Enqueue("utyvoiuhpoih[j[09u875");
-            q.Enqueue(GeneticManager.Termination);
-            q.Enqueue("take: 1.1, fast: 12, slow: 123.456, sharpe: 1.23");
-
             process.Setup(p => p.ReadLine()).Returns(() => { return q.Dequeue(); });
 
             var unit = new Dynasty(file.Object, process.Object);
@@ -40,7 +46,6 @@ namespace Optimization.Tests
 
             process.Verify();
         }
-
 
     }
 }

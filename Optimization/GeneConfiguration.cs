@@ -9,6 +9,7 @@ namespace Optimization
 {
 
     [JsonConverter(typeof(GeneConverter))]
+    [Serializable]
     public class GeneConfiguration
     {
 

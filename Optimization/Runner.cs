@@ -70,7 +70,7 @@ namespace Optimization
 
             if (_config.EndDate.HasValue)
             {
-                Config.Set("EndDate", _config.EndDate.Value.ToString("O"));
+                Config.Set("endDate", _config.EndDate.Value.ToString("O"));
             }
 
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);

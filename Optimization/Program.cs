@@ -80,7 +80,7 @@ namespace Optimization
             using (StreamReader file = File.OpenText(path))
             {
                 var document = (JObject)JsonConvert.DeserializeObject(file.ReadToEnd());
-                return JsonConvert.DeserializeObject<OptimizerConfiguration>(document["optimizer"].ToString());
+                return JsonConvert.DeserializeObject<OptimizerConfiguration>(document.ToString());
             }
         }
 
