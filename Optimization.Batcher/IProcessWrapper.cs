@@ -10,7 +10,8 @@ namespace Optimization.Batcher
 {
     public interface IProcessWrapper
     {
-        StreamReader StandardOutput { get; }
+        string ReadLine();
+
         void Start(ProcessStartInfo info);
         void Kill();
     }

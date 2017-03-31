@@ -10,22 +10,29 @@ namespace Optimization.Batcher
 {
     public class ProcessWrapper : IProcessWrapper
     {
-        private Process instance { get; set; }
+        private Process _instance { get; set; }
 
-        public StreamReader StandardOutput
+        public string ReadLine()
         {
-            get { return instance.StandardOutput; }
+             return _instance.StandardOutput.ReadLine();
         }
 
         public void Kill()
         {
-            instance.Kill();
-            instance = null;
+            try
+            {
+                _instance.Kill();
+                _instance = null;
+            }
+            catch (Exception ex)
+            {
+                //todo: log
+            }
         }
 
         public void Start(ProcessStartInfo info)
         {
-            instance = Process.Start(info);
+            _instance = Process.Start(info);
         }
     }
 }

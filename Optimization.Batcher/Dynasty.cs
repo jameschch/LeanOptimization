@@ -20,7 +20,7 @@ namespace Optimization.Batcher
 
         public Dynasty(IFileSystem file, IProcessWrapper process)
         {
-           _file = file;
+            _file = file;
             _process = process;
         }
 
@@ -30,7 +30,7 @@ namespace Optimization.Batcher
 
         public void Optimize()
         {
-            var config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("DynastyConfiguration.json"));
+            var config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("dynasty.json"));
 
             OptimizerConfiguration current = null;
             var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
@@ -57,42 +57,60 @@ namespace Optimization.Batcher
 
                 _process.Start(info);
                 string output;
-                Queue<string> queue = new Queue<string>(2);
-                while ((output = _process.StandardOutput.ReadLine()) != null)
+                FixedSizedQueue<string> queue = new FixedSizedQueue<string>(1);
+                while ((output = _process.ReadLine()) != null)
                 {
                     queue.Enqueue(output);
-                }
-                if (queue.First() == GeneticManager.Termination)
-                {
-                    if (config.WalkForward)
+
+                    if (queue.First() == GeneticManager.Termination)
                     {
-                        var split = queue.Last().Split(',');
-
-                        foreach (var item in split)
+                        if (config.WalkForward)
                         {
-                            string[] pair = item.Split(':');
+                            var split = queue.Last().Split(',');
 
-                            var gene = current.Genes.SingleOrDefault(g => g.Key == pair[0]);
+                            for (int ii = 0; ii < split.Length - 1; ii++)
+                            {
+                                string[] pair = split[ii].Split(':');
+                                var gene = current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
 
-                            decimal parsedDecimal;
-                            int parsedInt;
-                            if (decimal.TryParse(pair[1], out parsedDecimal))
-                            {
-                                gene.ActualDecimal = parsedDecimal;
+                                decimal parsedDecimal;
+                                int parsedInt;
+                                if (int.TryParse(pair[1].Trim(), out parsedInt))
+                                {
+                                    gene.ActualInt = parsedInt;
+                                }
+                                else if (decimal.TryParse(pair[1].Trim(), out parsedDecimal))
+                                {
+                                    gene.ActualDecimal = parsedDecimal;
+                                }
+                                else
+                                {
+                                    throw new Exception($"Unable to parse optimal gene from range {current.StartDate} {current.EndDate}");
+                                }
                             }
-                            else if (int.TryParse(pair[1], out parsedInt))
-                            {
-                                gene.ActualInt = parsedInt;
-                            }
-                            else
-                            {
-                                throw new Exception($"Unable to parse optimal gene from range {current.StartDate} {current.EndDate}");
-                            }
-
-                        } 
+                        }
                     }
+                    _process.Kill();
                 }
-                _process.Kill();
+            }
+        }
+
+        private class FixedSizedQueue<T> : Queue<T>
+        {
+
+            public FixedSizedQueue(int limit)
+            {
+                _limit = limit;
+            }
+
+            private int _limit { get; set; }
+            public new void Enqueue(T obj)
+            {
+                while (this.Count > _limit)
+                {
+                    this.Dequeue();
+                }
+                base.Enqueue(obj);
             }
         }
 
