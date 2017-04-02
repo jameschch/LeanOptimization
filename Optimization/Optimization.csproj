@@ -155,7 +155,7 @@
     <Content Include="optimization.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="optimization_walkForward.json">
+    <Content Include="optimization_dynasty.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config">

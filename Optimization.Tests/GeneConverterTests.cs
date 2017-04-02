@@ -14,24 +14,13 @@ namespace Optimization.Tests
     public class GeneConverterTests
     {
         [Test()]
-        public void CanConvertTest()
-        {
-        }
-
-        [Test()]
-        public void ReadJsonTest()
-        {
-        }
-
-        [Test()]
-        public void WriteJsonTest()
+        public void ReadWriteJsonTest()
         {
             string expected = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.json"));
             var config = JsonConvert.DeserializeObject<OptimizerConfiguration>(expected);
-
-            var actual = JsonConvert.SerializeObject(config, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
             expected = expected.Replace("\n", "").Replace(" ", "").Replace("\r", "");
 
+            var actual = JsonConvert.SerializeObject(config, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
             Assert.AreEqual(expected, actual);
 

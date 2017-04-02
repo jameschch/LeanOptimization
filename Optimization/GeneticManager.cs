@@ -39,10 +39,10 @@ namespace Optimization
 
             //create the population
             IList<IChromosome> list = new List<IChromosome>();
-            var geneConfig = GeneFactory.Load();
+            GeneFactory.Initialize(_config.Genes);
             for (int i = 0; i < _config.PopulationSize; i++)
             {
-                list.Add(new Chromosome(true, geneConfig));
+                list.Add(new Chromosome(true, GeneFactory.Config));
             }
 
             int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;

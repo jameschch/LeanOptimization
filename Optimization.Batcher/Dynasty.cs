@@ -16,7 +16,7 @@ namespace Optimization.Batcher
 
         readonly IFileSystem _file;
         readonly IProcessWrapper _process;
-        const string configFilename = "optimization_walkForward.json";
+        const string configFilename = "optimization_dynasty.json";
 
         public Dynasty(IFileSystem file, IProcessWrapper process)
         {
@@ -64,7 +64,7 @@ namespace Optimization.Batcher
                     {
                         break;
                     }
-
+                    //Console.WriteLine(output);
                     queue.Enqueue(output);
 
                     if (queue.First() == GeneticManager.Termination)

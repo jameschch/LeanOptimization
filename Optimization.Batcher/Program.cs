@@ -17,7 +17,7 @@ namespace Optimization.Batcher
 
             var batcher = new Dynasty();
             batcher.Optimize();
-
+            Console.ReadLine();
         }
     }
 }

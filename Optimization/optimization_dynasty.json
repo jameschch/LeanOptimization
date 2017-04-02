@@ -2,35 +2,36 @@
   "genes": [
     {
       "key": "take",
-      "min": 0.02,
-      "max": 0.1,
+      "min": 0.01,
+      "max": 0.03,
       "precision": 2
     },
     {
       "key": "fast",
-      "min": 6,
+      "min": 1,
       "max": 48,
       "precision": 0,
-      "actual": 1
+      "actual": 4
     },
     {
       "key": "slow",
-      "min": 48,
+      "min": 1,
       "max": 500,
-      "actual": 2
+      "actual": 17
     }
   ],
-  "populationSize": 2,
+  "populationSize": 4,
   "populationSizeMaximum": 48,
   "generations": 1000,
-  "stagnationGenerations": 1,
-  "maxThreads": 1,
+  "stagnationGenerations": 200,
+  "maxThreads": 2,
   "configPath": "../../../../Lean/Launcher/config.json",
   "algorithmTypeName": "ParameterizedWalkForwardAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "onePointCrossover": "true",
   "fitnessTypeName": "Optimization.OptimizerFitness",
   "dataFolder": "../../../../Lean_base/Data",
+  "includeNegativeReturn":  true
   //"fitnessTypeName": "Optimization.ConfiguredFitness",
   //"fitness": {
   //  "scale": 1,

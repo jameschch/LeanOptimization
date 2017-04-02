@@ -33,8 +33,7 @@ namespace Optimization
 
         public override IChromosome CreateNew()
         {
-            var config = GeneFactory.Load();
-            return new Chromosome(false, config);
+            return new Chromosome(false, GeneFactory.Config);
         }
 
         public override IChromosome Clone()
