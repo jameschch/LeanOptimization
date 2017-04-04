@@ -26,7 +26,7 @@ namespace Optimization.Batcher
             }
             catch (Exception ex)
             {
-                //todo: log
+                Program.Logger.Info(ex);
             }
         }
 

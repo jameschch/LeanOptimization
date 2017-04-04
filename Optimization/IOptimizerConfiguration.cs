@@ -22,12 +22,4 @@ namespace Optimization
         DateTime? EndDate { get; set; }
     }
 
-    public interface IFitnessConfiguration
-    {
-        string Name { get; set; }
-        string ResultKey { get; set; }
-        double? Scale { get; set; }
-        double? Modifier { get; set; }
-    }
-
 }

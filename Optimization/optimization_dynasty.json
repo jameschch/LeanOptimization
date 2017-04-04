@@ -20,11 +20,11 @@
       "actual": 17
     }
   ],
-  "populationSize": 4,
+  "populationSize": 2,
   "populationSizeMaximum": 48,
   "generations": 1000,
-  "stagnationGenerations": 200,
-  "maxThreads": 2,
+  "stagnationGenerations": 2,
+  "maxThreads": 1,
   "configPath": "../../../../Lean/Launcher/config.json",
   "algorithmTypeName": "ParameterizedWalkForwardAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",

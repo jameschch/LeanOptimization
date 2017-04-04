@@ -98,7 +98,7 @@
     <Compile Include="DynastyTests.cs" />
     <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
-    <Compile Include="GeneticManagerTests.cs" />
+    <Compile Include="GeneManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

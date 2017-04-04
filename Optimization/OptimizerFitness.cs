@@ -38,13 +38,13 @@ namespace Optimization
                 var fitness = CalculateFitness(result);
 
                 output += string.Format("{0}: {1}", this.Name, fitness.Value);
-                Program.Output(output);
+                Program.Logger.Info(output);
 
                 return fitness.Fitness;
             }
             catch (Exception ex)
             {
-                //todo: log
+                Program.Logger.Error(ex);
                 return 0;
             }
         }

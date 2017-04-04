@@ -14,17 +14,19 @@ namespace Optimization.Batcher
     public class Dynasty
     {
 
-        readonly IFileSystem _file;
-        readonly IProcessWrapper _process;
-        const string configFilename = "optimization_dynasty.json";
+        private readonly IFileSystem _file;
+        private readonly IProcessWrapper _process;
+        private readonly ILogWrapper _logWrapper;
+        const string _configFilename = "optimization_dynasty.json";
 
-        public Dynasty(IFileSystem file, IProcessWrapper process)
+        public Dynasty(IFileSystem file, IProcessWrapper process, ILogWrapper logWrapper)
         {
             _file = file;
             _process = process;
+            _logWrapper = logWrapper;
         }
 
-        public Dynasty() : this(new FileSystem(), new ProcessWrapper())
+        public Dynasty() : this(new FileSystem(), new ProcessWrapper(), new LogWrapper())
         {
         }
 
@@ -39,7 +41,7 @@ namespace Optimization.Batcher
             {
                 if (current == null)
                 {
-                    current = JsonConvert.DeserializeObject<OptimizerConfiguration>(_file.File.ReadAllText(configFilename));
+                    current = JsonConvert.DeserializeObject<OptimizerConfiguration>(_file.File.ReadAllText(_configFilename));
                 }
 
                 current.StartDate = i;
@@ -47,9 +49,9 @@ namespace Optimization.Batcher
 
                 string json = JsonConvert.SerializeObject(current, settings);
 
-                _file.File.WriteAllText(configFilename, json);
+                _file.File.WriteAllText(_configFilename, json);
 
-                var info = new ProcessStartInfo("Optimization.exe", configFilename)
+                var info = new ProcessStartInfo("Optimization.exe", _configFilename)
                 {
                     RedirectStandardOutput = true,
                     UseShellExecute = false
@@ -57,27 +59,25 @@ namespace Optimization.Batcher
 
                 _process.Start(info);
                 string output;
-                FixedSizedQueue<string> queue = new FixedSizedQueue<string>(1);
+                FixedSizeQueue<string> queue = new FixedSizeQueue<string>(2);
                 while ((output = _process.ReadLine()) != null)
                 {
-                    if (output == null)
-                    {
-                        break;
-                    }
-                    //Console.WriteLine(output);
                     queue.Enqueue(output);
+                    Console.WriteLine(output);
 
-                    if (queue.First() == GeneticManager.Termination)
+                    if (queue.First() == GeneManager.Termination)
                     {
-                        Console.WriteLine($"{current.StartDate} {current.EndDate}");
-                        Console.WriteLine(queue.First());
-                        Console.WriteLine(queue.Last());
+                        _logWrapper.Info($"For period: {current.StartDate} {current.EndDate}");
+                        _logWrapper.Info(queue.Dequeue());
+                        _logWrapper.Info(queue.Dequeue());
+                        string optimal = queue.Dequeue();
+                        _logWrapper.Info(optimal);
 
                         if (config.WalkForward)
                         {
-                            var split = queue.Last().Split(',');
+                            var split = optimal.Split(',');
 
-                            for (int ii = 0; ii < split.Length - 1; ii++)
+                            for (int ii = 0; ii < split.Length; ii++)
                             {
                                 string[] pair = split[ii].Split(':');
                                 var gene = current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
@@ -104,10 +104,10 @@ namespace Optimization.Batcher
             }
         }
 
-        private class FixedSizedQueue<T> : Queue<T>
+        private class FixedSizeQueue<T> : Queue<T>
         {
 
-            public FixedSizedQueue(int limit)
+            public FixedSizeQueue(int limit)
             {
                 _limit = limit;
             }

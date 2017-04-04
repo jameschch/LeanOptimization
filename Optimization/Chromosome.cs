@@ -47,6 +47,17 @@ namespace Optimization
             return this.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
         }
 
+        public string ToKeyValueString()
+        {
+            StringBuilder output = new StringBuilder();
+            foreach (var item in this.ToDictionary())
+            {
+                output.Append(item.Key).Append(": ").Append(item.Value.ToString()).Append(", ");
+            }
+
+            return output.ToString().TrimEnd(',', ' ');
+        }
+
     }
 
 }

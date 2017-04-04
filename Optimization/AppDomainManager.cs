@@ -59,14 +59,11 @@ namespace Optimization
 
         public static Dictionary<string, string> RunAlgorithm(Dictionary<string, object> list)
         {
-
             AppDomain ad = null;
-            Runner rc = CreateRunClassInAppDomain(ref ad);
-            
+            Runner rc = CreateRunClassInAppDomain(ref ad);       
 
             var result = (Dictionary<string, string>)rc.Run(list);
             
-
             lock (_resultsLocker)
             {
                 foreach (var item in GetResults(ad))

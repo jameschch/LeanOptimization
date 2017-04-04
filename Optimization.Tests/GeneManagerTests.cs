@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Optimization.Tests
 {
     [TestFixture()]
-    public class GeneticManagerTests
+    public class GeneManagerTests
     {
 
         [SetUp]
@@ -30,7 +30,7 @@ namespace Optimization.Tests
 
             var fitness = new Mock<OptimizerFitness>(config.Object);
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Verifiable();
-            var unit = new GeneticManager(config.Object, fitness.Object, Mock.Of<ILogManager>());
+            var unit = new GeneManager(config.Object, fitness.Object);
 
             unit.Start();
             fitness.Verify();

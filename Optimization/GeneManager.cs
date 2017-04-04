@@ -16,20 +16,18 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class GeneticManager
+    public class GeneManager
     {
         public const string Termination = "Termination Reached.";
-        IOptimizerConfiguration _config;
-        SmartThreadPoolTaskExecutor _executor;
-        Population _population;
-        OptimizerFitness _fitness;
-        ILogManager _logManager;
+        private readonly IOptimizerConfiguration _config;
+        private SmartThreadPoolTaskExecutor _executor;
+        private Population _population;
+        private readonly OptimizerFitness _fitness;
 
-        public GeneticManager(IOptimizerConfiguration config, OptimizerFitness fitness, ILogManager logManager)
+        public GeneManager(IOptimizerConfiguration config, OptimizerFitness fitness)
         {
             _config = config;
             _fitness = fitness;
-            _logManager = logManager;
         }
 
         public void Start()
@@ -66,25 +64,18 @@ namespace Optimization
 
         void TerminationReached(object sender, EventArgs e)
         {
-            _logManager.Output(Termination);
-            string output = "";
+            Program.Logger.Info(Termination);
 
-            var fittest = _population.BestChromosome;
-
-            foreach (var item in ((Chromosome)fittest).ToDictionary())
-            {
-                output += item.Key + ": " + item.Value.ToString() + ", ";
-            }
-
-            output += string.Format("{0}: {1}", _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness));
-            _logManager.Output(output);
+            GenerationRan(null, null);
         }
 
         void GenerationRan(object sender, EventArgs e)
         {
-            var fittest = _population.BestChromosome;
-            _logManager.Output("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
+            var fittest = (Chromosome)_population.BestChromosome;
+            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
                 _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness));
+
+            Program.Logger.Info(fittest.ToKeyValueString());
         }
 
     }
