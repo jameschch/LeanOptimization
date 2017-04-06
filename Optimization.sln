@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization", "Optimization\Optimization.csproj", "{89D0362E-9AED-4718-B35E-BCAE2949848D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3BE73B50-BCC9-47BD-A83B-BFA05ABF4913}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization.Tests", "Optimization.Tests\Optimization.Tests.csproj", "{C06F45D0-D5AF-4F69-829D-F855BB496765}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization.Example", "Optimization.Example\Optimization.Example.csproj", "{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Optimization.Batcher", "Optimization.Batcher\Optimization.Batcher.csproj", "{48F70701-525A-48AC-84AA-64F7919B1638}"
 EndProject
@@ -45,6 +47,18 @@ Global
 		{C06F45D0-D5AF-4F69-829D-F855BB496765}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C06F45D0-D5AF-4F69-829D-F855BB496765}.Release|x64.ActiveCfg = Release|Any CPU
 		{C06F45D0-D5AF-4F69-829D-F855BB496765}.Release|x64.Build.0 = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Debug|x64.Build.0 = Debug|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Mono|Any CPU.ActiveCfg = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Mono|Any CPU.Build.0 = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Mono|x64.ActiveCfg = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Mono|x64.Build.0 = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6177EC4-9C73-4420-B20D-47A69BB9BCF9}.Release|x64.Build.0 = Release|Any CPU
 		{48F70701-525A-48AC-84AA-64F7919B1638}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{48F70701-525A-48AC-84AA-64F7919B1638}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48F70701-525A-48AC-84AA-64F7919B1638}.Debug|x64.ActiveCfg = Debug|Any CPU

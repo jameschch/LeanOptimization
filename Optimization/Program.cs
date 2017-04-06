@@ -1,7 +1,6 @@
 ﻿using GeneticSharp.Domain.Fitnesses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QuantConnect.Util;
 using System;
 using System.IO;
 using System.Reflection;

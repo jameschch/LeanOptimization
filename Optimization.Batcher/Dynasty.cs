@@ -63,7 +63,7 @@ namespace Optimization.Batcher
                 while ((output = _process.ReadLine()) != null)
                 {
                     queue.Enqueue(output);
-                    Console.WriteLine(output);
+                    //Console.WriteLine(output);
 
                     if (queue.First() == GeneManager.Termination)
                     {

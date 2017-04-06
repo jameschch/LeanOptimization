@@ -29,7 +29,7 @@
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "onePointCrossover": "true",
   "fitnessTypeName": "Optimization.OptimizerFitness",
-  "dataFolder": "../../../../Lean_base/Data",
+  "dataFolder": "../../../../Lean/Data",
   //"fitnessTypeName": "Optimization.ConfiguredFitness",
   //"fitness": {
   //  "scale": 1,
