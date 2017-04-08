@@ -14,7 +14,7 @@ namespace Optimization.Batcher
     class Program
     {
 
-        internal static Logger Logger = LogManager.GetCurrentClassLogger();
+        internal static Logger Logger = LogManager.GetLogger("batcher");
 
         static void Main(string[] args)
         {

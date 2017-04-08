@@ -14,7 +14,7 @@ namespace Optimization
 
         #region Declarations
         static OptimizerConfiguration _config;
-        public static Logger Logger = LogManager.GetCurrentClassLogger();
+        public static Logger Logger = LogManager.GetLogger("optimizer");
         #endregion
 
         public static void Main(string[] args)
