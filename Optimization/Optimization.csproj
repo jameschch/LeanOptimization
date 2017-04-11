@@ -82,6 +82,10 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.4.5\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="QuantConnect.Algorithm, Version=2.2.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
@@ -133,10 +137,9 @@
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
-    <Compile Include="GeneticManager.cs" />
-    <Compile Include="ILogManager.cs" />
+    <Compile Include="GeneManager.cs" />
+    <Compile Include="IFitnessConfiguration.cs" />
     <Compile Include="IOptimizerConfiguration.cs" />
-    <Compile Include="LogManager.cs" />
     <Compile Include="OptimizerFitness.cs" />
     <Compile Include="OptimizerConfiguration.cs" />
     <Compile Include="PreloadPopulation.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="CompoundingAnnualReturnFitness.cs" />
+    <Compile Include="ConfiguredFitness.cs" />
     <Compile Include="TotalTradesFitness.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -154,6 +158,12 @@
     <Content Include="optimization.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="optimization_dynasty.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

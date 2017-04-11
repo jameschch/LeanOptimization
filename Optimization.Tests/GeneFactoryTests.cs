@@ -20,10 +20,10 @@ namespace Optimization.Tests
         }
 
         [Test()]
-        public void LoadTest()
+        public void InitializeTest()
         {
-            var actual = GeneFactory.Load();
-            Assert.IsNotNull(actual);
+            GeneFactory.Initialize(new GeneConfiguration[0]);
+            Assert.IsNotNull(GeneFactory.Config);
         }
 
         [Test()]
@@ -43,7 +43,8 @@ namespace Optimization.Tests
         [Test()]
         public void GenerateTest()
         {
-            var config = GeneFactory.Load();
+            var config = new[] { new GeneConfiguration { Key = "slow", ActualInt = 200 }, new GeneConfiguration { Key = "take", Precision = 2, MaxDecimal= 0.06m,
+                MinDecimal = 0.04m, ActualDecimal = 0.05m } };
 
             var actual = GeneFactory.Generate(config.Where(c => c.Key == "slow").Single(), true);
             Assert.AreEqual(200, (int)((KeyValuePair<string, object>)actual.Value).Value);

@@ -33,8 +33,7 @@ namespace Optimization
 
         public override IChromosome CreateNew()
         {
-            var config = GeneFactory.Load();
-            return new Chromosome(false, config);
+            return new Chromosome(false, GeneFactory.Config);
         }
 
         public override IChromosome Clone()
@@ -46,6 +45,17 @@ namespace Optimization
         public Dictionary<string, object> ToDictionary()
         {
             return this.GetGenes().ToDictionary(d => ((KeyValuePair<string, object>)d.Value).Key, d => ((KeyValuePair<string, object>)d.Value).Value);
+        }
+
+        public string ToKeyValueString()
+        {
+            StringBuilder output = new StringBuilder();
+            foreach (var item in this.ToDictionary())
+            {
+                output.Append(item.Key).Append(": ").Append(item.Value.ToString()).Append(", ");
+            }
+
+            return output.ToString().TrimEnd(',', ' ');
         }
 
     }

@@ -12,7 +12,7 @@ namespace Optimization
     {
 
         public string Name { get; protected set; }
-       protected IOptimizerConfiguration Config;
+        protected IOptimizerConfiguration Config;
 
         double scale = 0.02;
 
@@ -38,13 +38,13 @@ namespace Optimization
                 var fitness = CalculateFitness(result);
 
                 output += string.Format("{0}: {1}", this.Name, fitness.Value);
-                Program.Output(output);
+                Program.Logger.Info(output);
 
                 return fitness.Fitness;
             }
             catch (Exception ex)
             {
-                //todo: log
+                Program.Logger.Error(ex);
                 return 0;
             }
         }
@@ -70,7 +70,7 @@ namespace Optimization
                 sharpe = System.Math.Max(sharpe, -10);
             }
 
-            fitness.Value = sharpe.ToString("0.00");
+            fitness.Value = sharpe.ToString("0.000");
 
             fitness.Fitness = (double)(System.Math.Max(sharpe, -10) + 10) * scale;
 
@@ -79,7 +79,7 @@ namespace Optimization
 
         public virtual double GetValueFromFitness(double? fitness)
         {
-            return fitness.Value / scale -10;
+            return fitness.Value / scale - 10;
         }
 
         protected class FitnessResult

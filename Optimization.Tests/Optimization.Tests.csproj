@@ -80,6 +80,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.141, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Abstractions.2.0.0.141\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -91,18 +95,24 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ConfiguredFitnessTests.cs" />
+    <Compile Include="DynastyTests.cs" />
+    <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
-    <Compile Include="GeneticManagerTests.cs" />
+    <Compile Include="GeneManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="optimization.json">
+    <Content Include="test.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Optimization.Batcher\Optimization.Batcher.csproj">
+      <Project>{48f70701-525a-48ac-84aa-64f7919b1638}</Project>
+      <Name>Optimization.Batcher</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Optimization\Optimization.csproj">
       <Project>{89d0362e-9aed-4718-b35e-bcae2949848d}</Project>
       <Name>Optimization</Name>

@@ -16,7 +16,7 @@
     {
       "key": "slow",
       "min": 48,
-      "max": 500,
+      "max": 500
     }
   ],
   "populationSize": 24,
@@ -24,17 +24,14 @@
   "generations": 1000,
   "stagnationGenerations": 30,
   "maxThreads": 8,
-  "configPath": "../../../../Lean/Launcher/config.json",
   "algorithmTypeName": "ParameterizedAlgorithm",
+  "configPath": "../../../../Lean/Launcher/config.json",
+  "onePointCrossover": true,
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-  "onePointCrossover": "true",
+  "includeNegativeReturn": false,
   "fitnessTypeName": "Optimization.OptimizerFitness",
-  "dataFolder": "../../../../Lean/Data",
-  //"fitnessTypeName": "Optimization.ConfiguredFitness",
-  //"fitness": {
-  //  "scale": 1,
-  //  "modifier": -1,
-  //  "resultKey": "Beta",
-  //  "name": "MinimizeBeta"
-  //}
+  "dataFolder": "../../../../Lean_base/Data",
+  "fitness": null,
+  "startDate": null,
+  "endDate": null
 }

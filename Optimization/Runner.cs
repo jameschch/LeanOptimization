@@ -63,6 +63,16 @@ namespace Optimization
                 Config.Set("data-folder", _config.DataFolder);
             }
 
+            if (_config.StartDate.HasValue)
+            {
+                Config.Set("startDate", _config.StartDate.Value.ToString("O"));
+            }
+
+            if (_config.EndDate.HasValue)
+            {
+                Config.Set("endDate", _config.EndDate.Value.ToString("O"));
+            }
+
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 

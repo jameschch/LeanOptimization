@@ -30,7 +30,7 @@ namespace Optimization
                 MinDecimal = precision > 0 ? json["min"].Value<decimal?>() : null,
                 MaxDecimal = precision > 0 ? json["max"].Value<decimal?>() : null,
                 MinInt = precision > 0 ? null : json["min"].Value<int?>(),
-                MaxInt = precision > 0 ? null: json["max"].Value<int?>(),
+                MaxInt = precision > 0 ? null : json["max"].Value<int?>(),
                 Precision = precision
             };
             if (json["actual"] != null)
@@ -62,7 +62,49 @@ namespace Optimization
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotImplementedException();
+            var gene = (GeneConfiguration)value;
+
+
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("key");
+            writer.WriteValue(gene.Key);
+
+            if (gene.MinDecimal.HasValue)
+            {
+                writer.WritePropertyName("min");
+                writer.WriteValue(gene.MinDecimal);
+                writer.WritePropertyName("max");
+                writer.WriteValue(gene.MaxDecimal);
+            }
+
+            if (gene.MinInt.HasValue)
+            {
+                writer.WritePropertyName("min");
+                writer.WriteValue(gene.MinInt);
+                writer.WritePropertyName("max");
+                writer.WriteValue(gene.MaxInt);
+            }
+
+            if (gene.Precision.HasValue)
+            {
+                writer.WritePropertyName("precision");
+                writer.WriteValue(gene.Precision);
+            }
+            if (gene.ActualInt.HasValue)
+            {
+                writer.WritePropertyName("actual");
+                writer.WriteValue(gene.ActualInt);
+            }
+            if (gene.ActualDecimal.HasValue)
+            {
+                writer.WritePropertyName("actual");
+                writer.WriteValue(gene.ActualDecimal);
+            }
+
+
+            writer.WriteEndObject();
+
         }
 
     }

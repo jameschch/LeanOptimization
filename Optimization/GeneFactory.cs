@@ -15,20 +15,11 @@ namespace Optimization
     {
 
         private static Random _random = new Random();
+        public static GeneConfiguration[] Config { get; private set; }
 
-
-        public static GeneConfiguration[] Load()
+        public static void Initialize(GeneConfiguration[] config)
         {
-
-            var v = new Dictionary<string, object>();
-
-            using (StreamReader file = File.OpenText("optimization.json"))
-            {
-                var document = (JObject)JsonConvert.DeserializeObject(file.ReadToEnd());
-
-                return JsonConvert.DeserializeObject<GeneConfiguration[]>(document["genes"].ToString());
-            }
-
+            Config = config;
         }
 
         public static int RandomBetween(int minValue, int maxValue)
