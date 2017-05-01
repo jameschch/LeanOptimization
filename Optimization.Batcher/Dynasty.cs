@@ -11,7 +11,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Optimization.Batcher
 {
-    public class Dynasty
+    public class Dynasty : IDisposable
     {
 
         private readonly IFileSystem _file;
@@ -101,6 +101,14 @@ namespace Optimization.Batcher
                         _process.Kill();
                     }
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_process != null)
+            {
+                _process.Kill();
             }
         }
 

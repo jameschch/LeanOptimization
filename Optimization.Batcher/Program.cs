@@ -15,12 +15,14 @@ namespace Optimization.Batcher
     {
 
         internal static Logger Logger = LogManager.GetLogger("batcher");
+        static Dynasty batcher;
 
         static void Main(string[] args)
         {
             try
             {
-                var batcher = new Dynasty();
+                AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
+                batcher = new Dynasty();
                 batcher.Optimize();
                 Console.ReadLine();
             }
@@ -29,5 +31,12 @@ namespace Optimization.Batcher
                 Logger.Error(ex);
             }
         }
+
+        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+
+            batcher.Dispose();
+        }
+
     }
 }
