@@ -57,7 +57,8 @@ namespace Optimization
             ga.TaskExecutor = _executor;
             ga.Termination = new OrTermination(new FitnessStagnationTermination(_config.StagnationGenerations), new GenerationNumberTermination(_config.Generations));
             ga.Reinsertion = new ElitistReinsertion();
-
+            ga.MutationProbability = _config.MutationProbability;
+            ga.CrossoverProbability = _config.CrossoverProbability;
             //run the GA 
             ga.Start();
         }

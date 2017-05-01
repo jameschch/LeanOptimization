@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeneticSharp.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,6 +90,16 @@ namespace Optimization
         /// Algorithm backtest end date
         /// </summary>
         public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Likeliness of mutation
+        /// </summary>
+        public float MutationProbability { get; set; } = 0.5f;
+
+        /// <summary>
+        /// Likeliness of crossover
+        /// </summary>
+        public float CrossoverProbability { get; set; } = GeneticAlgorithm.DefaultCrossoverProbability;
     }
 
     [Serializable]

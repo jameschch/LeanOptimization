@@ -20,6 +20,8 @@ namespace Optimization
         FitnessConfiguration Fitness { get; set; }
         DateTime? StartDate { get; set; }
         DateTime? EndDate { get; set; }
+        float MutationProbability { get; set; }
+        float CrossoverProbability { get; set; }
     }
 
 }
