@@ -33,5 +33,7 @@
   "dataFolder": "../../../../Lean_base/Data",
   "fitness": null,
   "startDate": null,
-  "endDate": null
+  "endDate": null,
+  "mutationProbability": 0.5,
+  "crossoverProbability": 0.75
 }
