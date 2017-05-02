@@ -94,7 +94,7 @@ namespace Optimization
         /// <summary>
         /// Likeliness of mutation
         /// </summary>
-        public float MutationProbability { get; set; } = 0.5f;
+        public float MutationProbability { get; set; } = GeneticAlgorithm.DefaultMutationProbability;
 
         /// <summary>
         /// Likeliness of crossover
