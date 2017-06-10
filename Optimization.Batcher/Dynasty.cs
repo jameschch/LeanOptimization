@@ -15,7 +15,6 @@ namespace Optimization.Batcher
     {
 
         private readonly IFileSystem _file;
-        private readonly IProcessWrapper _process;
         private readonly ILogWrapper _logWrapper;
         private readonly IGeneManagerFactory _managerFactory;
         const string _configFilename = "optimization_dynasty.json";

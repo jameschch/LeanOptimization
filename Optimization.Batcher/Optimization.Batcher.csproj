@@ -88,10 +88,8 @@
     <Compile Include="GeneManagerFactory.cs" />
     <Compile Include="IGeneManagerFactory.cs" />
     <Compile Include="ILogWrapper.cs" />
-    <Compile Include="IProcessWrapper.cs" />
     <Compile Include="DynastyConfiguration.cs" />
     <Compile Include="LogWrapper.cs" />
-    <Compile Include="ProcessWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
