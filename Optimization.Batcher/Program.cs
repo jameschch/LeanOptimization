@@ -21,7 +21,6 @@ namespace Optimization.Batcher
         {
             try
             {
-                AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
                 batcher = new Dynasty();
                 batcher.Optimize();
                 Console.ReadLine();
@@ -30,12 +29,6 @@ namespace Optimization.Batcher
             {
                 Logger.Error(ex);
             }
-        }
-
-        static void CurrentDomain_ProcessExit(object sender, EventArgs e)
-        {
-
-            batcher.Dispose();
         }
 
     }

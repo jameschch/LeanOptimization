@@ -10,7 +10,13 @@ namespace Optimization.Batcher
     {
         public void Info(string message)
         {
-           Optimization.Batcher.Program.Logger.Info(message);
+           Optimization.Program.Logger.Info(message);
         }
+
+        public void Result(string message)
+        {
+            Optimization.Batcher.Program.Logger.Info(message);
+        }
+
     }
 }

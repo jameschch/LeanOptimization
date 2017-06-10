@@ -23,8 +23,8 @@ namespace Optimization
         {
             string plain = string.Join(",", items.Select(s => s.Value));
 
-            Dictionary<string, Dictionary<string, string>> results = AppDomainManager.GetResults(AppDomain.CurrentDomain);
-            _config = AppDomainManager.GetConfig(AppDomain.CurrentDomain);
+            Dictionary<string, Dictionary<string, string>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
+            _config = OptimizerAppDomainManager.GetConfig(AppDomain.CurrentDomain);
 
             if (results.ContainsKey(plain))
             {
@@ -39,7 +39,7 @@ namespace Optimization
             LaunchLean();
 
             results.Add(plain, _resultsHandler.FinalStatistics);
-            AppDomainManager.SetResults(AppDomain.CurrentDomain, results);
+            OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
 
             return _resultsHandler.FinalStatistics;
         }

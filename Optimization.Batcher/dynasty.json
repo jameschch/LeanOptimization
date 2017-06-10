@@ -1,7 +1,7 @@
 ﻿{
-  "startDate": "2013-01-01T00:00:00Z",
-  "endDate": "2017-01-01T00:00:00Z",
-  "durationHours": "1",
-  "durationDays": "30",
+  "startDate": "2016-02-01T00:00:00Z",
+  "endDate": "2017-05-01T00:00:00Z",
+  "durationHours": "0",
+  "durationDays": "10",
   "walkForward": "true"
 }

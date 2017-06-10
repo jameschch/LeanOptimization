@@ -45,6 +45,9 @@
     <Reference Include="QuantConnect.Algorithm">
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
+    <Reference Include="QuantConnect.Api">
+      <HintPath>..\..\Lean\Api\bin\Debug\QuantConnect.Api.dll</HintPath>
+    </Reference>
     <Reference Include="QuantConnect.Common, Version=2.3.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
@@ -81,6 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dynasty.cs" />
+    <Compile Include="FixedSizeQueue.cs" />
+    <Compile Include="GeneManagerFactory.cs" />
+    <Compile Include="IGeneManagerFactory.cs" />
     <Compile Include="ILogWrapper.cs" />
     <Compile Include="IProcessWrapper.cs" />
     <Compile Include="DynastyConfiguration.cs" />
@@ -94,9 +100,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="dynasty.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

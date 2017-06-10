@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class AppDomainManager
+    public class OptimizerAppDomainManager
     {
 
         static AppDomainSetup _ads;
-        static string _exeAssembly;
         static Dictionary<string, Dictionary<string, string>> _results;
         static object _resultsLocker;
         static IOptimizerConfiguration _config;
@@ -27,9 +26,6 @@ namespace Optimization
 
         static AppDomainSetup SetupAppDomain()
         {
-            // Get and display the full name of the EXE assembly.
-            _exeAssembly = Assembly.GetEntryAssembly().FullName;
-
             // Construct and initialize settings for a second AppDomain.
             AppDomainSetup ads = new AppDomainSetup();
             ads.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
@@ -49,7 +45,7 @@ namespace Optimization
 
             // Create an instance of MarshalbyRefType in the second AppDomain. 
             // A proxy to the object is returned.
-            Runner rc = (Runner)ad.CreateInstanceAndUnwrap(_exeAssembly, typeof(Runner).FullName);
+            Runner rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Runner).FullName);
 
             SetResults(ad, _results);
             SetConfig(ad, _config);

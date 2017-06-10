@@ -30,8 +30,8 @@ namespace Optimization.Tests
 
             var fitness = new Mock<OptimizerFitness>(config.Object);
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Verifiable();
-            var unit = new GeneManager(config.Object, fitness.Object);
-
+            var unit = new GeneManager();
+            unit.Initialize(config.Object, fitness.Object);
             unit.Start();
             fitness.Verify();
 
