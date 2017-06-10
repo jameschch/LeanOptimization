@@ -33,7 +33,7 @@ namespace Optimization
                     output += item.Key + ": " + item.Value.ToString() + ", ";
                 }
 
-                var result = AppDomainManager.RunAlgorithm(list);
+                var result = OptimizerAppDomainManager.RunAlgorithm(list);
 
                 var fitness = CalculateFitness(result);
 

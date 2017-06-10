@@ -32,8 +32,8 @@
   "fitnessTypeName": "Optimization.OptimizerFitness",
   "dataFolder": "../../../../Lean_base/Data",
   "fitness": null,
-  "startDate": null,
-  "endDate": null,
+  "startDate": "2016-02-01T00:00:00Z",
+  "endDate": "2016-02-03T00:00:00Z",
   "mutationProbability": 0.5,
   "crossoverProbability": 0.75
 }

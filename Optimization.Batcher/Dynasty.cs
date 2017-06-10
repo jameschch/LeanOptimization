@@ -11,124 +11,108 @@ using Newtonsoft.Json.Serialization;
 
 namespace Optimization.Batcher
 {
-    public class Dynasty : IDisposable
+    public class Dynasty
     {
 
         private readonly IFileSystem _file;
-        private readonly IProcessWrapper _process;
         private readonly ILogWrapper _logWrapper;
+        private readonly IGeneManagerFactory _managerFactory;
         const string _configFilename = "optimization_dynasty.json";
+        private FixedSizeQueue<string> _queue;
+        private DynastyConfiguration _config;
+        OptimizerConfiguration _current;
+        private static Dynasty _instance;
 
-        public Dynasty(IFileSystem file, IProcessWrapper process, ILogWrapper logWrapper)
+        public Dynasty(IFileSystem file, ILogWrapper logWrapper, IGeneManagerFactory managerFactory)
         {
             _file = file;
-            _process = process;
             _logWrapper = logWrapper;
+            _managerFactory = managerFactory;
+            _queue = new FixedSizeQueue<string>(2);
+            _current = null;
+            _instance = this;
         }
 
-        public Dynasty() : this(new FileSystem(), new ProcessWrapper(), new LogWrapper())
+        public Dynasty() : this(new FileSystem(), new LogWrapper(), new GeneManagerFactory())
         {
         }
 
         public void Optimize()
         {
-            var config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("dynasty.json"));
+            _config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("dynasty.json"));
 
-            OptimizerConfiguration current = null;
+            if (_config.DurationDays == 0 && _config.DurationHours == 0)
+            {
+                throw new ArgumentException("Duration must be specified");
+            }
+
             var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
-            for (var i = config.StartDate; i <= config.EndDate; i = i.AddDays(config.DurationDays).AddHours(config.DurationHours))
+            for (var i = _config.StartDate; i <= _config.EndDate; i = i.AddDays(_config.DurationDays).AddHours(_config.DurationHours))
             {
-                if (current == null)
+                if (_current == null)
                 {
-                    current = JsonConvert.DeserializeObject<OptimizerConfiguration>(_file.File.ReadAllText(_configFilename));
+                    _current = JsonConvert.DeserializeObject<OptimizerConfiguration>(_file.File.ReadAllText(_configFilename));
                 }
 
-                current.StartDate = i;
-                current.EndDate = i.AddDays(config.DurationDays).AddHours(config.DurationHours);
+                _current.StartDate = i;
+                _current.EndDate = i.AddDays(_config.DurationDays).AddHours(_config.DurationHours);
 
-                string json = JsonConvert.SerializeObject(current, settings);
+                string json = JsonConvert.SerializeObject(_current, settings);
 
                 _file.File.WriteAllText(_configFilename, json);
 
-                var info = new ProcessStartInfo("Optimization.exe", _configFilename)
-                {
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false
-                };
+                _logWrapper.Result($"For period: {_current.StartDate} {_current.EndDate}");
 
-                _process.Start(info);
-                string output;
-                FixedSizeQueue<string> queue = new FixedSizeQueue<string>(2);
-                while ((output = _process.ReadLine()) != null)
-                {
-                    queue.Enqueue(output);
-                    //Console.WriteLine(output);
+                var initializer = new Optimization.OptimizerInitializer(_file, _managerFactory.Create());
+                initializer.Initialize(new[] { _configFilename });
+            }
+        }
 
-                    if (queue.First() == GeneManager.Termination)
+        public void Watch(string message)
+        {
+            _queue.Enqueue(message);
+            //Console.WriteLine(output);
+
+            if (_queue.First() == GeneManager.Termination)
+            {
+                _logWrapper.Result(_queue.Dequeue());
+                _logWrapper.Result(_queue.Dequeue());
+                string optimal = _queue.Dequeue();
+                _logWrapper.Result(optimal);
+
+                if (_config.WalkForward)
+                {
+                    var split = optimal.Split(',');
+
+                    for (int ii = 0; ii < split.Length; ii++)
                     {
-                        _logWrapper.Info($"For period: {current.StartDate} {current.EndDate}");
-                        _logWrapper.Info(queue.Dequeue());
-                        _logWrapper.Info(queue.Dequeue());
-                        string optimal = queue.Dequeue();
-                        _logWrapper.Info(optimal);
+                        string[] pair = split[ii].Split(':');
+                        var gene = _current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
 
-                        if (config.WalkForward)
+                        decimal parsedDecimal;
+                        int parsedInt;
+                        if (int.TryParse(pair[1].Trim(), out parsedInt))
                         {
-                            var split = optimal.Split(',');
-
-                            for (int ii = 0; ii < split.Length; ii++)
-                            {
-                                string[] pair = split[ii].Split(':');
-                                var gene = current.Genes.SingleOrDefault(g => g.Key == pair[0].Trim());
-
-                                decimal parsedDecimal;
-                                int parsedInt;
-                                if (int.TryParse(pair[1].Trim(), out parsedInt))
-                                {
-                                    gene.ActualInt = parsedInt;
-                                }
-                                else if (decimal.TryParse(pair[1].Trim(), out parsedDecimal))
-                                {
-                                    gene.ActualDecimal = parsedDecimal;
-                                }
-                                else
-                                {
-                                    throw new Exception($"Unable to parse optimal gene from range {current.StartDate} {current.EndDate}");
-                                }
-                            }
+                            gene.ActualInt = parsedInt;
                         }
-                        _process.Kill();
+                        else if (decimal.TryParse(pair[1].Trim(), out parsedDecimal))
+                        {
+                            gene.ActualDecimal = parsedDecimal;
+                        }
+                        else
+                        {
+                            throw new Exception($"Unable to parse optimal gene from range {_current.StartDate} {_current.EndDate}");
+                        }
                     }
                 }
             }
+
         }
 
-        public void Dispose()
+        public static void LogOutput(string message)
         {
-            if (_process != null)
-            {
-                _process.Kill();
-            }
-        }
-
-        private class FixedSizeQueue<T> : Queue<T>
-        {
-
-            public FixedSizeQueue(int limit)
-            {
-                _limit = limit;
-            }
-
-            private int _limit { get; set; }
-            public new void Enqueue(T obj)
-            {
-                while (this.Count > _limit)
-                {
-                    this.Dequeue();
-                }
-                base.Enqueue(obj);
-            }
+            _instance.Watch(message);
         }
 
     }

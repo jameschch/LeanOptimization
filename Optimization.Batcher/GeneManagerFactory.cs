@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Optimization.Batcher
 {
-    public interface ILogWrapper
+    public class GeneManagerFactory : IGeneManagerFactory
     {
-
-        void Info(string message);
-        void Result(string message);
-
+        public IGeneManager Create()
+        {
+            return new GeneManager();
+        }
     }
 }

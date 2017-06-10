@@ -129,16 +129,21 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.IO.Abstractions, Version=2.0.0.141, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Abstractions.2.0.0.141\lib\net40\System.IO.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppDomainManager.cs" />
+    <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="GeneConfiguration.cs" />
     <Compile Include="GeneConverter.cs" />
     <Compile Include="GeneFactory.cs" />
     <Compile Include="GeneManager.cs" />
     <Compile Include="IFitnessConfiguration.cs" />
+    <Compile Include="OptimizerInitializer.cs" />
     <Compile Include="IOptimizerConfiguration.cs" />
     <Compile Include="OptimizerFitness.cs" />
     <Compile Include="OptimizerConfiguration.cs" />

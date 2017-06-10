@@ -16,24 +16,29 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
-    public class GeneManager
+
+    public class GeneManager : IGeneManager
     {
         public const string Termination = "Termination Reached.";
-        private readonly IOptimizerConfiguration _config;
+        private IOptimizerConfiguration _config;
         private SmartThreadPoolTaskExecutor _executor;
         private Population _population;
-        private readonly OptimizerFitness _fitness;
+        private OptimizerFitness _fitness;
 
-        public GeneManager(IOptimizerConfiguration config, OptimizerFitness fitness)
+        public void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness)
         {
             _config = config;
             _fitness = fitness;
+            _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1 };
+            _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
         }
 
         public void Start()
-        {
-            _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1 };
-            _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
+        {           
+            if (_executor == null)
+            {
+                throw new Exception("Executor was not initialized");
+            }
 
             //create the population
             IList<IChromosome> list = new List<IChromosome>();
@@ -79,5 +84,10 @@ namespace Optimization
             Program.Logger.Info(fittest.ToKeyValueString());
         }
 
+    }
+    public interface IGeneManager
+    {
+        void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness);
+        void Start();
     }
 }
