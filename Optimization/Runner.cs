@@ -21,10 +21,16 @@ namespace Optimization
 
         public Dictionary<string, string> Run(Dictionary<string, object> items)
         {
-            string plain = string.Join(",", items.Select(s => s.Value));
-
             Dictionary<string, Dictionary<string, string>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             _config = OptimizerAppDomainManager.GetConfig(AppDomain.CurrentDomain);
+
+            if (_config.StartDate.HasValue && _config.EndDate.HasValue)
+            {
+                if (!items.ContainsKey("startDate")) { items.Add("startDate", _config.StartDate); }
+                if (!items.ContainsKey("endDate")) { items.Add("endDate", _config.EndDate); }
+            }
+
+            string plain = string.Join(",", items.Select(s => s.Value));
 
             if (results.ContainsKey(plain))
             {
@@ -33,7 +39,18 @@ namespace Optimization
 
             foreach (var pair in items)
             {
-                Config.Set(pair.Key, pair.Value.ToString());
+                if (pair.Value is DateTime?)
+                {
+                    var cast = ((DateTime?)pair.Value);
+                    if (cast.HasValue)
+                    {
+                        Config.Set(pair.Key, cast.Value.ToString("O"));
+                    }
+                }
+                else
+                {
+                    Config.Set(pair.Key, pair.Value.ToString());
+                }
             }
 
             LaunchLean();
@@ -63,49 +80,47 @@ namespace Optimization
                 Config.Set("data-folder", _config.DataFolder);
             }
 
-            if (_config.StartDate.HasValue)
-            {
-                Config.Set("startDate", _config.StartDate.Value.ToString("O"));
-            }
-
-            if (_config.EndDate.HasValue)
-            {
-                Config.Set("endDate", _config.EndDate.Value.ToString("O"));
-            }
-
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
-            Log.LogHandler = Composer.Instance.GetExportedValueByTypeName<ILogHandler>(Config.Get("log-handler", "CompositeLogHandler"));
-            //Log.DebuggingEnabled = false;
-            //Log.DebuggingLevel = 1;
+            //separate log now uniquely named
+            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff");
+            if (File.Exists(logFileName + ".txt"))
+            {
+                logFileName += "_" + Guid.NewGuid().ToString();
+            }
+            logFileName += ".txt";
 
-            LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
-            try
-            {
-                leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                _resultsHandler = (BacktestingResultHandler)leanEngineAlgorithmHandlers.Results;
-            }
-            catch (CompositionException compositionException)
-            {
-                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
-                throw;
-            }
-            string algorithmPath;
-            AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
-            try
-            {
-                var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));
-                _engine.Run(job, algorithmPath);
-            }
-            finally
-            {
-                Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
+            var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
 
-                // clean up resources
-                systemHandlers.Dispose();
-                leanEngineAlgorithmHandlers.Dispose();
-                Log.LogHandler.Dispose();
+            using (Log.LogHandler = new CompositeLogHandler(logHandlers))
+            {
+                LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
+                try
+                {
+                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
+                    _resultsHandler = (BacktestingResultHandler)leanEngineAlgorithmHandlers.Results;
+                }
+                catch (CompositionException compositionException)
+                {
+                    Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                    throw;
+                }
+                string algorithmPath;
+                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+                try
+                {
+                    var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));
+                    _engine.Run(job, algorithmPath);
+                }
+                finally
+                {
+                    Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
+
+                    // clean up resources
+                    systemHandlers.Dispose();
+                    leanEngineAlgorithmHandlers.Dispose();
+                }
             }
         }
 
