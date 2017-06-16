@@ -3,6 +3,6 @@
   "endDate": "2017-05-01T00:00:00Z",
   "durationHours": "0",
   "durationDays": "10",
-  "walkForward": "true"
-  //"hourSegments": [ 24, 24, 24, 24, 72 ]
+  "walkForward": "true",
+  "hourSegments": [ 24, 48, 72 ]
 }

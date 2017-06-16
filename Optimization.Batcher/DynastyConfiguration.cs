@@ -43,6 +43,9 @@ namespace Optimization.Batcher
         /// </summary>
         public bool WalkForward { get; set; }
 
-
+        /// <summary>
+        /// Allows specification of unequal time segments for each time period. These time segments will be cycled in order until the end date is reached
+        /// </summary>
+        public int[] HourSegments { get; set; }
     }
 }

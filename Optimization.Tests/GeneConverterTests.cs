@@ -16,7 +16,7 @@ namespace Optimization.Tests
         [Test()]
         public void ReadWriteJsonTest()
         {
-            string expected = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "test.json"));
+            string expected = System.IO.File.ReadAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "optimization_test.json"));
             var config = JsonConvert.DeserializeObject<OptimizerConfiguration>(expected);
             expected = expected.Replace("\n", "").Replace(" ", "").Replace("\r", "");
 

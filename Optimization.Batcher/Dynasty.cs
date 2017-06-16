@@ -20,7 +20,7 @@ namespace Optimization.Batcher
         const string _configFilename = "optimization_dynasty.json";
         private FixedSizeQueue<string> _queue;
         private DynastyConfiguration _config;
-        OptimizerConfiguration _current;
+        private OptimizerConfiguration _current;
         private static Dynasty _instance;
 
         public Dynasty(IFileSystem file, ILogWrapper logWrapper, IGeneManagerFactory managerFactory)
@@ -41,14 +41,11 @@ namespace Optimization.Batcher
         {
             _config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("dynasty.json"));
 
-            if (_config.DurationDays == 0 && _config.DurationHours == 0)
-            {
-                throw new ArgumentException("Duration must be specified");
-            }
+            var _segmenter = new DynastySegmenter(_config);
 
             var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
-            for (var i = _config.StartDate; i <= _config.EndDate; i = i.AddDays(_config.DurationDays).AddHours(_config.DurationHours))
+            for (var i = _config.StartDate; i <= _config.EndDate; i = _segmenter.GetNext(i))
             {
                 if (_current == null)
                 {
@@ -56,7 +53,7 @@ namespace Optimization.Batcher
                 }
 
                 _current.StartDate = i;
-                _current.EndDate = i.AddDays(_config.DurationDays).AddHours(_config.DurationHours);
+                _current.EndDate = _segmenter.PeekNext(i);
 
                 string json = JsonConvert.SerializeObject(_current, settings);
 

@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dynasty.cs" />
+    <Compile Include="DynastySegmenter.cs" />
     <Compile Include="FixedSizeQueue.cs" />
     <Compile Include="GeneManagerFactory.cs" />
     <Compile Include="IGeneManagerFactory.cs" />
