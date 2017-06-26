@@ -1,8 +1,8 @@
-﻿{
-  "startDate": "2016-02-01T00:00:00Z",
-  "endDate": "2017-05-01T00:00:00Z",
+{
+  "startDate": "2010-01-02T00:00:00Z",
+  "endDate": "2015-01-02T00:00:00Z",
   "durationHours": "0",
-  "durationDays": "10",
+  "durationDays": "20",
   "walkForward": "true"
   //"hourSegments": [ 24, 24, 24, 24, 72 ]
 }

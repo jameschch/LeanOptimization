@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Abstractions;
@@ -53,7 +53,9 @@ namespace Optimization.Batcher
                 }
 
                 _current.StartDate = i;
-                _current.EndDate = _segmenter.PeekNext(i);
+                var endDate = _segmenter.PeekNext(i);
+
+                _current.EndDate = AdjustEndDate(endDate);
 
                 string json = JsonConvert.SerializeObject(_current, settings);
 
@@ -110,6 +112,17 @@ namespace Optimization.Batcher
         public static void LogOutput(string message)
         {
             _instance.Watch(message);
+        }
+
+        //Adjust midnight dates to previous day to prevent inclusive end dates in LEAN.
+        private DateTime AdjustEndDate(DateTime endDate)
+        {
+            if (endDate.TimeOfDay == new TimeSpan(0))
+            {
+                return endDate.Subtract(new TimeSpan(1));                   
+            }
+
+            return endDate;
         }
 
     }

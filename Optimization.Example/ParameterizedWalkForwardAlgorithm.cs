@@ -1,4 +1,4 @@
-﻿using QuantConnect;
+using QuantConnect;
 using QuantConnect.Algorithm;
 using QuantConnect.Configuration;
 using QuantConnect.Data.Market;
@@ -28,10 +28,17 @@ namespace Optimization.Example
 
             Fast = EMA("SPY", FastPeriod);
             Slow = EMA("SPY", SlowPeriod);
+
+            SetWarmUp(SlowPeriod);
         }
 
         public void OnData(TradeBars data)
         {
+            if (IsWarmingUp)
+            {
+                return;
+            }
+
             // wait for our indicators to ready
             if (!Fast.IsReady || !Slow.IsReady) return;
 

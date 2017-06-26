@@ -55,16 +55,16 @@ namespace Optimization.Tests
             Assert.IsTrue(actual.ElementAt(3).StartsWith("take:"));
             if (hasSegmentHours)
             {
-                Assert.IsTrue(actual.First().Equals("For period: 01/02/2016 00:00:00 02/02/2016 00:00:00"));
-                Assert.IsTrue(actual.ElementAt(4).Equals("For period: 02/02/2016 00:00:00 04/02/2016 00:00:00"));
-                Assert.IsTrue(actual.ElementAt(8).Equals("For period: 04/02/2016 00:00:00 07/02/2016 00:00:00"));
-                Assert.IsTrue(actual.ElementAt(12).Equals("For period: 07/02/2016 00:00:00 08/02/2016 00:00:00"));
+                Assert.AreEqual(actual.First(), "For period: 01/02/2016 00:00:00 01/02/2016 23:59:59");
+                Assert.AreEqual(actual.ElementAt(4), "For period: 02/02/2016 00:00:00 03/02/2016 23:59:59");
+                Assert.AreEqual(actual.ElementAt(8), "For period: 04/02/2016 00:00:00 06/02/2016 23:59:59");
+                Assert.AreEqual(actual.ElementAt(12), "For period: 07/02/2016 00:00:00 07/02/2016 23:59:59");
             }
             else
             {
-                Assert.IsTrue(actual.First().Equals("For period: 01/02/2016 00:00:00 11/02/2016 00:00:00"));
-                Assert.IsTrue(actual.ElementAt(4).Equals("For period: 11/02/2016 00:00:00 21/02/2016 00:00:00"));
-                Assert.IsTrue(actual.ElementAt(8).Equals("For period: 21/02/2016 00:00:00 02/03/2016 00:00:00"));
+                Assert.AreEqual(actual.First(), "For period: 01/02/2016 00:00:00 10/02/2016 23:59:59");
+                Assert.AreEqual(actual.ElementAt(4), "For period: 11/02/2016 00:00:00 20/02/2016 23:59:59");
+                Assert.AreEqual(actual.ElementAt(8), "For period: 21/02/2016 00:00:00 01/03/2016 23:59:59");
             }
 
         }
