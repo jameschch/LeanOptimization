@@ -14,7 +14,9 @@ namespace Optimization.Tests
 
         Wrapper unit;
 
-        public ConfiguredFitnessTests()
+        [TestCase("TotalNumberOfTrades")]
+        [TestCase("Total Trades")]
+        public void CalculateFitnessTest(string key)
         {
             unit = new Wrapper(new OptimizerConfiguration
             {
@@ -24,15 +26,11 @@ namespace Optimization.Tests
                     Scale = 0.1,
                     Modifier = -1,
                     Name = "TestName",
-                    ResultKey = "TestResultKey"
+                    ResultKey = key
                 }
             });
-        }
 
-        [Test()]
-        public void CalculateFitnessTest()
-        {
-            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, string> { { "TestResultKey", "10%"  } });
+            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> { { "TotalNumberOfTrades", 10 } });
 
             Assert.AreEqual(-1d, actual.Item2);
         }
@@ -40,6 +38,18 @@ namespace Optimization.Tests
         [Test()]
         public void GetValueFromFitnessTest()
         {
+            unit = new Wrapper(new OptimizerConfiguration
+            {
+                FitnessTypeName = "Optimization.ConfiguredFitness",
+                Fitness = new FitnessConfiguration
+                {
+                    Scale = 0.1,
+                    Modifier = -1,
+                    Name = "TestName",
+                    ResultKey = "TotalTrades"
+                }
+            });
+
             var actual = unit.GetValueFromFitness(-1d);
             Assert.AreEqual(10, actual);
         }
@@ -50,10 +60,10 @@ namespace Optimization.Tests
             {
             }
 
-            public Tuple<string, double> CalculateFitnessWrapper(Dictionary<string, string> result)
+            public Tuple<decimal, double> CalculateFitnessWrapper(Dictionary<string, decimal> result)
             {
                 var fitness = base.CalculateFitness(result);
-                return new Tuple<string, double>(fitness.Value, fitness.Fitness);
+                return new Tuple<decimal, double>(fitness.Value, fitness.Fitness);
             }
         }
 

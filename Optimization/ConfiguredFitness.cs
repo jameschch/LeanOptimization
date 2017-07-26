@@ -27,17 +27,15 @@ namespace Optimization
         }
 
         //Fitness based on config settings
-        protected override FitnessResult CalculateFitness(Dictionary<string, string> result)
+        protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
             var fitness = new FitnessResult();
 
-            double parsed = 0.0;
-            var raw = result[Config.Fitness.ResultKey].TrimEnd('%');
-            double.TryParse(raw, out parsed);
+            var raw = StatisticsAdapter.Translate(Config.Fitness.ResultKey, result);
 
-            fitness.Value = parsed.ToString();
+            fitness.Value = raw;
 
-            fitness.Fitness = parsed * Config.Fitness.Scale.Value * Config.Fitness.Modifier.Value;
+            fitness.Fitness = (double)raw * Config.Fitness.Scale.Value * Config.Fitness.Modifier.Value;
 
             return fitness;
         }

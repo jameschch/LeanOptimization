@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 
 namespace Optimization
 {
+
     public class OptimizerAppDomainManager
     {
 
         static AppDomainSetup _ads;
-        static Dictionary<string, Dictionary<string, string>> _results;
+        static Dictionary<string, Dictionary<string, decimal>> _results;
         static object _resultsLocker;
         static IOptimizerConfiguration _config;
 
         public static void Initialize(IOptimizerConfiguration config)
         {
             _config = config;
-            _results = new Dictionary<string, Dictionary<string, string>>();
+            _results = new Dictionary<string, Dictionary<string, decimal>>();
             _ads = SetupAppDomain();
             _resultsLocker = new object();
         }
@@ -53,12 +54,12 @@ namespace Optimization
             return rc;
         }
 
-        public static Dictionary<string, string> RunAlgorithm(Dictionary<string, object> list)
+        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
         {
             AppDomain ad = null;
             Runner rc = CreateRunClassInAppDomain(ref ad);       
 
-            var result = (Dictionary<string, string>)rc.Run(list);
+            var result = rc.Run(list);
             
             lock (_resultsLocker)
             {
@@ -76,9 +77,9 @@ namespace Optimization
             return result;
         }
 
-        public static Dictionary<string, Dictionary<string, string>> GetResults(AppDomain ad)
+        public static Dictionary<string, Dictionary<string, decimal>> GetResults(AppDomain ad)
         {
-            return GetData<Dictionary<string, Dictionary<string, string>>>(ad, "Results");
+            return GetData<Dictionary<string, Dictionary<string, decimal>>>(ad, "Results");
         }
 
         public static IOptimizerConfiguration GetConfig(AppDomain ad)

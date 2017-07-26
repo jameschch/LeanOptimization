@@ -1,6 +1,5 @@
 ﻿using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
-using QuantConnect.Lean.Engine.Results;
 using QuantConnect.Logging;
 using QuantConnect.Packets;
 using QuantConnect.Util;
@@ -16,12 +15,12 @@ namespace Optimization
     public class Runner : MarshalByRefObject
     {
 
-        private BacktestingResultHandler _resultsHandler;
+        private OptimizerResultHandler _resultsHandler;
         IOptimizerConfiguration _config;
 
-        public Dictionary<string, string> Run(Dictionary<string, object> items)
+        public Dictionary<string, decimal> Run(Dictionary<string, object> items)
         {
-            Dictionary<string, Dictionary<string, string>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
+            Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             _config = OptimizerAppDomainManager.GetConfig(AppDomain.CurrentDomain);
 
             if (_config.StartDate.HasValue && _config.EndDate.HasValue)
@@ -55,10 +54,10 @@ namespace Optimization
 
             LaunchLean();
 
-            results.Add(plain, _resultsHandler.FinalStatistics);
+            results.Add(plain, _resultsHandler.FullResults);
             OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
-
-            return _resultsHandler.FinalStatistics;
+ 
+            return _resultsHandler.FullResults;
         }
 
         private void LaunchLean()
@@ -98,8 +97,10 @@ namespace Optimization
                 LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
                 try
                 {
-                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                    _resultsHandler = (BacktestingResultHandler)leanEngineAlgorithmHandlers.Results;
+                    //override config to use custom result handler
+                    Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
+                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);                   
+                    _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
                 }
                 catch (CompositionException compositionException)
                 {
@@ -108,6 +109,7 @@ namespace Optimization
                 }
                 string algorithmPath;
                 AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+
                 try
                 {
                     var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));

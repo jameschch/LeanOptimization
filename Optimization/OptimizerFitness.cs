@@ -8,6 +8,12 @@ using GeneticSharp.Domain.Chromosomes;
 
 namespace Optimization
 {
+    
+
+    /// <summary>
+    /// Default optimizer baheviour using sharpe ratio.
+    /// </summary>
+    /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
     public class OptimizerFitness : IFitness
     {
 
@@ -19,6 +25,7 @@ namespace Optimization
         public OptimizerFitness(IOptimizerConfiguration config)
         {
             Config = config;
+            this.Name = "Sharpe";
         }
 
         public virtual double Evaluate(IChromosome chromosome)
@@ -49,30 +56,20 @@ namespace Optimization
             }
         }
 
-        protected virtual FitnessResult CalculateFitness(Dictionary<string, string> result)
+        protected virtual FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
-            this.Name = "Sharpe";
             var fitness = new FitnessResult();
 
-            var sharpe = -10m;
-            var ratio = result["Sharpe Ratio"];
-            Decimal.TryParse(ratio, out sharpe);
-            var compound = result["Compounding Annual Return"];
-            decimal parsed;
-            Decimal.TryParse(compound.Trim('%'), out parsed);
+            var ratio = result["SharpeRatio"];
+            var compound = result["CompoundingAnnualReturn"];
 
             if (!Config.IncludeNegativeReturn)
             {
-                sharpe = System.Math.Max(sharpe <= 0 || parsed < 0 ? -10 : sharpe, -10);
+                ratio = compound < 0 ? -10 : ratio;
             }
-            else
-            {
-                sharpe = System.Math.Max(sharpe, -10);
-            }
+            fitness.Value = ratio;
 
-            fitness.Value = sharpe.ToString("0.000");
-
-            fitness.Fitness = (double)(System.Math.Max(sharpe, -10) + 10) * scale;
+            fitness.Fitness = (double)(System.Math.Max(ratio, -10) + 10) * scale;
 
             return fitness;
         }
@@ -84,7 +81,7 @@ namespace Optimization
 
         protected class FitnessResult
         {
-            public string Value { get; set; }
+            public decimal Value { get; set; }
             public double Fitness { get; set; }
         }
 

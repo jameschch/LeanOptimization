@@ -1,42 +1,44 @@
 {
   "genes": [
     {
-      "key": "take",
-      "min": 0.02,
-      "max": 0.1,
-      "precision": 2
+      "key": "gamma",
+      "min": 0.5,
+      "max": 0.8,
+      "precision": 5,
+      //"actual":  0.6,
     },
     {
-      "key": "fast",
-      "min": 6,
-      "max": 48,
-      "precision": 0,
-      "actual": 13
+      "key": "kappa",
+      "min": 39,
+      "max": 42,
+      "precision": 5,
+     // "actual":  40.4,
     },
     {
-      "key": "slow",
-      "min": 48,
-      "max": 500,
+      "key": "sigma",
+      "min": 0.000000001,
+      "max": 0.0000003,
+      "precision": 9,
+     // "actual": 0.00000018,
+    },
+    {
+      "key": "alpha",
+      "min": 2.8,
+      "max": 3.2,
+      "precision": 5,
+     // "actual": 2.9,
     }
   ],
   "populationSize": 24,
-  "populationSizeMaximum": 48,
   "generations": 1000,
-  "stagnationGenerations": 30,
-  "maxThreads": 8,
+  "stagnationGenerations": 200,
+  "maxThreads": 4,
   "configPath": "../../../../Lean/Launcher/config.json",
-  "algorithmTypeName": "ParameterizedAlgorithm",
-  "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
-  "onePointCrossover": "true",
-  "fitnessTypeName": "Optimization.OptimizerFitness",
-  "dataFolder": "../../../../Lean/Data",
-  //"mutationProbability": 0.5,
-  //"crossoverProbability": 0.75
-  //"fitnessTypeName": "Optimization.ConfiguredFitness",
-  //"fitness": {
-  //  "scale": 1,
-  //  "modifier": -1,
-  //  "resultKey": "Beta",
-  //  "name": "MinimizeBeta"
-  //}
+  "algorithmTypeName": "OCForex2",
+  "algorithmLocation": "../../../../Lean/Launcher/bin/Debug/Jtc.Algorithm.dll",
+  "dataFolder": "../../../../Data",
+  "OnePointCrossover": "true",
+  "includeNegativeReturn": "true",
+  "startDate": "2017-01-23T00:00:00Z",
+  "endDate": "2017-01-28T00:00:00Z"
 }

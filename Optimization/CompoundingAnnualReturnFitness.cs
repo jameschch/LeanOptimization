@@ -15,18 +15,16 @@ namespace Optimization
         double scale = 0.01;
 
         //Fitness based on Compounding Annual Return
-        protected override FitnessResult CalculateFitness(Dictionary<string, string> result)
+        protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
             this.Name = "Return";
             var fitness = new FitnessResult();
 
-            double parsed = 0;
-            var raw = result["Compounding Annual Return"];
-            double.TryParse(raw.TrimEnd('%'), out parsed);
+            var raw = result["CompoundingAnnualReturn"];
 
-            fitness.Value = parsed.ToString();
+            fitness.Value = raw;
 
-            fitness.Fitness = parsed * scale;
+            fitness.Fitness = (double)raw * scale;
 
             return fitness;
         }
