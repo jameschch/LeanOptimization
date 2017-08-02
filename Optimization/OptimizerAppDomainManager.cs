@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,6 +23,11 @@ namespace Optimization
             _results = new Dictionary<string, Dictionary<string, decimal>>();
             _ads = SetupAppDomain();
             _resultsLocker = new object();
+        }
+
+        public static void ReInitialize(IOptimizerConfiguration config)
+        {
+            _config = config;
         }
 
         static AppDomainSetup SetupAppDomain()

@@ -1,4 +1,4 @@
-﻿using GeneticSharp.Domain.Fitnesses;
+using GeneticSharp.Domain.Fitnesses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +38,11 @@ namespace Optimization
                 foreach (var item in list)
                 {
                     output += item.Key + ": " + item.Value.ToString() + ", ";
+                }
+
+                if (Config.StartDate.HasValue && Config.EndDate.HasValue)
+                {
+                    output += string.Format("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
                 }
 
                 var result = OptimizerAppDomainManager.RunAlgorithm(list);

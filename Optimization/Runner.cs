@@ -1,4 +1,4 @@
-﻿using QuantConnect.Configuration;
+using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
 using QuantConnect.Packets;
@@ -91,6 +91,7 @@ namespace Optimization
             logFileName += ".txt";
 
             var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
+            Log.Trace("Initializing log.");
 
             using (Log.LogHandler = new CompositeLogHandler(logHandlers))
             {

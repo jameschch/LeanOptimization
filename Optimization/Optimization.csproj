@@ -136,6 +136,7 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DualPeriodSharpeFitness.cs" />
     <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="GeneConfiguration.cs" />
