@@ -72,6 +72,11 @@ namespace Optimization
             {
                 ratio = compound < 0 ? -10 : ratio;
             }
+            if (result["TotalNumberOfTrades"] == 0)
+            {
+                ratio = -10;
+            }
+
             fitness.Value = ratio;
 
             fitness.Fitness = (double)(System.Math.Max(ratio, -10) + 10) * scale;

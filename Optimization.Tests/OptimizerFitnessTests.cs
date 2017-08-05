@@ -22,11 +22,16 @@ namespace Optimization.Tests
             });
         }
 
-        [TestCase(1, 0.22)]
-        [TestCase(-1, 0)]
-        public void CalculateFitnessTest(decimal car, double expected)
+        [TestCase(1, 12, 0.22)]
+        [TestCase(-1, 12, 0)]
+        [TestCase(-1, 0, 0)]
+        public void CalculateFitnessTest(decimal car, int trades, double expected)
         {
-            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> { { "SharpeRatio", 1 }, { "CompoundingAnnualReturn", car } });        
+            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> {
+                { "SharpeRatio", 1 },
+                { "CompoundingAnnualReturn", car },
+                { "TotalNumberOfTrades", trades }
+            });
             Assert.AreEqual(expected, actual.Item2);
         }
 
