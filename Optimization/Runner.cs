@@ -82,13 +82,8 @@ namespace Optimization
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
-            //separate log now uniquely named
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff");
-            if (File.Exists(logFileName + ".txt"))
-            {
-                logFileName += "_" + Guid.NewGuid().ToString();
-            }
-            logFileName += ".txt";
+            //separate log uniquely named
+            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + Guid.NewGuid().ToString() + ".txt";
 
             var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
             Log.Trace("Initializing log.");
