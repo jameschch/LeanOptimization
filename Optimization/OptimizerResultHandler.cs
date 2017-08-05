@@ -53,7 +53,7 @@ namespace Optimization
         {
             get
             {
-                throw new NotImplementedException();
+                return _shadow.ResamplePeriod;
             }
         }
 
@@ -61,7 +61,7 @@ namespace Optimization
         {
             get
             {
-                throw new NotImplementedException();
+                return _shadow.NotificationPeriod;
             }
         }
 
@@ -69,7 +69,7 @@ namespace Optimization
         {
             get
             {
-                throw new NotImplementedException();
+                return _shadow.IsActive;
             }
         }
         #endregion
