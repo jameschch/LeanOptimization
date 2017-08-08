@@ -22,6 +22,8 @@ namespace Optimization
         protected double Skewness;
         protected double Kurtosis;
         protected double SharpeRatio;
+        private double gamma = Constants.EulerMascheroni;
+        private double e = Constants.E;
 
         public virtual void Initialize(IOptimizerConfiguration config)
         {
@@ -30,31 +32,33 @@ namespace Optimization
             ReturnsData = fullResults.ToDictionary(k => k.Key, v => (double)v.Value["CompoundingAnnualReturn"]);
 
 
-            N = SharpeData.Where(d => d.Value != 0).Count();
+            N = SharpeData.Count(d => d.Value != 0);
             var statistics = new DescriptiveStatistics(ReturnsData.Select(d => d.Value));
             V = statistics.Variance;
             T = (config.EndDate - config.StartDate).Value.TotalDays;
             Skewness = statistics.Skewness;
             Kurtosis = statistics.Kurtosis;
-            SharpeRatio = SharpeData.Max(d => d.Value);
+            SharpeRatio = SharpeData.Average(d => d.Value);
         }
 
         //cumulative standard normal distribution
         private double Z(double x)
         {
-            return new Normal(0, 1).CumulativeDistribution(x);
+            return Normal.CDF(0, 1, x);
         }
 
         //cumulative standard normal distribution inverse
         private double ZInverse(double x)
         {
-            return new Normal(0, 1).InverseCumulativeDistribution(Z(x));
+            return Normal.InvCDF(0, 1, x);
         }
 
         public double CalculateExpectedMaximum()
         {
-            var result = Math.Sqrt(1 / V) * ((1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E)));
-            return result;
+            var asd = ZInverse(1 - 1 / N);
+            var qwe = ZInverse(1 - 1 / (N * e));
+            var maxZ = (1 - gamma) * ZInverse(1 - 1 / N) + gamma * ZInverse(1 - 1 / (N * e));
+            return SharpeRatio + Math.Sqrt(V) * maxZ;
         }
 
         public double CalculateDeflatedSharpeRatio(double sharpeRatioZero)
