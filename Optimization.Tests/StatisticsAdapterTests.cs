@@ -16,7 +16,17 @@ namespace Optimization.Tests
         [Test()]
         public void TransformTest()
         {
-            var actual = StatisticsAdapter.Transform(new AlgorithmPerformance { PortfolioStatistics = new PortfolioStatistics { Alpha = 1.23m }, TradeStatistics = new TradeStatistics { TotalNumberOfTrades = 45 } });
+            var actual = StatisticsAdapter.Transform(new AlgorithmPerformance
+            {
+                PortfolioStatistics = new PortfolioStatistics
+                {
+                    Alpha = 1.23m
+                },
+                TradeStatistics = new TradeStatistics
+                {
+                    TotalNumberOfTrades = 45
+                }
+            });
 
             Assert.AreEqual(1.23m, actual["Alpha"]);
             Assert.AreEqual(45m, actual["TotalNumberOfTrades"]);
