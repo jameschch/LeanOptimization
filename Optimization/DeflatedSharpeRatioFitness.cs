@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,25 +48,27 @@ namespace Optimization
             T = (Config.EndDate - Config.StartDate).Value.TotalDays;
             Skewness = statistics.Skewness;
             Kurtosis = statistics.Kurtosis;
-            SharpeRatio = SharpeData.Any() ? SharpeData.Max(d => d.Value) : 0;
+            SharpeRatio = SharpeData.Any() ? SharpeData.Average(d => d.Value) : 0;
         }
 
         //cumulative standard normal distribution
         private double Z(double x)
         {
-            return new Normal(0, 1).CumulativeDistribution(x);
+            return Normal.CDF(0, 1, x);
         }
 
         //cumulative standard normal distribution inverse
         private double ZInverse(double x)
         {
-            return new Normal(0, 1).InverseCumulativeDistribution(x);
+            return Normal.InvCDF(0, 1, x);
         }
 
         public double CalculateExpectedMaximum()
         {
-            var result = Math.Sqrt(1 / V) * ((1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E)));
-            return result;
+            var asd = ZInverse(1 - 1 / N);
+            var qwe = ZInverse(1 - 1 / (N * Constants.E));
+            var maxZ = (1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E));
+            return SharpeRatio + Math.Sqrt(V) * maxZ;
         }
 
         public double CalculateDeflatedSharpeRatio(double expectedMaximum)
