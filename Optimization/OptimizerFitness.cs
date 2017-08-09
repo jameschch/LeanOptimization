@@ -72,7 +72,7 @@ namespace Optimization
             {
                 ratio = compound < 0 ? -10 : ratio;
             }
-            if (result["TotalNumberOfTrades"] == 0)
+            if (ratio == 0 && result["TotalNumberOfTrades"] == 0)
             {
                 ratio = -10;
             }
