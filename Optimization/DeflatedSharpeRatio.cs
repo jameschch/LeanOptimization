@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 
 namespace Optimization
 {
-    public class DeflatedSharpeRatio
+    public class DeflatedSharpeRatioFitness
     {
 
 
@@ -22,8 +22,6 @@ namespace Optimization
         protected double Skewness;
         protected double Kurtosis;
         protected double SharpeRatio;
-        private double gamma = Constants.EulerMascheroni;
-        private double e = Constants.E;
 
         public virtual void Initialize(IOptimizerConfiguration config)
         {
@@ -56,8 +54,8 @@ namespace Optimization
         public double CalculateExpectedMaximum()
         {
             var asd = ZInverse(1 - 1 / N);
-            var qwe = ZInverse(1 - 1 / (N * e));
-            var maxZ = (1 - gamma) * ZInverse(1 - 1 / N) + gamma * ZInverse(1 - 1 / (N * e));
+            var qwe = ZInverse(1 - 1 / (N * Constants.E));
+            var maxZ = (1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E));
             return SharpeRatio + Math.Sqrt(V) * maxZ;
         }
 
