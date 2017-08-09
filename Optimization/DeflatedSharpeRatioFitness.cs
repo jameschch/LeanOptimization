@@ -102,5 +102,10 @@ namespace Optimization
             return base.Evaluate(chromosome);
         }
 
+        public override double GetValueFromFitness(double? fitness)
+        {
+            return fitness ?? 0;
+        }
+
     }
 }
