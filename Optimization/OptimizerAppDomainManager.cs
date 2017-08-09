@@ -82,6 +82,11 @@ namespace Optimization
             return result;
         }
 
+        public static Dictionary<string, Dictionary<string, decimal>> GetResults()
+        {
+            return _results;
+        }
+
         public static Dictionary<string, Dictionary<string, decimal>> GetResults(AppDomain ad)
         {
             return GetData<Dictionary<string, Dictionary<string, decimal>>>(ad, "Results");

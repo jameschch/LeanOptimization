@@ -99,6 +99,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ConfiguredFitnessTests.cs" />
+    <Compile Include="DeflatedSharpeRatioFitnessTest.cs" />
     <Compile Include="DynastyTests.cs" />
     <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />
