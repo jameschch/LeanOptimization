@@ -9,7 +9,7 @@ namespace Optimization.Tests
 {
 
     [TestFixture]
-    public class DeflatedSharpeRatioTest
+    public class DeflatedSharpeRatioFitnessTest
     {
 
 
