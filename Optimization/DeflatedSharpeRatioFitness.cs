@@ -27,7 +27,7 @@ namespace Optimization
         protected double T { get; set; } //sample length
         protected double Skewness { get; set; }
         protected double Kurtosis { get; set; }
-        protected double SharpeRatio { get; set; }
+        protected double CurrentSharpeRatio { get; set; }
         #endregion
 
         public DeflatedSharpeRatioFitness(IOptimizerConfiguration config) : base(config)
@@ -48,7 +48,6 @@ namespace Optimization
             T = (Config.EndDate - Config.StartDate).Value.TotalDays;
             Skewness = statistics.Skewness;
             Kurtosis = statistics.Kurtosis;
-            SharpeRatio = SharpeData.Any() ? SharpeData.Average(d => d.Value) : 0;
         }
 
         //cumulative standard normal distribution
@@ -65,24 +64,25 @@ namespace Optimization
 
         public double CalculateExpectedMaximum()
         {
-            var asd = ZInverse(1 - 1 / N);
-            var qwe = ZInverse(1 - 1 / (N * Constants.E));
             var maxZ = (1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E));
-            return SharpeRatio + Math.Sqrt(V) * maxZ;
+            var final = Math.Sqrt(1 / (V * 250)) * maxZ;
+            return final;
         }
 
         public double CalculateDeflatedSharpeRatio(double expectedMaximum)
         {
-            var nonAnnualized = (SharpeRatio / Math.Sqrt(250));
+            var nonAnnualized = (CurrentSharpeRatio / Math.Sqrt(250));
             var top = (nonAnnualized - expectedMaximum) * Math.Sqrt(T - 1);
             var bottom = Math.Sqrt(1 - (Skewness) * nonAnnualized + ((Kurtosis - 1) / 4) * Math.Pow(nonAnnualized, 2));
 
-            return Z(top / bottom);
+            var confidence = Z(top / bottom);
+            return confidence;
         }
 
         protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
             Initialize();
+            CurrentSharpeRatio = (double)result["SharpeRatio"];
 
             //we've not enough results: abandon attempt
             if (N == 0 || double.IsNaN(Kurtosis))

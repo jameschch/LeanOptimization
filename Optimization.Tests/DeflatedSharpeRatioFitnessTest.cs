@@ -14,7 +14,6 @@ namespace Optimization.Tests
 
 
         [Test]
-        [Ignore("merge formula fixes")]
         public void CalculateExpectedMaximumTest()
         {
             var unit = new DeflatedSharpeRatioFitnessWrapper(null);
@@ -34,7 +33,6 @@ namespace Optimization.Tests
             Assert.AreEqual(0.9004, actual, 0.0002);
         }
 
-
         private class DeflatedSharpeRatioFitnessWrapper : DeflatedSharpeRatioFitness
         {
 
@@ -45,11 +43,11 @@ namespace Optimization.Tests
             public override void Initialize()
             {
                 N = 100;
-                V = 0.5;
+                V = 2;
                 T = 1250;
                 Skewness = -3;
                 Kurtosis = 10;
-                SharpeRatio = 2.5;
+                CurrentSharpeRatio = 2.5;
             }
 
         }
