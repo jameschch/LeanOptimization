@@ -45,7 +45,7 @@ namespace Optimization
 
             N = SharpeData.Count();
             var statistics = new DescriptiveStatistics(ReturnsData.Select(d => d.Value));
-            V = statistics.Variance;
+            V = new DescriptiveStatistics(SharpeData.Select(s => s.Value)).Variance;
             //measure only trading days
             T = ((Config.EndDate - Config.StartDate).Value.TotalDays / 365) * days;
             Skewness = statistics.Skewness;
