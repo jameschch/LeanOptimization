@@ -28,6 +28,7 @@ namespace Optimization
         protected double Skewness { get; set; }
         protected double Kurtosis { get; set; }
         protected double CurrentSharpeRatio { get; set; }
+        const int days = 250; // trading days for annualization
         #endregion
 
         public DeflatedSharpeRatioFitness(IOptimizerConfiguration config) : base(config)
@@ -45,7 +46,8 @@ namespace Optimization
             N = SharpeData.Count();
             var statistics = new DescriptiveStatistics(ReturnsData.Select(d => d.Value));
             V = statistics.Variance;
-            T = (Config.EndDate - Config.StartDate).Value.TotalDays;
+            //measure only trading days
+            T = ((Config.EndDate - Config.StartDate).Value.TotalDays / 365) * days;
             Skewness = statistics.Skewness;
             Kurtosis = statistics.Kurtosis;
         }
@@ -65,13 +67,13 @@ namespace Optimization
         public double CalculateExpectedMaximum()
         {
             var maxZ = (1 - Constants.EulerMascheroni) * ZInverse(1 - 1 / N) + Constants.EulerMascheroni * ZInverse(1 - 1 / (N * Constants.E));
-            var final = Math.Sqrt(1 / (V * 250)) * maxZ;
+            var final = Math.Sqrt(1 / (V * days)) * maxZ;
             return final;
         }
 
         public double CalculateDeflatedSharpeRatio(double expectedMaximum)
         {
-            var nonAnnualized = (CurrentSharpeRatio / Math.Sqrt(250));
+            var nonAnnualized = (CurrentSharpeRatio / Math.Sqrt(days));
             var top = (nonAnnualized - expectedMaximum) * Math.Sqrt(T - 1);
             var bottom = Math.Sqrt(1 - (Skewness) * nonAnnualized + ((Kurtosis - 1) / 4) * Math.Pow(nonAnnualized, 2));
 
@@ -92,7 +94,12 @@ namespace Optimization
 
             var fitness = CalculateDeflatedSharpeRatio(CalculateExpectedMaximum());
 
-            return new FitnessResult { Fitness = double.IsNaN(fitness) ? 0 : fitness, Value = result["SharpeRatio"] };
+            if (double.IsNaN(fitness) || fitness == 0)
+            {
+                return base.CalculateFitness(result);
+            }
+
+            return new FitnessResult { Fitness = fitness, Value = result["SharpeRatio"] };
         }
 
         public override double Evaluate(IChromosome chromosome)
