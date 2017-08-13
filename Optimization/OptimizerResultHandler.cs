@@ -103,10 +103,10 @@ namespace Optimization
             _shadow.DebugMessage(message);
         }
 
-        public void SystemDebugMessage(string message)
-        {
-            _shadow.SystemDebugMessage(message);
-        }
+        //public void SystemDebugMessage(string message)
+        //{
+        //    _shadow.SystemDebugMessage(message);
+        //}
 
         public void SecurityType(List<SecurityType> types)
         {

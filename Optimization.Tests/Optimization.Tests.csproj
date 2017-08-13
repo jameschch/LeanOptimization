@@ -77,7 +77,7 @@
     </Reference>
     <Reference Include="QuantConnect.Common, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean_decimal\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="SmartThreadPool, Version=2.2.3.0, Culture=neutral, PublicKeyToken=1126fe8b671e8a79, processorArchitecture=MSIL">
       <HintPath>..\packages\SmartThreadPool.dll.2.2.3\lib\SmartThreadPool.dll</HintPath>
