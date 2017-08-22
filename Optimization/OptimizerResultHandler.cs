@@ -201,7 +201,17 @@ namespace Optimization
         public void ProcessSynchronousEvents(bool forceProcess = false)
         {
             _shadow.ProcessSynchronousEvents(forceProcess);
-        } 
+        }
+
+        public string SaveLogs(string id, IEnumerable<string> logs)
+        {
+            return _shadow.SaveLogs(id, logs);
+        }
+
+        public void SaveResults(string name, Result result)
+        {
+            _shadow.SaveResults(name, result);
+        }
         #endregion
     }
 }
