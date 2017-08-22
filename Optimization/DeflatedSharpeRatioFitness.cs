@@ -94,9 +94,9 @@ namespace Optimization
 
             var fitness = CalculateDeflatedSharpeRatio(CalculateExpectedMaximum());
 
-            if (double.IsNaN(fitness) || fitness == 0)
+            if (double.IsNaN(fitness))
             {
-                return base.CalculateFitness(result);
+                fitness = 0;
             }
 
             return new FitnessResult { Fitness = fitness, Value = result["SharpeRatio"] };
