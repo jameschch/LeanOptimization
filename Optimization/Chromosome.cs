@@ -13,6 +13,7 @@ namespace Optimization
 
         GeneConfiguration[] _config;
         bool _isActual;
+        public string Id { get; } = Guid.NewGuid().ToString();
 
         public Chromosome(bool isActual, GeneConfiguration[] config) : base(config.Length)
         {

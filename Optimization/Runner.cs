@@ -11,17 +11,25 @@ using System.Linq;
 
 namespace Optimization
 {
+    public interface IRunner
+    {
+        Dictionary<string, decimal> Run(Dictionary<string, object> items);
+    }
 
-    public class Runner : MarshalByRefObject
+    public class Runner : MarshalByRefObject, IRunner
     {
 
         private OptimizerResultHandler _resultsHandler;
         IOptimizerConfiguration _config;
+        private string _id;
 
         public Dictionary<string, decimal> Run(Dictionary<string, object> items)
         {
             Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             _config = OptimizerAppDomainManager.GetConfig(AppDomain.CurrentDomain);
+
+            _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid()).ToString();
+            items.Remove("Id");
 
             if (_config.StartDate.HasValue && _config.EndDate.HasValue)
             {
@@ -56,7 +64,7 @@ namespace Optimization
 
             results.Add(plain, _resultsHandler.FullResults);
             OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
- 
+
             return _resultsHandler.FullResults;
         }
 
@@ -83,7 +91,7 @@ namespace Optimization
             systemHandlers.Initialize();
 
             //separate log uniquely named
-            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + Guid.NewGuid().ToString() + ".txt";
+            var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
 
             var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
             Log.Trace("Initializing log.");
@@ -95,7 +103,7 @@ namespace Optimization
                 {
                     //override config to use custom result handler
                     Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
-                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);                   
+                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
                     _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
                 }
                 catch (CompositionException compositionException)

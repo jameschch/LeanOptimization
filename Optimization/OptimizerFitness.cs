@@ -35,6 +35,8 @@ namespace Optimization
                 string output = "";
                 var list = ((Chromosome)chromosome).ToDictionary();
 
+                list.Add("Id", ((Chromosome)chromosome).Id);
+
                 foreach (var item in list)
                 {
                     output += item.Key + ": " + item.Value.ToString() + ", ";
