@@ -78,8 +78,8 @@ namespace Optimization
         void GenerationRan(object sender, EventArgs e)
         {
             var fittest = (Chromosome)_population.BestChromosome;
-            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
-                _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness), fittest.ToKeyValueString());
+            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
+                _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness), fittest.ToKeyValueString(), fittest.Id);
         }
 
     }
