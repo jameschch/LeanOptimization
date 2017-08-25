@@ -89,7 +89,7 @@ namespace Optimization
             //we've not enough results: abandon attempt
             if (N == 0 || double.IsNaN(Kurtosis))
             {
-                return new FitnessResult { Fitness = 0, Value = -10 };
+                return new FitnessResult { Fitness = 0, Value = result["SharpeRatio"] };
             }
 
             var fitness = CalculateDeflatedSharpeRatio(CalculateExpectedMaximum());
