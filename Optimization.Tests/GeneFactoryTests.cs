@@ -34,10 +34,36 @@ namespace Optimization.Tests
         }
 
         [Test()]
+        public void RandomBetweenCanBeMaximumTest()
+        {
+            bool canBeMaximum = false;
+            for (var i = 0; i < 10000; i++)
+            {
+                var actual = GeneFactory.RandomBetween(0, 1);
+                if (actual == 1m) { canBeMaximum = true; break;  }
+            }
+
+            Assert.IsTrue(canBeMaximum);
+        }
+
+        [Test()]
         public void RandomBetweenPrecisionTest()
         {
             var actual = GeneFactory.RandomBetween(1.1m, 1.2m, 1);
             Assert.IsTrue(actual >= 1.1m && actual <= 1.2m);
+        }
+
+        [Test()]
+        public void RandomBetweenPrecisionCanBeMaximumTest()
+        {
+            bool canBeMaximum = false;
+            for (var i = 0;i < 10000;i++)
+            {
+                var actual = GeneFactory.RandomBetween(1.1m, 1.2m, 1);
+                if (actual == 1.2m) { canBeMaximum = true; break; }
+            }
+
+            Assert.IsTrue(canBeMaximum);
         }
 
         [Test()]

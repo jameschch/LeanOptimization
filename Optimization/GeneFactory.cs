@@ -24,7 +24,7 @@ namespace Optimization
 
         public static int RandomBetween(int minValue, int maxValue)
         {
-            return _random.Next(minValue, maxValue);
+            return _random.Next(minValue, maxValue + 1);
         }
 
         public static decimal RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
