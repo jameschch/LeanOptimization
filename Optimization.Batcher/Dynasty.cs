@@ -41,11 +41,11 @@ namespace Optimization.Batcher
         {
             _config = JsonConvert.DeserializeObject<DynastyConfiguration>(_file.File.ReadAllText("dynasty.json"));
 
-            var _segmenter = new DynastySegmenter(_config);
+            var segmenter = new DynastySegmenter(_config);
 
             var settings = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
-            for (var i = _config.StartDate; i <= _config.EndDate; i = _segmenter.GetNext(i))
+            for (var i = _config.StartDate; i <= _config.EndDate; i = segmenter.GetNext(i))
             {
                 if (_current == null)
                 {
@@ -53,7 +53,7 @@ namespace Optimization.Batcher
                 }
 
                 _current.StartDate = i;
-                var endDate = _segmenter.PeekNext(i);
+                var endDate = segmenter.PeekNext(i);
 
                 _current.EndDate = AdjustEndDate(endDate);
 
@@ -63,7 +63,7 @@ namespace Optimization.Batcher
 
                 _logWrapper.Result($"For period: {_current.StartDate} {_current.EndDate}");
 
-                var initializer = new Optimization.OptimizerInitializer(_file, _managerFactory.Create());
+                var initializer = new OptimizerInitializer(_file, _managerFactory.Create());
                 initializer.Initialize(new[] { _configFilename });
             }
         }

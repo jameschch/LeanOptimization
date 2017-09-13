@@ -116,9 +116,9 @@ namespace Optimization
 
                 try
                 {
-                    var _engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, Config.GetBool("live-mode"));
+                    var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
                     var algorithmManager = new AlgorithmManager(false);
-                    _engine.Run(job, algorithmManager, algorithmPath);
+                    engine.Run(job, algorithmManager, algorithmPath);
                 }
                 finally
                 {

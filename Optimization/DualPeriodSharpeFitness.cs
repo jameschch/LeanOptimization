@@ -18,7 +18,6 @@ namespace Optimization
         {
             this.Name = "DualPeriodSharpe";
 
-            var list = ((Chromosome)chromosome).ToDictionary();
             var start = Config.StartDate.Value;
             var end = Config.EndDate.Value;
 

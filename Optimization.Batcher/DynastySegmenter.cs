@@ -20,7 +20,7 @@ namespace Optimization.Batcher
 
         public DateTime PeekNext(DateTime i)
         {
-            return this.GetNext(i, true);
+            return GetNext(i, true);
         }
 
         public DateTime GetNext(DateTime i, bool isPeeking = false)

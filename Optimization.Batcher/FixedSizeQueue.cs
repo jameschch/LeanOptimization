@@ -9,17 +9,18 @@ namespace Optimization.Batcher
     public class FixedSizeQueue<T> : Queue<T>
     {
 
+        private int _limit;
+
         public FixedSizeQueue(int limit)
         {
             _limit = limit;
         }
 
-        private int _limit { get; set; }
         public new void Enqueue(T obj)
         {
-            while (this.Count > _limit)
+            while (Count > _limit)
             {
-                this.Dequeue();
+                Dequeue();
             }
             base.Enqueue(obj);
         }
