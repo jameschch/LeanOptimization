@@ -8,7 +8,7 @@ using GeneticSharp.Domain.Chromosomes;
 
 namespace Optimization
 {
-    
+
 
     /// <summary>
     /// Default optimizer baheviour using sharpe ratio.
@@ -18,18 +18,20 @@ namespace Optimization
     {
 
         public string Name { get; protected set; }
-        protected IOptimizerConfiguration Config;
-
+        public IOptimizerConfiguration Config { get; protected set; }
+        public IFitnessFilter Filter { get; set; }
         double scale = 0.02;
 
-        public OptimizerFitness(IOptimizerConfiguration config)
+        public OptimizerFitness(IOptimizerConfiguration config, IFitnessFilter filter)
         {
             Config = config;
-            this.Name = "Sharpe";
+            Filter = filter;
         }
 
         public virtual double Evaluate(IChromosome chromosome)
         {
+            this.Name = "Sharpe";
+
             try
             {
                 string output = "";
@@ -68,15 +70,10 @@ namespace Optimization
             var fitness = new FitnessResult();
 
             var ratio = result["SharpeRatio"];
-            var compound = result["CompoundingAnnualReturn"];
 
-            if (!Config.IncludeNegativeReturn)
+            if (Filter != null && !Filter.IsSuccess(result, this))
             {
-                ratio = compound < 0 ? -10 : ratio;
-            }
-            if (ratio == 0 && result["TotalNumberOfTrades"] == 0)
-            {
-                ratio = -10;
+                ratio = -10m;
             }
 
             fitness.Value = ratio;

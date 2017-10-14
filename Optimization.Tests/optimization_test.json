@@ -35,5 +35,7 @@
   "startDate": "2016-02-01T00:00:00Z",
   "endDate": "2016-02-03T00:00:00Z",
   "mutationProbability": 0.5,
-  "crossoverProbability": 0.75
+  "crossoverProbability": 0.75,
+  "minimumTrades": 1,
+  "enableFitnessFilter": true
 }

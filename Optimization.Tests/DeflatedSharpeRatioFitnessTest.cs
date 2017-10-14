@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,10 @@ namespace Optimization.Tests
     public class DeflatedSharpeRatioFitnessTest
     {
 
-
         [Test]
         public void CalculateExpectedMaximumTest()
         {
-            var unit = new DeflatedSharpeRatioFitnessWrapper(null);
+            var unit = new Wrapper(null);
             unit.Initialize();
             var actual = unit.CalculateExpectedMaximum();
 
@@ -26,18 +26,18 @@ namespace Optimization.Tests
         [Test]
         public void CalculateDeflatedSharpeRatioTest()
         {
-            var unit = new DeflatedSharpeRatioFitnessWrapper(null);
+            var unit = new Wrapper(null);
             unit.Initialize();
             var actual = unit.CalculateDeflatedSharpeRatio(0.1132);
 
             Assert.AreEqual(0.9004, actual, 0.0002);
         }
 
-        private class DeflatedSharpeRatioFitnessWrapper : DeflatedSharpeRatioFitness
+        private class Wrapper : DeflatedSharpeRatioFitness
         {
 
-            public DeflatedSharpeRatioFitnessWrapper(IOptimizerConfiguration config) : base(config)
-            {                
+            public Wrapper(IOptimizerConfiguration config) : base(config, null)
+            {
             }
 
             public override void Initialize()

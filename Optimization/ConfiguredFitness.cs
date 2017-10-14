@@ -9,7 +9,7 @@ namespace Optimization
     public class ConfiguredFitness : OptimizerFitness
     {
 
-        public ConfiguredFitness(IOptimizerConfiguration config) : base(config)
+        public ConfiguredFitness(IOptimizerConfiguration config) : base(config, null)
         {
             if (config.Fitness == null)
             {

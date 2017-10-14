@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using Optimization;
 using System;
 using System.Collections.Generic;
@@ -56,6 +57,7 @@ namespace Optimization.Tests
 
         private class Wrapper : ConfiguredFitness
         {
+
             public Wrapper(IOptimizerConfiguration config) : base(config)
             {
             }

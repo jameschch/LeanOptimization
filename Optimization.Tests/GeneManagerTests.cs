@@ -28,7 +28,7 @@ namespace Optimization.Tests
             config.Setup(c => c.PopulationSize).Returns(2);
             config.Setup(c => c.Genes).Returns(new[] { new GeneConfiguration { Key = "abc", MinInt = 1, MaxInt = 3 }, new GeneConfiguration{ Key = "def", MinInt = 1, MaxInt = 3 } });
 
-            var fitness = new Mock<OptimizerFitness>(config.Object);
+            var fitness = new Mock<OptimizerFitness>(config.Object, null);
             fitness.Setup(f => f.Evaluate(It.IsAny<IChromosome>())).Returns(-10).Verifiable();
             var unit = new GeneManager();
             unit.Initialize(config.Object, fitness.Object);

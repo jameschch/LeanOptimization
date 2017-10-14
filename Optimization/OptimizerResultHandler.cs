@@ -84,7 +84,7 @@ namespace Optimization
         {
             _shadow.SendFinalResult(job, orders, profitLoss, holdings, statisticsResults, banner);
 
-            FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance);
+            FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
         }
 
         #region Shadow Methods
