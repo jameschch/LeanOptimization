@@ -31,7 +31,7 @@ namespace Optimization
         const int days = 250; // trading days for annualization
         #endregion
 
-        public DeflatedSharpeRatioFitness(IOptimizerConfiguration config) : base(config)
+        public DeflatedSharpeRatioFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
 
@@ -93,6 +93,11 @@ namespace Optimization
             }
 
             var fitness = CalculateDeflatedSharpeRatio(CalculateExpectedMaximum());
+
+            if (!Filter.IsSuccess(result, this))
+            {
+                fitness = 0;
+            }
 
             if (double.IsNaN(fitness))
             {

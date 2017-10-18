@@ -24,12 +24,15 @@ namespace Optimization.Tests
                 },
                 TradeStatistics = new TradeStatistics
                 {
-                    TotalNumberOfTrades = 45
+                    TotalNumberOfTrades = 0,
+                    TotalFees = 0
                 }
-            });
+            },
+            new Dictionary<string, string> { { "Total Trades", "45" }, { "Total Fees", "$1.23" } });
 
             Assert.AreEqual(1.23m, actual["Alpha"]);
             Assert.AreEqual(45m, actual["TotalNumberOfTrades"]);
+            Assert.AreEqual(1.23m, actual["TotalFees"]);
         }
 
     }

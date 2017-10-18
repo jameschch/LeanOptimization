@@ -100,6 +100,17 @@ namespace Optimization
         /// Likeliness of crossover
         /// </summary>
         public float CrossoverProbability { get; set; } = GeneticAlgorithm.DefaultCrossoverProbability;
+
+        /// <summary>
+        /// The minimum number of trades to consider the execution a non-failure
+        /// </summary>
+        public int MinimumTrades { get; set; }
+
+        /// <summary>
+        /// Enables the fitness filter that discards probable false positive executions
+        /// </summary>
+        public bool EnableFitnessFilter { get; set; }
+
     }
 
     [Serializable]

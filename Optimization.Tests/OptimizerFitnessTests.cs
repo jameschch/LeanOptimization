@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using Moq;
+using NUnit.Framework;
 using Optimization;
 using System;
 using System.Collections.Generic;
@@ -19,25 +20,29 @@ namespace Optimization.Tests
             unit = new Wrapper(new OptimizerConfiguration
             {
                 FitnessTypeName = "Optimization.OptimizerFitness",
-            });
+                EnableFitnessFilter = true
+            }, new FitnessFilter());
         }
 
-        [TestCase(1, 12, 0.22)]
-        [TestCase(-1, 12, 0)]
-        [TestCase(-1, 0, 0)]
-        public void CalculateFitnessTest(decimal car, int trades, double expected)
+        [TestCase(1, 12, 0.22, 0.5)]
+        [TestCase(-1, 12, 0, 0.5)]
+        [TestCase(-1, 0, 0, 0.5)]
+        [TestCase(1, 12, 0, 1)]
+        public void CalculateFitnessTest(decimal car, int trades, double expected, decimal lossRate)
         {
             var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> {
                 { "SharpeRatio", 1 },
                 { "CompoundingAnnualReturn", car },
-                { "TotalNumberOfTrades", trades }
+                { "TotalNumberOfTrades", trades },
+                { "LossRate", lossRate }
             });
             Assert.AreEqual(expected, actual.Item2);
         }
 
         private class Wrapper : OptimizerFitness
         {
-            public Wrapper(IOptimizerConfiguration config) : base(config)
+
+            public Wrapper(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
             {
             }
 

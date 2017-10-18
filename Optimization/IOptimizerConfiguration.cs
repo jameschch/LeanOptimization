@@ -22,6 +22,8 @@ namespace Optimization
         DateTime? EndDate { get; set; }
         float MutationProbability { get; set; }
         float CrossoverProbability { get; set; }
+        int MinimumTrades { get; set; }
+        bool EnableFitnessFilter { get; set; }
     }
 
 }

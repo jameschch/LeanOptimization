@@ -8,7 +8,7 @@ namespace Optimization
 {
     public class CompoundingAnnualReturnFitness : OptimizerFitness
     {
-        public CompoundingAnnualReturnFitness(IOptimizerConfiguration config) : base(config)
+        public CompoundingAnnualReturnFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
 
@@ -20,11 +20,16 @@ namespace Optimization
             this.Name = "Return";
             var fitness = new FitnessResult();
 
-            var raw = result["CompoundingAnnualReturn"];
+            var car = result["CompoundingAnnualReturn"];
 
-            fitness.Value = raw;
+            if (!Filter.IsSuccess(result, this))
+            {
+                car = -100m;
+            }
 
-            fitness.Fitness = (double)raw * scale;
+            fitness.Value = car;
+
+            fitness.Fitness = (double)car * scale;
 
             return fitness;
         }

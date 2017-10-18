@@ -55,10 +55,6 @@
       <HintPath>..\packages\Accord.Statistics.3.6.0\lib\net45\Accord.Statistics.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="DynamicExpresso.Core, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DynamicExpresso.Core.1.3.3.5\lib\net40\DynamicExpresso.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="GeneticSharp.Domain, Version=1.0.5894.2743, Culture=neutral, PublicKeyToken=d63d2a65268366c6, processorArchitecture=MSIL">
       <HintPath>..\packages\GeneticSharp.1.0.100\lib\net35\GeneticSharp.Domain.dll</HintPath>
       <Private>True</Private>
@@ -147,6 +143,8 @@
   <ItemGroup>
     <Compile Include="DeflatedSharpeRatioFitness.cs" />
     <Compile Include="DualPeriodSharpeFitness.cs" />
+    <Compile Include="FitnessFilter.cs" />
+    <Compile Include="IFitnessFilter.cs" />
     <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="GeneConfiguration.cs" />

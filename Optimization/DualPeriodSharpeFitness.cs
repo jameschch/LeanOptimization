@@ -10,7 +10,7 @@ namespace Optimization
     public class DualPeriodSharpeFitness : OptimizerFitness
     {
 
-        public DualPeriodSharpeFitness(IOptimizerConfiguration config) : base(config)
+        public DualPeriodSharpeFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
 

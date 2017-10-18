@@ -30,6 +30,8 @@
   "onePointCrossover": "true",
   "fitnessTypeName": "Optimization.OptimizerFitness",
   "dataFolder": "../../../../Lean/Data",
+  "minimumTrades": 0,
+  "enableFitnessFilter": true
   //"mutationProbability": 0.5,
   //"crossoverProbability": 0.75
   //"fitnessTypeName": "Optimization.ConfiguredFitness",

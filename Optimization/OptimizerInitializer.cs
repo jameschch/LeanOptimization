@@ -48,7 +48,7 @@ namespace Optimization
             OptimizerAppDomainManager.Initialize(_config);
 
             OptimizerFitness fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(_config.FitnessTypeName, false, BindingFlags.Default, null,
-                new[] { _config }, null, null);
+                new object[] { _config, new FitnessFilter() }, null, null);
 
             _manager.Initialize(_config, fitness);
             _manager.Start();
