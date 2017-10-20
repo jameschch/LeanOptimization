@@ -67,6 +67,19 @@ namespace Optimization.Tests
         }
 
         [Test()]
+        public void RandomBetweenPrecisionCanBeNegativeTest()
+        {
+            bool canBeNegative = false;
+            for (var i = 0; i < 10000; i++)
+            {
+                var actual = GeneFactory.RandomBetween(-1m, 1m, 0);
+                if (actual == -1) { canBeNegative = true; break; }
+            }
+
+            Assert.IsTrue(canBeNegative);
+        }
+
+        [Test()]
         public void GenerateTest()
         {
             var config = new[] { new GeneConfiguration { Key = "slow", ActualInt = 200 }, new GeneConfiguration { Key = "take", Precision = 2, MaxDecimal= 0.06m,
