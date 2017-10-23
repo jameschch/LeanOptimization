@@ -1,16 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9E0FE7A8-B6E6-48BC-96EF-730FBB2A26BD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{442041B3-6F94-46D4-B599-8D79E487307F}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "OptimizerLogToJson", "src\OptimizerLogToJson\OptimizerLogToJson.xproj", "{974E8AF4-148E-4318-8025-C0286D819B50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OptimizerLogToJson", "src\OptimizerLogToJson\OptimizerLogToJson.csproj", "{974E8AF4-148E-4318-8025-C0286D819B50}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
