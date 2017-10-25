@@ -13,7 +13,7 @@ namespace Optimization.Toolbox.OptimizerLogToConfig
         public static void Main(string[] args)
         {
             Console.WriteLine("***********************************************************************************************************************");
-            Console.WriteLine("Converts the last generation alpha chromosome from supplied optimizer.log to json or C# dictionary.\nUsage: OptimizerLogToJson logPath configPath");
+            Console.WriteLine("Merges the last generation alpha chromosome from supplied optimizer.log into the supplied optimization.json config file.\nUsage: OptimizerLogToJson logPath configPath");
             Console.WriteLine("***********************************************************************************************************************");
 
             if (args == null || !args.Any())
@@ -54,9 +54,20 @@ namespace Optimization.Toolbox.OptimizerLogToConfig
                     throw new Exception("Cound not find key: " + pair.First());
                 }
 
-                key.SelectToken("actual")?.Remove();
+                ((JObject)key).Remove("actual");
 
-                ((JObject)key).Add(new JProperty("actual", pair.Last()));
+                JProperty property = null;
+
+                if (int.TryParse(pair.Last(), out var parsed))
+                {
+                    property = new JProperty("actual", int.Parse(pair.Last()));
+                }
+                else
+                {
+                    property = new JProperty("actual", decimal.Parse(pair.Last()));
+                }
+
+                ((JObject)key).Add(property);
 
             }
 
