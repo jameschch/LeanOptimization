@@ -27,7 +27,7 @@ namespace Optimization.Toolbox.OptimizerLogToConfig
 
             var lines = File.ReadAllLines(path);
             string line = null;
-            for (var i = lines.Length - 1; i > 0; i--)
+            for (var i = lines.Length - 1; i > -1; i--)
             {
                 line = lines.ElementAt(i);
 
