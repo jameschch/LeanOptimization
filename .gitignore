@@ -253,3 +253,4 @@ Charts/
 *.ncrunchsolution
 *.ncrunchproject
 /.vs/config/applicationhost.config
+*.bak

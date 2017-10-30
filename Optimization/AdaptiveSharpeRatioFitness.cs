@@ -34,11 +34,14 @@ namespace Optimization
                 var adding = hours - (hours * improvement);
                 Config.StartDate = Config.StartDate.Value.AddHours(adding);
 
-                //should also mean result history is ignored
+                //should also ignore result history
                 OptimizerAppDomainManager.ReInitialize(Config);
             }
 
-            _previousFitness = fitness;
+            if (fitness > _previousFitness)
+            {
+                _previousFitness = fitness;
+            }
             return fitness;
         }
 
