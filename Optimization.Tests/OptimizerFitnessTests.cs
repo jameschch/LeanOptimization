@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using GeneticSharp.Domain.Chromosomes;
+using Moq;
 using NUnit.Framework;
 using Optimization;
 using System;
@@ -13,11 +14,11 @@ namespace Optimization.Tests
     public class OptimizerFitnessTests
     {
 
-        Wrapper unit;
+        Wrapper _unit;
 
         public OptimizerFitnessTests()
         {
-            unit = new Wrapper(new OptimizerConfiguration
+            _unit = new Wrapper(new OptimizerConfiguration
             {
                 FitnessTypeName = "Optimization.OptimizerFitness",
                 EnableFitnessFilter = true
@@ -30,13 +31,21 @@ namespace Optimization.Tests
         [TestCase(1, 12, 0, 1)]
         public void CalculateFitnessTest(decimal car, int trades, double expected, decimal lossRate)
         {
-            var actual = unit.CalculateFitnessWrapper(new Dictionary<string, decimal> {
+            var actual = _unit.CalculateFitnessWrapper(new Dictionary<string, decimal> {
                 { "SharpeRatio", 1 },
                 { "CompoundingAnnualReturn", car },
                 { "TotalNumberOfTrades", trades },
                 { "LossRate", lossRate }
             });
             Assert.AreEqual(expected, actual.Item2);
+        }
+
+        [Test]
+        public void EvaluateTest()
+        {
+            //todo:
+            _unit.Evaluate(Mock.Of<IChromosome>());
+
         }
 
         private class Wrapper : OptimizerFitness
@@ -52,5 +61,6 @@ namespace Optimization.Tests
                 return new Tuple<decimal, double>(fitness.Value, fitness.Fitness);
             }
         }
+
     }
 }

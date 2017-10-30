@@ -99,6 +99,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="AdaptiveSharpeRatioFitnessTests.cs" />
     <Compile Include="ConfiguredFitnessTests.cs" />
     <Compile Include="DeflatedSharpeRatioFitnessTest.cs" />
     <Compile Include="DynastyTests.cs" />

@@ -152,6 +152,7 @@
     <Compile Include="GeneFactory.cs" />
     <Compile Include="GeneManager.cs" />
     <Compile Include="IFitnessConfiguration.cs" />
+    <Compile Include="AdaptiveSharpeRatioFitness.cs" />
     <Compile Include="OptimizerInitializer.cs" />
     <Compile Include="IOptimizerConfiguration.cs" />
     <Compile Include="OptimizerFitness.cs" />
