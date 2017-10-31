@@ -94,7 +94,6 @@ namespace Optimization
             var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
 
             var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
-            Log.Trace("Initializing log.");
 
             using (Log.LogHandler = new CompositeLogHandler(logHandlers))
             {
