@@ -1,4 +1,5 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
+using GeneticSharp.Domain.Randomizations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -16,15 +17,19 @@ namespace Optimization
 
         private static Random _random = new Random();
         public static GeneConfiguration[] Config { get; private set; }
+        private static IRandomization _basic;
+        private static IRandomization _fibonacci;
 
         public static void Initialize(GeneConfiguration[] config)
         {
             Config = config;
+            _basic = RandomizationProvider.Current;
+            _fibonacci = new FibonacciRandomization();
         }
 
         public static int RandomBetween(int minValue, int maxValue)
         {
-            return _random.Next(minValue, maxValue + 1);
+            return RandomizationProvider.Current.GetInt(minValue, maxValue + 1);
         }
 
         public static decimal RandomBetween(decimal minValue, decimal maxValue, int? precision = null)
@@ -34,12 +39,21 @@ namespace Optimization
                 precision = GetPrecision(minValue);
             }
 
-            var value = _random.NextDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
+            var value = RandomizationProvider.Current.GetDouble() * ((double)maxValue - (double)minValue) + (double)minValue;
             return (decimal)System.Math.Round(value, precision.Value);
         }
 
         public static Gene Generate(GeneConfiguration config, bool isActual)
         {
+            if (config.Fibonacci && RandomizationProvider.Current.GetType() != typeof(FibonacciRandomization))
+            {
+                RandomizationProvider.Current = _fibonacci;
+            }
+            else
+            {
+                RandomizationProvider.Current = _basic;
+            }
+
             if (isActual && config.ActualInt.HasValue)
             {
                 return new Gene(new KeyValuePair<string, object>(config.Key, config.ActualInt));
