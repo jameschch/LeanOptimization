@@ -1,5 +1,6 @@
 ﻿using GeneticSharp.Domain.Chromosomes;
 using GeneticSharp.Domain.Fitnesses;
+using GeneticSharp.Domain.Randomizations;
 using Moq;
 using NUnit.Framework;
 using Optimization;
@@ -19,6 +20,7 @@ namespace Optimization.Tests
         public void Setup()
         {
             Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+            RandomizationProvider.Current = new BasicRandomization();
         }
 
         [Test()]

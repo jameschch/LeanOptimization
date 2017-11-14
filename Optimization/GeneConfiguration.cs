@@ -52,5 +52,11 @@ namespace Optimization
         /// </summary>
         public decimal? ActualDecimal { get; set; }
 
+        /// <summary>
+        /// When true, will randomly select a value between 0 to 10946 from the Fibonacci sequence instead of generating random values
+        /// </summary>
+        /// <remarks></remarks>
+        public bool Fibonacci { get; set; }
+
     }
 }

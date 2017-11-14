@@ -31,7 +31,8 @@ namespace Optimization
                 MaxDecimal = precision > 0 ? json["max"].Value<decimal?>() : null,
                 MinInt = precision > 0 ? null : json["min"].Value<int?>(),
                 MaxInt = precision > 0 ? null : json["max"].Value<int?>(),
-                Precision = precision
+                Precision = precision, 
+                Fibonacci = json["fibonacci"] != null ? json["fibonacci"].Value<bool>() : false
             };
             if (json["actual"] != null)
             {

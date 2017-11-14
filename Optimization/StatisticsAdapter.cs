@@ -47,7 +47,7 @@ namespace Optimization
         {
             var list = performance.PortfolioStatistics.GetType().GetProperties().ToDictionary(k => k.Name, v => (decimal)v.GetValue(performance.PortfolioStatistics));
             list.Add("TotalNumberOfTrades", int.Parse(summary["Total Trades"]));
-            list.Add("TotalFees", decimal.Parse(summary["Total Fees"], NumberStyles.Currency, CultureInfo.CurrentUICulture));
+            list.Add("TotalFees", decimal.Parse(summary["Total Fees"].Substring(1)));
 
             return list;
         }

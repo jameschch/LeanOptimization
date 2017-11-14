@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using GeneticSharp.Domain.Randomizations;
+using NUnit.Framework;
 using Optimization;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Optimization.Tests
         public void Setup()
         { 
             Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+            RandomizationProvider.Current = new BasicRandomization();
         }
 
         [Test()]
@@ -85,10 +87,14 @@ namespace Optimization.Tests
             var config = new[] { new GeneConfiguration { Key = "slow", ActualInt = 200 }, new GeneConfiguration { Key = "take", Precision = 2, MaxDecimal= 0.06m,
                 MinDecimal = 0.04m, ActualDecimal = 0.05m } };
 
-            var actual = GeneFactory.Generate(config.Where(c => c.Key == "slow").Single(), true);
+            RandomizationProvider.Current = new BasicRandomization();
+            GeneFactory.Initialize(config);
+
+            var actual = GeneFactory.Generate(config[0], true);
             Assert.AreEqual(200, (int)((KeyValuePair<string, object>)actual.Value).Value);
 
-            actual = GeneFactory.Generate(config.Where(c => c.Key == "take").Single(), false);
+            RandomizationProvider.Current = new BasicRandomization();
+            actual = GeneFactory.Generate(config[1], false);
             decimal parsed;
             Assert.IsTrue(decimal.TryParse(((KeyValuePair<string, object>)actual.Value).Value.ToString(), out parsed));
             Assert.AreEqual(2, GeneFactory.GetPrecision(parsed));

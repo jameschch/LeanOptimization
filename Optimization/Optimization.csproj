@@ -145,6 +145,7 @@
     <Compile Include="DualPeriodSharpeFitness.cs" />
     <Compile Include="FitnessFilter.cs" />
     <Compile Include="IFitnessFilter.cs" />
+    <Compile Include="FibonacciRandomization.cs" />
     <Compile Include="OptimizerAppDomainManager.cs" />
     <Compile Include="Chromosome.cs" />
     <Compile Include="GeneConfiguration.cs" />
