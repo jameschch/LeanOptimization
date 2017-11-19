@@ -38,6 +38,7 @@ namespace Optimization.Tests
 
             //sharpe improved by 50%, period window should increase by 24 hours
             Assert.AreEqual(72, actualHours);
+            //todo: assert change of baseline, reset of history
 
             fitness = unit.Evaluate(Mock.Of<IChromosome>());
             actualHours = CurrentHours(config);

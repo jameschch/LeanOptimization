@@ -34,8 +34,12 @@ namespace Optimization
                 var adding = hours - (hours * improvement);
                 Config.StartDate = Config.StartDate.Value.AddHours(adding);
 
-                //should also ignore result history
+                //restart with longer in sample. History will now be ignored
+                //todo: retain history for failure (-10 Sharpe) executions			
                 OptimizerAppDomainManager.ReInitialize(Config);
+                //resample current alpha
+                _previousFitness = EvaluateBase(chromosome);
+                fitness = _previousFitness;
             }
 
             if (fitness > _previousFitness)
