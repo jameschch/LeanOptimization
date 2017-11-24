@@ -13,6 +13,7 @@ using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Lean.Engine.Setup;
 using QuantConnect.Lean.Engine.TransactionHandlers;
 using System.Collections.Concurrent;
+using QuantConnect.Securities;
 
 namespace Optimization
 {
@@ -80,9 +81,10 @@ namespace Optimization
 
         }
 
-        public void SendFinalResult(AlgorithmNodePacket job, Dictionary<int, Order> orders, Dictionary<DateTime, decimal> profitLoss, Dictionary<string, Holding> holdings, StatisticsResults statisticsResults, Dictionary<string, string> banner)
+        public void SendFinalResult(AlgorithmNodePacket job, Dictionary<int, Order> orders, Dictionary<DateTime, decimal> profitLoss, Dictionary<string, Holding> holdings,
+            CashBook cashbook, StatisticsResults statisticsResults, Dictionary<string, string> banner)
         {
-            _shadow.SendFinalResult(job, orders, profitLoss, holdings, statisticsResults, banner);
+            _shadow.SendFinalResult(job, orders, profitLoss, holdings, cashbook, statisticsResults, banner);
 
             FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
         }
