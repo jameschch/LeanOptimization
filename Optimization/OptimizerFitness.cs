@@ -11,7 +11,7 @@ namespace Optimization
 
 
     /// <summary>
-    /// Default optimizer baheviour using sharpe ratio.
+    /// Default optimizer behaviour using Sharpe ratio.
     /// </summary>
     /// <remarks>Default behaviour will nullify fitness for negative return</remarks>
     public class OptimizerFitness : IFitness
@@ -49,7 +49,7 @@ namespace Optimization
                     output += string.Format("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
                 }
 
-                var result = OptimizerAppDomainManager.RunAlgorithm(list);
+                var result = OptimizerAppDomainManager.RunAlgorithm(list, Config);
 
                 var fitness = CalculateFitness(result);
 

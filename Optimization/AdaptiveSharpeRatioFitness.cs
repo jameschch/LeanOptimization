@@ -32,11 +32,11 @@ namespace Optimization
                 var hours = Config.EndDate.Value.Subtract(Config.StartDate.Value).TotalHours;
                 var improvement = fitness / _previousFitness;
                 var adding = hours - (hours * improvement);
+                //todo: after config is modified, executions in process will still return for previous dates
                 Config.StartDate = Config.StartDate.Value.AddHours(adding);
 
                 //restart with longer in sample. History will now be ignored
                 //todo: retain history for failure (-10 Sharpe) executions			
-                OptimizerAppDomainManager.ReInitialize(Config);
                 //resample current alpha
                 _previousFitness = EvaluateBase(chromosome);
                 fitness = _previousFitness;

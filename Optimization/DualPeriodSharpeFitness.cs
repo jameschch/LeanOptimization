@@ -1,4 +1,5 @@
 using GeneticSharp.Domain.Chromosomes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +19,18 @@ namespace Optimization
         {
             this.Name = "DualPeriodSharpe";
 
+            var dualConfig = Clone<OptimizerConfiguration>((OptimizerConfiguration)Config);
             var start = Config.StartDate.Value;
             var end = Config.EndDate.Value;
-
-            var first = base.Evaluate(chromosome);
-
             var diff = end - start;
 
-            Config.StartDate = end;
-            Config.EndDate = end + diff;
+            dualConfig.StartDate = end;
+            dualConfig.EndDate = end + diff;
 
-            OptimizerAppDomainManager.ReInitialize(Config);
-            var second = base.Evaluate(chromosome);
+            var dualFitness = new OptimizerFitness(dualConfig, this.Filter);
+
+            var first = base.Evaluate(chromosome);
+            var second = dualFitness.Evaluate(chromosome);
 
             var fitness = new FitnessResult
             {
@@ -37,13 +38,19 @@ namespace Optimization
             };
             fitness.Value = (decimal)base.GetValueFromFitness(fitness.Fitness);
 
-            var output = string.Format("Start: {0}, End: {1}, Start: {2}, End: {3}, {4}: {5}", start, end, Config.StartDate, Config.EndDate, this.Name, fitness.Value);
+            var output = string.Format("Start: {0}, End: {1}, Start: {2}, End: {3}, Dual Period {4}: {5}", start, end, Config.StartDate, Config.EndDate, this.Name, fitness.Value);
             Program.Logger.Info(output);
 
             Config.StartDate = start;
             Config.EndDate = end;
 
             return fitness.Fitness;
+        }
+
+        public static T Clone<T>(T source)
+        {
+            var serialized = JsonConvert.SerializeObject(source);
+            return JsonConvert.DeserializeObject<T>(serialized);
         }
 
     }

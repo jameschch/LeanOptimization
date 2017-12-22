@@ -15,19 +15,12 @@ namespace Optimization
         static AppDomainSetup _ads;
         static Dictionary<string, Dictionary<string, decimal>> _results;
         static object _resultsLocker;
-        static IOptimizerConfiguration _config;
 
-        public static void Initialize(IOptimizerConfiguration config)
+        public static void Initialize()
         {
-            _config = config;
             _results = new Dictionary<string, Dictionary<string, decimal>>();
             _ads = SetupAppDomain();
             _resultsLocker = new object();
-        }
-
-        public static void ReInitialize(IOptimizerConfiguration config)
-        {
-            _config = config;
         }
 
         static AppDomainSetup SetupAppDomain()
@@ -54,17 +47,16 @@ namespace Optimization
             Runner rc = (Runner)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Runner).FullName);
 
             SetResults(ad, _results);
-            SetConfig(ad, _config);
 
             return rc;
         }
 
-        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list)
+        public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
             AppDomain ad = null;
-            Runner rc = CreateRunClassInAppDomain(ref ad);       
+            Runner rc = CreateRunClassInAppDomain(ref ad);
 
-            var result = rc.Run(list);
+            var result = rc.Run(list, config);
             
             lock (_resultsLocker)
             {
@@ -92,11 +84,6 @@ namespace Optimization
             return GetData<Dictionary<string, Dictionary<string, decimal>>>(ad, "Results");
         }
 
-        public static IOptimizerConfiguration GetConfig(AppDomain ad)
-        {
-            return GetData<IOptimizerConfiguration>(ad, "Config");
-        }
-
         public static T GetData<T>(AppDomain ad, string key)
         {
            return (T)ad.GetData(key);
@@ -105,11 +92,6 @@ namespace Optimization
         public static void SetResults(AppDomain ad, object item)
         {
             SetData(ad, "Results", item);
-        }
-
-        public static void SetConfig(AppDomain ad, object item)
-        {
-            SetData(ad, "Config", item);
         }
 
         public static void SetData(AppDomain ad, string key, object item)

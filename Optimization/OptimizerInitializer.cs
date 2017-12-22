@@ -33,7 +33,7 @@ namespace Optimization
             _file.File.Copy(_config.ConfigPath, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json"), true);
 
             string path = _config.AlgorithmLocation;
-            if (!string.IsNullOrEmpty(path))
+            if (!string.IsNullOrEmpty(path) && (path.Contains('\\') || path.Contains('/')))
             {
                 _file.File.Copy(path, System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, System.IO.Path.GetFileName(path)), true);
                 string pdb = path.Replace(System.IO.Path.GetExtension(path), ".pdb");
@@ -45,7 +45,7 @@ namespace Optimization
                 }
             }
 
-            OptimizerAppDomainManager.Initialize(_config);
+            OptimizerAppDomainManager.Initialize();
 
             OptimizerFitness fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(_config.FitnessTypeName, false, BindingFlags.Default, null,
                 new object[] { _config, new FitnessFilter() }, null, null);

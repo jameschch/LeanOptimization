@@ -13,7 +13,7 @@ namespace Optimization
 {
     public interface IRunner
     {
-        Dictionary<string, decimal> Run(Dictionary<string, object> items);
+        Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config);
     }
 
     public class Runner : MarshalByRefObject, IRunner
@@ -23,10 +23,10 @@ namespace Optimization
         IOptimizerConfiguration _config;
         private string _id;
 
-        public Dictionary<string, decimal> Run(Dictionary<string, object> items)
+        public Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config)
         {
             Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
-            _config = OptimizerAppDomainManager.GetConfig(AppDomain.CurrentDomain);
+            _config = config;
 
             _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid()).ToString();
             items.Remove("Id");
