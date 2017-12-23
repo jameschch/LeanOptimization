@@ -38,7 +38,8 @@ namespace Optimization
             };
             fitness.Value = (decimal)base.GetValueFromFitness(fitness.Fitness);
 
-            var output = string.Format("Start: {0}, End: {1}, Start: {2}, End: {3}, Dual Period {4}: {5}", start, end, Config.StartDate, Config.EndDate, this.Name, fitness.Value);
+            var output = string.Format($"Start: {Config.StartDate}, End: {Config.EndDate}, Start: {dualConfig.StartDate}, End: {dualConfig.EndDate}, "
+            + $"Id: {((Chromosome)chromosome).Id} Dual Period {this.Name}: {fitness.Value}");
             Program.Logger.Info(output);
 
             Config.StartDate = start;
