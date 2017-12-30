@@ -29,7 +29,6 @@ namespace Optimization
             _config = config;
 
             _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid()).ToString();
-            items.Remove("Id");
 
             if (_config.StartDate.HasValue && _config.EndDate.HasValue)
             {
@@ -44,7 +43,8 @@ namespace Optimization
                 return results[plain];
             }
 
-            foreach (var pair in items)
+            //just ignore id gene
+            foreach (var pair in items.Where(i => i.Key != "Id"))
             {
                 if (pair.Value is DateTime?)
                 {
@@ -93,9 +93,7 @@ namespace Optimization
             //separate log uniquely named
             var logFileName = "log" + DateTime.Now.ToString("yyyyMMddssfffffff") + "_" + _id + ".txt";
 
-            var logHandlers = new ILogHandler[] { new FileLogHandler(logFileName, true) };
-
-            using (Log.LogHandler = new CompositeLogHandler(logHandlers))
+            using (Log.LogHandler = new FileLogHandler(logFileName, true))
             {
                 LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
                 try
