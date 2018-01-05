@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
+using Newtonsoft.Json;
 
 namespace Optimization
 {
@@ -29,7 +30,7 @@ namespace Optimization
             //fitness has improved: adapt the period to steepen ascent. Don't adapt on degenerate negative return
             if (_previousFitness > 0 && fitness > _previousFitness && Config.StartDate.HasValue)
             {
-                var hours = Config.EndDate.Value.Subtract(Config.StartDate.Value).TotalHours;
+                var hours = Config.EndDate.Value.AddDays(1).AddTicks(-1).Subtract(Config.StartDate.Value).TotalHours;
                 var improvement = fitness / _previousFitness;
                 var adding = hours - (hours * improvement);
                 //todo: after config is modified, executions in process will still return for previous dates
@@ -54,6 +55,29 @@ namespace Optimization
             return base.Evaluate(chromosome);
         }
 
+        protected void ExtendFailureKeys(DateTime extending)
+        {
+            var failures = OptimizerAppDomainManager.GetResults().Where(r => r.Value["SharpeRatio"] == -10m);
+
+            var previousKey = JsonConvert.SerializeObject(Config.StartDate);
+            var extendingKey = JsonConvert.SerializeObject(extending);
+
+            var switching = new List<Tuple<string, string>>();
+
+            foreach (var item in failures)
+            {
+                var after = item.Key.Replace(previousKey, extendingKey);
+                switching.Add(Tuple.Create(item.Key, after));
+            }
+
+            foreach (var item in switching)
+            {
+                var before = OptimizerAppDomainManager.GetResults()[item.Item1];
+                OptimizerAppDomainManager.GetResults().Remove(item.Item1);
+                OptimizerAppDomainManager.GetResults().Add(item.Item2, before);
+            }
+
+        }
 
     }
 }

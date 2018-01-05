@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using QuantConnect.Configuration;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Logging;
@@ -36,11 +37,11 @@ namespace Optimization
                 if (!items.ContainsKey("endDate")) { items.Add("endDate", _config.EndDate); }
             }
 
-            string plain = string.Join(",", items.Select(s => s.Value));
+            string jsonKey = JsonConvert.SerializeObject(items);
 
-            if (results.ContainsKey(plain))
+            if (results.ContainsKey(jsonKey))
             {
-                return results[plain];
+                return results[jsonKey];
             }
 
             //just ignore id gene
@@ -62,7 +63,7 @@ namespace Optimization
 
             LaunchLean();
 
-            results.Add(plain, _resultsHandler.FullResults);
+            results.Add(jsonKey, _resultsHandler.FullResults);
             OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
 
             return _resultsHandler.FullResults;
