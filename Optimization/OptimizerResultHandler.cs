@@ -50,29 +50,13 @@ namespace Optimization
             }
         }
 
-        public TimeSpan ResamplePeriod
-        {
-            get
-            {
-                return _shadow.ResamplePeriod;
-            }
-        }
+        public TimeSpan ResamplePeriod => _shadow.ResamplePeriod;
 
-        public TimeSpan NotificationPeriod
-        {
-            get
-            {
-                return _shadow.NotificationPeriod;
-            }
-        }
+        public TimeSpan NotificationPeriod => _shadow.NotificationPeriod;
 
-        public bool IsActive
-        {
-            get
-            {
-                return _shadow.IsActive;
-            }
-        }
+        public bool IsActive => _shadow.IsActive;
+
+        private bool _hasError;
         #endregion
 
         public OptimizerResultHandler()
@@ -86,6 +70,12 @@ namespace Optimization
         {
             _shadow.SendFinalResult(job, orders, profitLoss, holdings, cashbook, statisticsResults, banner);
 
+            if (_hasError)
+            {
+                FullResults = null;
+                return;
+            }
+
             FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
         }
 
@@ -97,6 +87,7 @@ namespace Optimization
 
         public void Run()
         {
+            _hasError = false;
             _shadow.Run();
         }
 
@@ -128,6 +119,7 @@ namespace Optimization
         public void RuntimeError(string message, string stacktrace = "")
         {
             _shadow.ErrorMessage(message, stacktrace);
+            _hasError = true;
         }
 
         public void Sample(string chartName, string seriesName, int seriesIndex, SeriesType seriesType, DateTime time, decimal value, string unit = "$")

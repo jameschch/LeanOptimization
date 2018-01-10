@@ -51,6 +51,11 @@ namespace Optimization
 
                 var result = OptimizerAppDomainManager.RunAlgorithm(list, Config);
 
+                if (result == null)
+                {
+                    return 0;
+                }
+
                 var fitness = CalculateFitness(result);
 
                 output += string.Format("{0}: {1}", this.Name, fitness.Value);

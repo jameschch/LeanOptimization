@@ -63,8 +63,11 @@ namespace Optimization
 
             LaunchLean();
 
-            results.Add(jsonKey, _resultsHandler.FullResults);
-            OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
+            if (_resultsHandler.FullResults != null && _resultsHandler.FullResults.Any())
+            {
+                results.Add(jsonKey, _resultsHandler.FullResults);
+                OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
+            }
 
             return _resultsHandler.FullResults;
         }
