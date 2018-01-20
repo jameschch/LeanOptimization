@@ -29,7 +29,7 @@ namespace Optimization
         public override Gene GenerateGene(int geneIndex)
         {
             var item = _config[geneIndex];
-            return GeneFactory.Generate(item, _isActual);
+            return GeneFactory.Generate(item, geneIndex == 0 ? _isActual : false);
         }
 
         public override IChromosome CreateNew()
