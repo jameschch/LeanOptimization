@@ -30,7 +30,11 @@ namespace Optimization
             var dualFitness = new OptimizerFitness(dualConfig, this.Filter);
 
             var first = base.Evaluate(chromosome);
-            var second = dualFitness.Evaluate(chromosome);
+            double second = -10;
+            if (first > -10)
+            {
+                second = dualFitness.Evaluate(chromosome);
+            }
 
             var fitness = new FitnessResult
             {
