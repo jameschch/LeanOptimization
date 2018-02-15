@@ -45,7 +45,7 @@ namespace Optimization
             GeneFactory.Initialize(_config.Genes);
             for (int i = 0; i < _config.PopulationSize; i++)
             {
-                list.Add(new Chromosome(true, GeneFactory.Config));
+                list.Add(new Chromosome(i == 0, GeneFactory.Config));
             }
 
             int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
