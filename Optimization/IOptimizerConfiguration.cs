@@ -24,6 +24,8 @@ namespace Optimization
         float CrossoverProbability { get; set; }
         int MinimumTrades { get; set; }
         bool EnableFitnessFilter { get; set; }
+
+        bool UseActualGenesForWholeGeneration { get; set; }
     }
 
 }

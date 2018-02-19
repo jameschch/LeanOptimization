@@ -111,6 +111,11 @@ namespace Optimization
         /// </summary>
         public bool EnableFitnessFilter { get; set; }
 
+        /// <summary>
+        /// The actual settings for a gene by default are used for a single chromosome of the first generation. 
+        /// Setting this to true will result in the entire first generation being populated with any actal genes specified.
+        /// </summary>
+        public bool UseActualGenesForWholeGeneration { get; set; }
     }
 
     [Serializable]

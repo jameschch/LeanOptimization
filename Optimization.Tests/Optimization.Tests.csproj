@@ -102,6 +102,7 @@
     <Compile Include="AdaptiveSharpeRatioFitnessTests.cs" />
     <Compile Include="ConfiguredFitnessTests.cs" />
     <Compile Include="DeflatedSharpeRatioFitnessTest.cs" />
+    <Compile Include="DualPeriodSharpeFitnessTests.cs" />
     <Compile Include="DynastyTests.cs" />
     <Compile Include="GeneConverterTests.cs" />
     <Compile Include="GeneFactoryTests.cs" />

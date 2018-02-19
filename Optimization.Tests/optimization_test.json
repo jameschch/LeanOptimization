@@ -37,5 +37,6 @@
   "mutationProbability": 0.5,
   "crossoverProbability": 0.75,
   "minimumTrades": 1,
-  "enableFitnessFilter": true
+  "enableFitnessFilter": true,
+  "useActualGenesForWholeGeneration": false
 }

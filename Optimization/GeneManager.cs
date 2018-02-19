@@ -45,7 +45,9 @@ namespace Optimization
             GeneFactory.Initialize(_config.Genes);
             for (int i = 0; i < _config.PopulationSize; i++)
             {
-                list.Add(new Chromosome(i == 0, GeneFactory.Config));
+                //first chromosome always use actuals. For others decide by config
+                var isActual = i == 0 || _config.UseActualGenesForWholeGeneration;
+                list.Add(new Chromosome(isActual, GeneFactory.Config));
             }
 
             int max = _config.PopulationSizeMaximum < _config.PopulationSize ? _config.PopulationSize * 2 : _config.PopulationSizeMaximum;
