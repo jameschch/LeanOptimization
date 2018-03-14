@@ -91,6 +91,7 @@ namespace Optimization
                 Config.Set("data-folder", _config.DataFolder);
             }
 
+            Config.Set("api-handler", nameof(EmptyApiHandler));
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 

@@ -36,7 +36,7 @@ namespace Optimization
             return ads;
         }
 
-        static Runner CreateRunClassInAppDomain(ref AppDomain ad)
+        static Runner CreateRunnerInAppDomain(ref AppDomain ad)
         {
             // Create the second AppDomain.
             var name = Guid.NewGuid().ToString("x");
@@ -54,7 +54,7 @@ namespace Optimization
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
             AppDomain ad = null;
-            Runner rc = CreateRunClassInAppDomain(ref ad);
+            Runner rc = CreateRunnerInAppDomain(ref ad);
 
             var result = rc.Run(list, config);
             
@@ -72,6 +72,22 @@ namespace Optimization
             AppDomain.Unload(ad);
 
             return result;
+        }
+		
+        /// <summary>
+        /// Can be used to "russian doll" QCAlgorithm
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+		public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list, IOptimizerConfiguration config)
+        {
+            AppDomain ad = null;
+            Runner rc = CreateRunnerInAppDomain(ref ad);
+
+            var result = Task.Run(() => rc.Run(list, config));
+
+            return Tuple.Create(ad, result);
         }
 
         public static Dictionary<string, Dictionary<string, decimal>> GetResults()

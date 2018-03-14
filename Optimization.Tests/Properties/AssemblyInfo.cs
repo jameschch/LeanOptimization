@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OptimizationTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The McGraw-Hill Companies")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OptimizationTests")]
-[assembly: AssemblyCopyright("Copyright © The McGraw-Hill Companies 2016")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
