@@ -51,13 +51,28 @@ namespace Optimization
             return rc;
         }
 
+        static Queuer CreateQueuerInAppDomain(ref AppDomain ad)
+        {
+            // Create the second AppDomain.
+            var name = Guid.NewGuid().ToString("x");
+            ad = AppDomain.CreateDomain(name, null, _ads);
+
+            // Create an instance of MarshalbyRefType in the second AppDomain. 
+            // A proxy to the object is returned.
+            Queuer rc = (Queuer)ad.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(Queuer).FullName);
+
+            SetResults(ad, _results);
+
+            return rc;
+        }
+
         public static Dictionary<string, decimal> RunAlgorithm(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
             AppDomain ad = null;
             Runner rc = CreateRunnerInAppDomain(ref ad);
 
             var result = rc.Run(list, config);
-            
+
             lock (_resultsLocker)
             {
                 foreach (var item in GetResults(ad))
@@ -73,21 +88,20 @@ namespace Optimization
 
             return result;
         }
-		
+
         /// <summary>
         /// Can be used to "russian doll" QCAlgorithm
         /// </summary>
         /// <param name="list"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-		public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public static Tuple<AppDomain, Task<Dictionary<string, decimal>>> RunAlgorithmAsync(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            AppDomain ad = null;
-            Runner rc = CreateRunnerInAppDomain(ref ad);
+            var runner = CreateRunnerInAppDomain(ref EngineContext.AppDomain);
 
-            var result = Task.Run(() => rc.Run(list, config));
+            var result = Task.Run(() => runner.Run(list, config));
 
-            return Tuple.Create(ad, result);
+            return Tuple.Create(EngineContext.AppDomain, result);
         }
 
         public static Dictionary<string, Dictionary<string, decimal>> GetResults()
@@ -102,7 +116,7 @@ namespace Optimization
 
         public static T GetData<T>(AppDomain ad, string key)
         {
-           return (T)ad.GetData(key);
+            return (T)ad.GetData(key);
         }
 
         public static void SetResults(AppDomain ad, object item)

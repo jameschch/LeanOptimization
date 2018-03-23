@@ -154,7 +154,6 @@ namespace Optimization
 
         public void SetAlgorithmStatus(string algorithmId, AlgorithmStatus status, string message = "")
         {
-            throw new NotImplementedException();
         }
 
         public void SendStatistics(string algorithmId, decimal unrealized, decimal fees, decimal netProfit, decimal holdings, decimal equity, decimal netReturn, decimal volume, int trades, double sharpe)
