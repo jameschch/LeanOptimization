@@ -37,7 +37,7 @@ namespace Optimization
                 if (!items.ContainsKey("endDate")) { items.Add("endDate", _config.EndDate); }
             }
 
-            string jsonKey = JsonConvert.SerializeObject(items);
+            string jsonKey = JsonConvert.SerializeObject(items.Where(i => i.Key != "Id"));
 
             if (results.ContainsKey(jsonKey))
             {
