@@ -206,6 +206,11 @@ namespace Optimization
         {
             _shadow.SaveResults(name, result);
         }
+
+        public void SetAlphaRuntimeStatistics(AlphaRuntimeStatistics statistics)
+        {
+            _shadow.SetAlphaRuntimeStatistics(statistics);
+        }
         #endregion
     }
 }
