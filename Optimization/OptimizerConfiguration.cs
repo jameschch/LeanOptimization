@@ -116,6 +116,8 @@ namespace Optimization
         /// Setting this to true will result in the entire first generation being populated with any actal genes specified.
         /// </summary>
         public bool UseActualGenesForWholeGeneration { get; set; }
+
+        public string TransactionLog { get; set; }
     }
 
     [Serializable]
