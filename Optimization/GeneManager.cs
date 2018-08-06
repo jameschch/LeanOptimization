@@ -24,6 +24,7 @@ namespace Optimization
         private SmartThreadPoolTaskExecutor _executor;
         private Population _population;
         private OptimizerFitness _fitness;
+        private Chromosome _bestChromosome;
 
         public void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness)
         {
@@ -79,9 +80,14 @@ namespace Optimization
 
         void GenerationRan(object sender, EventArgs e)
         {
-            var fittest = (Chromosome)_population.BestChromosome;
-            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, fittest.Fitness,
-                _fitness.Name, _fitness.GetValueFromFitness(fittest.Fitness), fittest.ToKeyValueString(), fittest.Id);
+            //keep first iteration of alpha to maintain id
+            if (_bestChromosome == null || _population.BestChromosome.Fitness > _bestChromosome?.Fitness)
+            {
+                _bestChromosome = (Chromosome)_population.BestChromosome;
+            }
+
+            Program.Logger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
+                _fitness.Name, _fitness.GetValueFromFitness(_bestChromosome.Fitness), _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
         }
 
     }
