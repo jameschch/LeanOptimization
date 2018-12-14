@@ -185,5 +185,10 @@ namespace Optimization
         {
             throw new NotImplementedException();
         }
+
+        public PricesList ReadPrices(IEnumerable<Symbol> symbols)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

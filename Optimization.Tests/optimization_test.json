@@ -38,5 +38,6 @@
   "crossoverProbability": 0.75,
   "minimumTrades": 1,
   "enableFitnessFilter": true,
-  "useActualGenesForWholeGeneration": false
+  "useActualGenesForWholeGeneration": false,
+  "transactionLog":  null
 }
