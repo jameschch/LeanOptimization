@@ -29,7 +29,7 @@ namespace Optimization
             Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             _config = config;
 
-            _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid()).ToString();
+            _id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid().ToString("N")).ToString();
 
             if (_config.StartDate.HasValue && _config.EndDate.HasValue)
             {

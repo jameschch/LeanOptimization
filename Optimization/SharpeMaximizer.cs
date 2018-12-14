@@ -58,7 +58,7 @@ namespace Optimization
                     StringBuilder output = new StringBuilder();
                     var list = ((Chromosome)chromosome).ToDictionary();
 
-                    ((Chromosome)chromosome).Id = Guid.NewGuid().ToString();
+                    ((Chromosome)chromosome).Id = Guid.NewGuid().ToString("N");
 
                     list.Add("Id", ((Chromosome)chromosome).Id);
                     output.Append("Id: " + list["Id"] + ", ");
