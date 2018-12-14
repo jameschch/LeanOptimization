@@ -4,41 +4,45 @@
       "key": "take",
       "min": 0.02,
       "max": 0.1,
-      "precision": 2
+      "precision": 2,
+      "actual": 0.06
     },
     {
       "key": "fast",
       "min": 6,
       "max": 48,
       "precision": 0,
-      "actual": 13
+      "actual": 44
     },
     {
       "key": "slow",
       "min": 48,
       "max": 500,
+      "actual": 63
     }
   ],
   "populationSize": 24,
   "populationSizeMaximum": 48,
-  "generations": 1000,
+  "generations": 20,
   "stagnationGenerations": 30,
   "maxThreads": 8,
   "configPath": "../../../../Lean/Launcher/config.json",
   "algorithmTypeName": "ParameterizedAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "onePointCrossover": "true",
-  "fitnessTypeName": "Optimization.OptimizerFitness",
+  //"fitnessTypeName": "Optimization.OptimizerFitness",
+  //"fitnessTypeName": "Optimization.ConfiguredFitness",
+  "fitnessTypeName": "Optimization.SharpeMaximizer",
   "dataFolder": "../../../../Lean/Data",
-  "minimumTrades": 0,
-  "enableFitnessFilter": true
+  "minimumTrades": 2,
+  "enableFitnessFilter": true,
   //"mutationProbability": 0.5,
   //"crossoverProbability": 0.75
-  //"fitnessTypeName": "Optimization.ConfiguredFitness",
-  //"fitness": {
-  //  "scale": 1,
-  //  "modifier": -1,
-  //  "resultKey": "Beta",
-  //  "name": "MinimizeBeta"
-  //}
+  "fitness": {
+    //"scale": 1,
+    //"modifier": -1,
+    //"resultKey": "Beta",
+    //"name": "MinimizeBeta",
+    "OptimizerTypeName": "ParticleSwarm"
+  }
 }

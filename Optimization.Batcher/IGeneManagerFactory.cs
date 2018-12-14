@@ -3,7 +3,7 @@
     public interface IGeneManagerFactory
     {
 
-        IGeneManager Create();
+        IOptimizerManager Create();
 
     }
 }

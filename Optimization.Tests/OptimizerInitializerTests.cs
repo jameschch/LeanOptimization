@@ -19,7 +19,7 @@ namespace Optimization.Tests
         {
             var file = new Mock<IFileSystem>();
             file.Setup(f => f.File.ReadAllText(It.IsAny<string>())).Returns("{}");
-            var manager = new Mock<IGeneManager>();
+            var manager = new Mock<IOptimizerManager>();
             SetEntryAssembly(Assembly.GetCallingAssembly());
 
             var unit = new OptimizerInitializer(file.Object, manager.Object);

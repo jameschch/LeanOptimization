@@ -8,7 +8,7 @@ namespace Optimization.Batcher
 {
     public class GeneManagerFactory : IGeneManagerFactory
     {
-        public IGeneManager Create()
+        public IOptimizerManager Create()
         {
             return new GeneManager();
         }

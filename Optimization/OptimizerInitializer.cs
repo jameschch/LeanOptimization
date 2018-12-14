@@ -14,17 +14,18 @@ namespace Optimization
     {
 
         private readonly IFileSystem _file;
-        private readonly IGeneManager _manager;
+        private IOptimizerManager _manager;
         OptimizerConfiguration _config;
 
-        public OptimizerInitializer(IFileSystem file, IGeneManager manager)
+        public OptimizerInitializer(IFileSystem file, IOptimizerManager manager)
         {
             _file = file;
             _manager = manager;
         }
 
-        public OptimizerInitializer() : this(new FileSystem(), new GeneManager())
+        public OptimizerInitializer()
         {
+            _file = new FileSystem();
         }
 
         public void Initialize(string[] args)
@@ -49,6 +50,18 @@ namespace Optimization
 
             OptimizerFitness fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(_config.FitnessTypeName, false, BindingFlags.Default, null,
                 new object[] { _config, new FitnessFilter() }, null, null);
+
+            if (_manager == null)
+            {
+                if (fitness.GetType() == typeof(SharpeMaximizer))
+                {
+                    _manager = new MaximizerManager();
+                }
+                else
+                {
+                    _manager = new GeneManager();
+                }
+            }
 
             _manager.Initialize(_config, fitness);
             _manager.Start();

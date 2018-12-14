@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Optimization
 {
 
-    public class GeneManager : IGeneManager
+    public class GeneManager : IOptimizerManager
     {
         public const string Termination = "Termination Reached.";
         private IOptimizerConfiguration _config;
@@ -90,10 +90,5 @@ namespace Optimization
                 _fitness.Name, _fitness.GetValueFromFitness(_bestChromosome.Fitness), _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
         }
 
-    }
-    public interface IGeneManager
-    {
-        void Initialize(IOptimizerConfiguration config, OptimizerFitness fitness);
-        void Start();
     }
 }

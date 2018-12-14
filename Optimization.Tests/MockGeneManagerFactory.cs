@@ -11,7 +11,7 @@ namespace Optimization.Tests
     class MockGeneManagerFactory : IGeneManagerFactory
     {
 
-        public IGeneManager Create()
+        public IOptimizerManager Create()
         {
 
             Dynasty.LogOutput("utyvoiuhpoih[j[09u875");
@@ -20,7 +20,7 @@ namespace Optimization.Tests
             Dynasty.LogOutput("take: 1.1, fast: 12, slow: 123.456");
             Dynasty.LogOutput(null);
 
-            return Mock.Of<IGeneManager>();
+            return Mock.Of<IOptimizerManager>();
         }
     }
 }

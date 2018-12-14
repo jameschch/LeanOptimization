@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Optimization.Enums;
 
 namespace Optimization
 {
@@ -116,11 +117,13 @@ namespace Optimization
         /// Setting this to true will result in the entire first generation being populated with any actal genes specified.
         /// </summary>
         public bool UseActualGenesForWholeGeneration { get; set; }
+
     }
 
     [Serializable]
     public class FitnessConfiguration : IFitnessConfiguration
     {
+
         /// <summary>
         /// Name of the fitness
         /// </summary>
@@ -137,5 +140,7 @@ namespace Optimization
         /// The modifier function of the fitness with a default value of 1. A value of -1 will invert the optimization to minimize the algorithm statistic result.
         /// </summary>
         public double? Modifier { get; set; }
+
+        public string OptimizerTypeName { get; set; } = OptimizerTypeOptions.Genetic.ToString();
     }
 }
