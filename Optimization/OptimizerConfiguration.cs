@@ -118,6 +118,7 @@ namespace Optimization
         /// </summary>
         public bool UseActualGenesForWholeGeneration { get; set; }
 
+        public string TransactionLog { get; set; }
     }
 
     [Serializable]

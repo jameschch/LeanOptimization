@@ -91,6 +91,17 @@ namespace Optimization
                 Config.Set("data-folder", _config.DataFolder);
             }
 
+            if (!string.IsNullOrEmpty(_config.TransactionLog))
+            {
+                var filename = _config.TransactionLog;
+                filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, 
+                    Path.GetFileNameWithoutExtension(filename) + _id + Path.GetExtension(filename));
+
+                Config.Set("transaction-log", filename);
+            }
+
+            //transaction-log
+
             Config.Set("api-handler", nameof(EmptyApiHandler));
             var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();

@@ -26,6 +26,7 @@ namespace Optimization
         bool EnableFitnessFilter { get; set; }
 
         bool UseActualGenesForWholeGeneration { get; set; }
+        string TransactionLog { get; set; }
     }
 
 }
