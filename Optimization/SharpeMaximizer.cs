@@ -44,7 +44,7 @@ namespace Optimization
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
-                        throw new Exception("Genetic optimizer cannot be used with Sharpe Maximizer"); 
+                        throw new Exception("Genetic optimizer cannot be used with Sharpe Maximizer");
                     }
                 }
 
@@ -55,37 +55,48 @@ namespace Optimization
 
                 Func<double[], OptimizerResult> minimize = p =>
                 {
-                    StringBuilder output = new StringBuilder();
-                    var list = ((Chromosome)chromosome).ToDictionary();
-
-                    ((Chromosome)chromosome).Id = Guid.NewGuid().ToString("N");
-
-                    list.Add("Id", ((Chromosome)chromosome).Id);
-                    output.Append("Id: " + list["Id"] + ", ");
-
-                    for (int i = 0; i < Config.Genes.Count(); i++)
+                    var id = Guid.NewGuid().ToString("N");
+                    try
                     {
-                        var key = Config.Genes.ElementAt(i).Key;
-                        var precision = Config.Genes.ElementAt(i).Precision ?? 0;
-                        var value = Math.Round(p[i], precision);
-                        list[key] = value;
+                        StringBuilder output = new StringBuilder();
+                        var list = ((Chromosome)chromosome).ToDictionary();
 
-                        output.Append(key  + ": " + value.ToString() + ", ");
+                        ((Chromosome)chromosome).Id = id;
+
+                        list.Add("Id", ((Chromosome)chromosome).Id);
+                        output.Append("Id: " + list["Id"] + ", ");
+
+                        for (int i = 0; i < Config.Genes.Count(); i++)
+                        {
+                            var key = Config.Genes.ElementAt(i).Key;
+                            var precision = Config.Genes.ElementAt(i).Precision ?? 0;
+                            var value = Math.Round(p[i], precision);
+                            list[key] = value;
+
+                            output.Append(key + ": " + value.ToString() + ", ");
+                        }
+
+                        if (Config.StartDate.HasValue && Config.EndDate.HasValue)
+                        {
+                            output.AppendFormat("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
+                        }
+
+                        var score = OptimizerAppDomainManager.RunAlgorithm(list, Config);
+
+                        var fitness = CalculateFitness(score);
+
+                        output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
+                        Program.Logger.Info(output);
+
+                        return new OptimizerResult(p, (double)fitness.Value * -1);
+
                     }
-
-                    if (Config.StartDate.HasValue && Config.EndDate.HasValue)
+                    catch (Exception ex)
                     {
-                        output.AppendFormat("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
+                        Program.Logger.Info($"Id: {id}, Iteration failed with error: {ex.ToString()}");
+
+                        return new OptimizerResult(p, 10d);
                     }
-
-                    var score = OptimizerAppDomainManager.RunAlgorithm(list, Config);
-
-                    var fitness = CalculateFitness(score);
-
-                    output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
-                    Program.Logger.Info(output);
-
-                    return new OptimizerResult(p, (double)fitness.Value * -1);
                 };
 
                 // run optimizer
