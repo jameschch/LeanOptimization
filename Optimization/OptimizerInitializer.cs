@@ -53,7 +53,7 @@ namespace Optimization
 
             if (_manager == null)
             {
-                if (fitness.GetType() == typeof(SharpeMaximizer))
+                if (new[] { typeof(SharpeMaximizer), typeof(NFoldCrossReturnMaximizer), typeof(NestedCrossSharpeMaximizer), typeof(NestedCrossSharpeMaximizer) }.Contains(fitness.GetType()))
                 {
                     _manager = new MaximizerManager();
                 }

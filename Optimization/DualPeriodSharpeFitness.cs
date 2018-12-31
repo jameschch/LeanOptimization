@@ -11,14 +11,14 @@ namespace Optimization
     public class DualPeriodSharpeFitness : OptimizerFitness
     {
 
+        public override string Name { get; set; } = "DualPeriodSharpe";
+
         public DualPeriodSharpeFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
 
         public override double Evaluate(IChromosome chromosome)
         {
-            this.Name = "DualPeriodSharpe";
-
             var dualConfig = Clone<OptimizerConfiguration>((OptimizerConfiguration)Config);
             var start = Config.StartDate.Value;
             var end = Config.EndDate.Value;
@@ -50,12 +50,6 @@ namespace Optimization
             Config.EndDate = end;
 
             return fitness.Fitness;
-        }
-
-        public static T Clone<T>(T source)
-        {
-            var serialized = JsonConvert.SerializeObject(source);
-            return JsonConvert.DeserializeObject<T>(serialized);
         }
 
     }

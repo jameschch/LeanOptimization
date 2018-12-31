@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GeneticSharp.Domain.Chromosomes;
+using Newtonsoft.Json;
 
 namespace Optimization
 {
@@ -17,10 +18,11 @@ namespace Optimization
     public class OptimizerFitness : IFitness
     {
 
-        public string Name { get; protected set; }
+        public virtual string Name { get; set; } = "Sharpe";
         public IOptimizerConfiguration Config { get; protected set; }
         public IFitnessFilter Filter { get; set; }
-        double scale = 0.02;
+        protected double Scale { get; set; } = 0.02;
+        protected const decimal ErrorRatio = -10;
 
         public OptimizerFitness(IOptimizerConfiguration config, IFitnessFilter filter)
         {
@@ -78,26 +80,39 @@ namespace Optimization
 
             if (Filter != null && !Filter.IsSuccess(result, this))
             {
-                ratio = -10m;
+                ratio = ErrorRatio;
             }
 
             fitness.Value = ratio;
 
-            fitness.Fitness = (double)(System.Math.Max(ratio, -10) + 10) * scale;
+            fitness.Fitness = (double)(System.Math.Max(ratio, ErrorRatio) + 10) * Scale;
 
             return fitness;
         }
 
         public virtual double GetValueFromFitness(double? fitness)
         {
-            return fitness.Value / scale - 10;
+            return fitness.Value / Scale - 10;
+        }
+
+        protected static T Clone<T>(T source)
+        {
+            var serialized = JsonConvert.SerializeObject(source);
+            return JsonConvert.DeserializeObject<T>(serialized);
         }
 
         protected class FitnessResult
         {
+            /// <summary>
+            /// The value of the result
+            /// </summary>
             public decimal Value { get; set; }
+            /// <summary>
+            /// The scaled or adjused fitness
+            /// </summary>
             public double Fitness { get; set; }
         }
+
 
     }
 }

@@ -8,6 +8,9 @@ namespace Optimization
 {
     public class CompoundingAnnualReturnFitness : OptimizerFitness
     {
+
+        public override string Name { get; set; } = "Return";
+
         public CompoundingAnnualReturnFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
@@ -17,7 +20,6 @@ namespace Optimization
         //Fitness based on Compounding Annual Return
         protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
         {
-            this.Name = "Return";
             var fitness = new FitnessResult();
 
             var car = result["CompoundingAnnualReturn"];

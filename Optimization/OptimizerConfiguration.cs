@@ -141,7 +141,13 @@ namespace Optimization
         /// The modifier function of the fitness with a default value of 1. A value of -1 will invert the optimization to minimize the algorithm statistic result.
         /// </summary>
         public double? Modifier { get; set; }
-
+        /// <summary>
+        /// Type of fitness/optimization algorithm
+        /// </summary>
         public string OptimizerTypeName { get; set; } = OptimizerTypeOptions.Genetic.ToString();
+        /// <summary>
+        /// Number of cross validation folds
+        /// </summary>
+        public int Folds { get; set; }
     }
 }

@@ -177,6 +177,9 @@
     <Compile Include="Enums.cs" />
     <Compile Include="FitnessFilter.cs" />
     <Compile Include="IOptimizerManager.cs" />
+    <Compile Include="NFoldCrossReturnMaximizer.cs" />
+    <Compile Include="NFoldCrossSharpeMaximizer.cs" />
+    <Compile Include="NestedCrossSharpeMaximizer.cs" />
     <Compile Include="SharpeMaximizer.cs" />
     <Compile Include="MaximizerManager.cs" />
     <Compile Include="IFitnessFilter.cs" />

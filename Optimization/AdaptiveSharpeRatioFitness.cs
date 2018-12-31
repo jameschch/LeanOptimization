@@ -17,7 +17,7 @@ namespace Optimization
     public class AdaptiveSharpeRatioFitness : OptimizerFitness
     {
 
-        private double _previousFitness = -10;
+        private double _previousFitness = (double)ErrorRatio;
 
         public AdaptiveSharpeRatioFitness(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
@@ -57,7 +57,7 @@ namespace Optimization
 
         protected void ExtendFailureKeys(DateTime extending)
         {
-            var failures = OptimizerAppDomainManager.GetResults().Where(r => r.Value["SharpeRatio"] == -10m);
+            var failures = OptimizerAppDomainManager.GetResults().Where(r => r.Value["SharpeRatio"] == ErrorRatio);
 
             var previousKey = JsonConvert.SerializeObject(Config.StartDate);
             var extendingKey = JsonConvert.SerializeObject(extending);

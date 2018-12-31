@@ -29,14 +29,16 @@ namespace Optimization
         {
             GeneFactory.Initialize(_config.Genes);
             var chromosome = new Chromosome(false, GeneFactory.Config);
-            var maximizer = new SharpeMaximizer(_config, new FitnessFilter());
-            maximizer.Evaluate(chromosome);
+            _fitness.Evaluate(chromosome);
 
             Program.Logger.Info(Termination);
 
-            var info = $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: {_fitness.GetValueFromFitness(chromosome.Fitness)}, {((Chromosome)maximizer.Best).ToKeyValueString()}";
-            Program.Logger.Info(info);
+            var best = ((Chromosome)((SharpeMaximizer)_fitness).Best);
 
+            var info = $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: " +
+            $" {_fitness.GetValueFromFitness(chromosome.Fitness)}, {best.ToKeyValueString()}";
+
+            Program.Logger.Info(info);
         }
 
     }

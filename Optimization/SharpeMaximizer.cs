@@ -13,6 +13,8 @@ namespace Optimization
     public class SharpeMaximizer : OptimizerFitness
     {
 
+        public virtual string ScoreKey { get; set; } = "SharpeRatio";
+        public override string Name { get; set; } = "Sharpe";
         public IChromosome Best { get; set; }
 
         public SharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
@@ -21,13 +23,11 @@ namespace Optimization
 
         public override double Evaluate(IChromosome chromosome)
         {
-            Name = "Sharpe";
-
             try
             {
                 var parameters = Config.Genes.Select(s =>
                     new MinMaxParameterSpec(min: (double)(s.MinDecimal ?? s.MinInt.Value), max: (double)(s.MaxDecimal ?? s.MaxInt.Value),
-                        transform: Transform.Linear, parameterType: s.Precision > 0 ? ParameterType.Continuous : ParameterType.Discrete)
+                    transform: Transform.Linear, parameterType: s.Precision > 0 ? ParameterType.Continuous : ParameterType.Discrete)
                 ).ToArray();
 
 
@@ -40,7 +40,8 @@ namespace Optimization
                 {
                     if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
                     {
-                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSizeMaximum, seed: 42);
+                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSize,
+                            seed: 42);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
@@ -81,21 +82,20 @@ namespace Optimization
                             output.AppendFormat("Start: {0}, End: {1}, ", Config.StartDate, Config.EndDate);
                         }
 
-                        var score = OptimizerAppDomainManager.RunAlgorithm(list, Config);
-
+                        var score = GetScore(list);
                         var fitness = CalculateFitness(score);
 
                         output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
                         Program.Logger.Info(output);
 
-                        return new OptimizerResult(p, (double)fitness.Value * -1);
+                        return new OptimizerResult(p, fitness.Fitness);
 
                     }
                     catch (Exception ex)
                     {
-                        Program.Logger.Info($"Id: {id}, Iteration failed with error: {ex.ToString()}");
+                        Program.Logger.Error($"Id: {id}, Iteration failed.");
 
-                        return new OptimizerResult(p, 10d);
+                        return new OptimizerResult(p, 1.01);
                     }
                 };
 
@@ -103,20 +103,25 @@ namespace Optimization
                 var result = optimizer.OptimizeBest(minimize);
 
                 Best = ToChromosome(result.ParameterSet, chromosome);
-                Best.Fitness = result.Error * -1;
+                Best.Fitness = result.Error;
 
                 if (result == null)
                 {
                     return 0;
                 }
 
-                return result.Error * -1;
+                return result.Error;
             }
             catch (Exception ex)
             {
                 Program.Logger.Error(ex);
                 return 0;
             }
+        }
+
+        protected virtual Dictionary<string, decimal> GetScore(Dictionary<string, object> list)
+        {
+            return OptimizerAppDomainManager.RunAlgorithm(list, Config);
         }
 
         private IChromosome ToChromosome(double[] parameters, IChromosome configChromosome)
@@ -130,6 +135,28 @@ namespace Optimization
 
             return configChromosome;
         }
+
+        protected override FitnessResult CalculateFitness(Dictionary<string, decimal> result)
+        {
+            var ratio = result[ScoreKey];
+
+            if (Filter != null && !Filter.IsSuccess(result, this))
+            {
+                ratio = ErrorRatio;
+            }
+
+            return new FitnessResult
+            {
+                Value = ratio,
+                Fitness = 1 - ((double)ratio / 1000)
+            };
+        }
+
+        public override double GetValueFromFitness(double? fitness)
+        {
+            return ((fitness ?? 1.01) - 1) * 1000 * -1;
+        }
+
 
     }
 }
