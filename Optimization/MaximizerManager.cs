@@ -36,7 +36,7 @@ namespace Optimization
             var best = ((Chromosome)((SharpeMaximizer)_fitness).Best);
 
             var info = $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: " +
-            $" {_fitness.GetValueFromFitness(chromosome.Fitness)}, {best.ToKeyValueString()}";
+            $"{_fitness.GetValueFromFitness(chromosome.Fitness).ToString("F")}, {best.ToKeyValueString()}";
 
             Program.Logger.Info(info);
         }

@@ -11,16 +11,14 @@ namespace Optimization
 
         public override string Name { get; set; } = "NestedCrossSharpe";
 
-
         public NestedCrossSharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
         }
-
         //todo: configurable k-folds
-        protected override Dictionary<string, decimal> GetScore(Dictionary<string, object> list)
+        public override Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            //todo: start date is rounded down
-            var score = base.GetScore(list);
+            //todo: threads
+            var score = base.GetScore(list, config);
 
             var period = Config.StartDate.Value - Config.EndDate.Value.Date.AddDays(1).AddMilliseconds(-1);
             var oneThird = period.Ticks / 3;

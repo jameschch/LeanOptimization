@@ -12,7 +12,6 @@ namespace Optimization
         private int _folds = 2;
         public override string Name { get; set; } = "NFoldCrossSharpe";
 
-
         public NFoldCrossSharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
             var folds = config.Fitness?.Folds ?? 2;
@@ -22,20 +21,50 @@ namespace Optimization
             }
         }
 
-        protected override Dictionary<string, decimal> GetScore(Dictionary<string, object> list)
+        public override Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
         {
-            var score = base.GetScore(list);
+            var firstConfig = Clone((OptimizerConfiguration)Config);
 
-            var endDate = Config.EndDate.Value.Date.AddDays(1).AddTicks(-1);
-            var period = Config.StartDate.Value.Date - endDate;
-            var foldSize = Math.Min(Math.Abs(period.Ticks) + 1 / _folds, TimeSpan.FromDays(1).Ticks);
+            firstConfig.EndDate = firstConfig.EndDate.Value.Date.AddDays(1).AddTicks(-1);
+            firstConfig.StartDate = firstConfig.StartDate.Value.Date;
+            var period = (firstConfig.EndDate.Value - firstConfig.StartDate.Value).Ticks;
+            var minimumPeriod = 863999999999;
+
+            var foldSize = period / _folds;
+
+            if (foldSize < minimumPeriod)
+            {
+                foldSize = minimumPeriod;
+                _folds = 1;
+            }
+
+            firstConfig.EndDate = firstConfig.StartDate.Value.AddTicks(foldSize);
+
+            var score = base.GetScore(list, firstConfig);
+            //early stopping
+            if (CalculateFitness(score).Value == ErrorRatio)
+            {
+                return score;
+            }
+
+            var previousConfig = firstConfig;
 
             for (int i = 0; i < _folds - 1; i++)
             {
-                var iterationConfig = Clone((OptimizerConfiguration)Config);
-                iterationConfig.StartDate = endDate + TimeSpan.FromTicks(1);
+                var iterationConfig = Clone((OptimizerConfiguration)previousConfig);
+                iterationConfig.StartDate = iterationConfig.EndDate.Value.AddTicks(1);
                 iterationConfig.EndDate = iterationConfig.StartDate.Value.AddTicks(foldSize);
-                OptimizerAppDomainManager.RunAlgorithm(list, iterationConfig).Select(s => score[s.Key] += s.Value);
+
+                var foldScore = base.GetScore(list, iterationConfig);
+                //early stopping
+                if (CalculateFitness(foldScore).Value == ErrorRatio)
+                {
+                    return foldScore;
+                }
+
+                score = foldScore.ToDictionary(k => k.Key, v => score[v.Key] += v.Value);
+
+                previousConfig = iterationConfig;
             }
 
             var average = score.ToDictionary(d => d.Key, d => d.Value / _folds);

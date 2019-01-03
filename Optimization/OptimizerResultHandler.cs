@@ -82,7 +82,7 @@ namespace Optimization
         #region Shadow Methods
         public void Initialize(AlgorithmNodePacket job, IMessagingHandler messagingHandler, IApi api, IDataFeed dataFeed, ISetupHandler setupHandler, ITransactionHandler transactionHandler)
         {
-            _shadow.Initialize(job, messagingHandler, api, dataFeed, setupHandler, transactionHandler);
+            _shadow.Initialize(job, messagingHandler, api, setupHandler, transactionHandler);
         }
 
         public void Run()
@@ -210,6 +210,16 @@ namespace Optimization
         public void SetAlphaRuntimeStatistics(AlphaRuntimeStatistics statistics)
         {
             _shadow.SetAlphaRuntimeStatistics(statistics);
+        }
+
+        public void Initialize(AlgorithmNodePacket job, IMessagingHandler messagingHandler, IApi api, ISetupHandler setupHandler, ITransactionHandler transactionHandler)
+        {
+            _shadow.Initialize(job, messagingHandler, api, setupHandler, transactionHandler);
+        }
+
+        public void SetDataManager(IDataFeedSubscriptionManager dataManager)
+        {
+            _shadow.SetDataManager(dataManager);
         }
         #endregion
     }

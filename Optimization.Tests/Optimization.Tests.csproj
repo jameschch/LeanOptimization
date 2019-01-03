@@ -107,6 +107,7 @@
     <Compile Include="GeneFactoryTests.cs" />
     <Compile Include="GeneManagerTests.cs" />
     <Compile Include="MockGeneManagerFactory.cs" />
+    <Compile Include="NFoldCrossSharpeMaximizerTests.cs" />
     <Compile Include="OptimizerFitnessTests.cs" />
     <Compile Include="OptimizerInitializerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,6 +7,7 @@ using QuantConnect;
 using QuantConnect.Api;
 using QuantConnect.API;
 using QuantConnect.Data;
+using QuantConnect.Data.Market;
 using QuantConnect.Interfaces;
 using QuantConnect.Securities;
 
@@ -187,6 +188,16 @@ namespace Optimization
         }
 
         public PricesList ReadPrices(IEnumerable<Symbol> symbols)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<QuantConnect.Data.Market.Split> GetSplits(DateTime from, DateTime to)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<QuantConnect.Data.Market.Dividend> GetDividends(DateTime from, DateTime to)
         {
             throw new NotImplementedException();
         }

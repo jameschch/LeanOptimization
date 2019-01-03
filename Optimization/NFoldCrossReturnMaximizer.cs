@@ -1,9 +1,8 @@
 ﻿namespace Optimization
 {
-    public class NFoldCrossReturnMaximizer : SharpeMaximizer
+    public class NFoldCrossReturnMaximizer : NFoldCrossSharpeMaximizer
     {
 
-        private int _folds = 2;
         public override string Name { get; set; } = "NFoldCrossReturn";
         public override string ScoreKey { get; set; } = "CompoundingAnnualReturn";
 
