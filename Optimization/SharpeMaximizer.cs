@@ -37,15 +37,23 @@ namespace Optimization
 
 
                 IOptimizer optimizer = null;
-                if (Config.Fitness == null || Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
+                if (Config.Fitness != null)
                 {
-                    optimizer = new RandomSearchOptimizer(parameters, iterations: Config.Generations, seed: 42, runParallel: true);
-                }
-                else if (Config.Fitness != null)
-                {
-                    if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
+                    if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
+                    {
+                        optimizer = new RandomSearchOptimizer(parameters, iterations: Config.Generations, seed: 42, runParallel: true);
+                    }
+                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
                     {
                         optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSize, seed: 42);
+                    }
+                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
+                    {
+                        optimizer = new BayesianOptimizer(parameters, maxIterations: Config.Generations, numberOfStartingPoints: Config.PopulationSize, seed: 42);
+                    }
+                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
+                    {
+                        optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Config.Generations, maxIterationsPrRestart: Config.PopulationSize, seed: 42);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
@@ -54,9 +62,7 @@ namespace Optimization
                 }
 
                 //todo:
-                // GridSearchOptimizer
-                // GlobalizedBoundedNelderMeadOptimizer
-                // BayesianOptimizer
+                // GridSearchOptimizer?
 
                 Func<double[], OptimizerResult> minimize = p => Minimize(p, (Chromosome)chromosome);
 
