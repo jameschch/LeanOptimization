@@ -30,9 +30,9 @@
   "algorithmTypeName": "ParameterizedAlgorithm",
   "algorithmLocation": "../../../Optimization.Example/bin/debug/Optimization.Example.dll",
   "onePointCrossover": "true",
-  //"fitnessTypeName": "Optimization.OptimizerFitness",
+  "fitnessTypeName": "Optimization.OptimizerFitness",
   //"fitnessTypeName": "Optimization.ConfiguredFitness",
- "fitnessTypeName": "Optimization.NFoldCrossReturnMaximizer",
+  //"fitnessTypeName": "Optimization.NFoldCrossReturnMaximizer",
   //"fitnessTypeName": "Optimization.NFoldCrossSharpeMaximizer",
   //"fitnessTypeName": "Optimization.SharpeMaximizer",
   "dataFolder": "../../../../Lean/Data",
@@ -40,11 +40,13 @@
   "enableFitnessFilter": true,
   //"mutationProbability": 0.5,
   //"crossoverProbability": 0.75
-  "fitness": {
-    //"scale": 1,
-    //"modifier": -1,
-    //"resultKey": "Beta",
-    //"name": "MinimizeBeta",
-    "OptimizerTypeName": "ParticleSwarm"
-  }
+  //"fitness": {
+  //  "scale": 1,
+  //  "modifier": -1,
+  //  "resultKey": "Beta",
+  //  "name": "MinimizeBeta",
+  //  "OptimizerTypeName": "ParticleSwarm"
+  //  "OptimizerTypeName": "RandomSearch"
+  //  "OptimizerTypeName": "GlobalizedBoundedNelderMead"
+  //}
 }

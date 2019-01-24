@@ -34,14 +34,16 @@ namespace Optimization.Tests
                 EnableFitnessFilter = true,
                 Fitness = new FitnessConfiguration { Folds = folds }
             },
-            new FitnessFilter()) { CallBase = true };
+            new FitnessFilter())
+            { CallBase = true };
 
             unit.Setup(x => x.RunAlgorithm(It.IsAny<Dictionary<string, object>>(), It.IsAny<IOptimizerConfiguration>())).Returns<Dictionary<string, object>, IOptimizerConfiguration>((l, c) =>
             {
                 _actualStartDate.Add(ConvertDate(c.StartDate));
                 _actualEndDate.Add(ConvertDate(c.EndDate));
 
-                return new Dictionary<string, decimal> { { "SharpeRatio", 1 } };
+                return new Dictionary<string, decimal> { { "SharpeRatio", 1 }, { "CompoundingAnnualReturn", 1 }, { "TotalNumberOfTrades", 1 },
+                    { "LossRate", 0.1m } };
             });
 
             var actual = unit.Object.GetScore(new Dictionary<string, object>(), unit.Object.Config);

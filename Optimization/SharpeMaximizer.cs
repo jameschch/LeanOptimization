@@ -41,11 +41,12 @@ namespace Optimization
                 {
                     if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.RandomSearch.ToString())
                     {
-                        optimizer = new RandomSearchOptimizer(parameters, iterations: Config.Generations, seed: 42, runParallel: true);
+                        optimizer = new RandomSearchOptimizer(parameters, iterations: Config.Generations, seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.ParticleSwarm.ToString())
                     {
-                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSize, seed: 42);
+                        optimizer = new ParticleSwarmOptimizer(parameters, maxIterations: Config.Generations, numberOfParticles: Config.PopulationSize,
+                            seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
                     {
@@ -53,7 +54,8 @@ namespace Optimization
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
-                        optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Config.Generations, maxIterationsPrRestart: Config.PopulationSize, seed: 42);
+                        optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Config.Generations, 
+                            maxIterationsPrRestart: Config.PopulationSize, seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
