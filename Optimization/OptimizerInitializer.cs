@@ -46,7 +46,14 @@ namespace Optimization
                 }
             }
 
-            OptimizerAppDomainManager.Initialize();
+            if (_config.UseSharedAppDomain)
+            {
+                SingleAppDomainManager.Initialize();
+            }
+            else
+            {
+                OptimizerAppDomainManager.Initialize();
+            }
 
             OptimizerFitness fitness = (OptimizerFitness)Assembly.GetExecutingAssembly().CreateInstance(_config.FitnessTypeName, false, BindingFlags.Default, null,
                 new object[] { _config, new FitnessFilter() }, null, null);

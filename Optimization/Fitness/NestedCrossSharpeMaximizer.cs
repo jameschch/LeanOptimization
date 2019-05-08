@@ -25,10 +25,12 @@ namespace Optimization
 
             var oneThirdConfig = Clone((OptimizerConfiguration)Config);
             oneThirdConfig.EndDate = Config.StartDate.Value.AddTicks(oneThird);
+            //todo: single app domain
             OptimizerAppDomainManager.RunAlgorithm(list, oneThirdConfig).Select(s => score[s.Key] += s.Value);
 
             var twoThirdsConfig = Clone((OptimizerConfiguration)Config);
             twoThirdsConfig.EndDate = Config.StartDate.Value.AddTicks(oneThird * 2);
+            //todo: single app domain
             OptimizerAppDomainManager.RunAlgorithm(list, oneThirdConfig).Select(s => score[s.Key] += s.Value);
             return score.ToDictionary(d => d.Key, d => d.Value / 3);
 

@@ -44,31 +44,31 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QuantConnect.Algorithm">
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Api">
-      <HintPath>..\..\Lean\Api\bin\Debug\QuantConnect.Api.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Api\bin\Debug\QuantConnect.Api.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Common, Version=2.3.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Configuration, Version=2.3.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Configuration.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Indicators">
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Indicators.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Indicators.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Logging, Version=2.3.0.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Logging.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Logging.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Messaging">
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Messaging.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Messaging.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Queues">
-      <HintPath>..\..\Lean\Launcher\bin\Debug\QuantConnect.Queues.dll</HintPath>
+      <HintPath>..\..\Lean_Master\Launcher\bin\Debug\QuantConnect.Queues.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

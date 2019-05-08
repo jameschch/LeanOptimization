@@ -12,11 +12,6 @@ using System.Linq;
 
 namespace Optimization
 {
-    public interface IRunner
-    {
-        Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config);
-    }
-
     public class Runner : MarshalByRefObject, IRunner
     {
 
