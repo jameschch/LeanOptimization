@@ -128,6 +128,7 @@ namespace Optimization
         /// <summary>
         /// If true, will always execute algorithm even if supplied parameters have previously been executed
         /// </summary>
+        /// <remarks>May be used for non-deterministic execution results</remarks>
         public bool EnableRunningDuplicateParameters { get; set; }
     }
 
