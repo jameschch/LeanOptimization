@@ -38,7 +38,7 @@ namespace Optimization.Tests
         {
             var originalHours = CurrentHours(_config);
           
-            OptimizerAppDomainManager.GetResults().Add("key", new Dictionary<string, decimal>() { { "SharpeRatio", 123m } });
+            OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain).Add("key", new Dictionary<string, decimal>() { { "SharpeRatio", 123m } });
 
             //will not adapt on first result
             Assert.AreEqual(originalHours, CurrentHours(_config));
@@ -74,13 +74,13 @@ namespace Optimization.Tests
             var successKey = JsonConvert.SerializeObject(new Dictionary<string, object> { { "startDate", _config.StartDate }, { "period", 456 } });
             var expectedKey = JsonConvert.SerializeObject(new Dictionary<string, object> { { "startDate", extending }, { "period", 123 } });
 
-            OptimizerAppDomainManager.GetResults().Add(failureKey, failure);
-            OptimizerAppDomainManager.GetResults().Add(successKey, success);
+            OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain).Add(failureKey, failure);
+            OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain).Add(successKey, success);
 
             _unit.ExtendFailureKeysWrapper(extending);
 
-            Assert.AreEqual(1.5m, OptimizerAppDomainManager.GetResults()[successKey]["SharpeRatio"]);
-            Assert.AreEqual(-10m, OptimizerAppDomainManager.GetResults()[expectedKey]["SharpeRatio"]);
+            Assert.AreEqual(1.5m, OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain)[successKey]["SharpeRatio"]);
+            Assert.AreEqual(-10m, OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain)[expectedKey]["SharpeRatio"]);
         }
 
         private double CurrentHours(OptimizerConfiguration config)

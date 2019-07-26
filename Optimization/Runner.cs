@@ -12,11 +12,6 @@ using System.Linq;
 
 namespace Optimization
 {
-    public interface IRunner
-    {
-        Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config);
-    }
-
     public class Runner : MarshalByRefObject, IRunner
     {
 
@@ -39,7 +34,7 @@ namespace Optimization
 
             string jsonKey = JsonConvert.SerializeObject(items.Where(i => i.Key != "Id"));
 
-            if (results.ContainsKey(jsonKey))
+            if (!config.EnableRunningDuplicateParameters && results.ContainsKey(jsonKey))
             {
                 return results[jsonKey];
             }
@@ -65,6 +60,10 @@ namespace Optimization
 
             if (_resultsHandler.FullResults != null && _resultsHandler.FullResults.Any())
             {
+                if (config.EnableRunningDuplicateParameters && results.ContainsKey(jsonKey))
+                {
+                    results.Remove(jsonKey);
+                }
                 results.Add(jsonKey, _resultsHandler.FullResults);
                 OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, results);
             }
@@ -94,7 +93,7 @@ namespace Optimization
             if (!string.IsNullOrEmpty(_config.TransactionLog))
             {
                 var filename = _config.TransactionLog;
-                filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, 
+                filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                     Path.GetFileNameWithoutExtension(filename) + _id + Path.GetExtension(filename));
 
                 Config.Set("transaction-log", filename);
@@ -129,8 +128,9 @@ namespace Optimization
 
                 try
                 {
-                    var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
                     var algorithmManager = new AlgorithmManager(false);
+                    systemHandlers.LeanManager.Initialize(systemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
+                    var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
                     engine.Run(job, algorithmManager, algorithmPath);
                 }
                 finally

@@ -119,6 +119,17 @@ namespace Optimization
         public bool UseActualGenesForWholeGeneration { get; set; }
 
         public string TransactionLog { get; set; }
+
+        /// <summary>
+        /// If true, will execute algorithms in a single AppDomain, allowing object instance sharing between iterations and generations.
+        /// </summary>
+        public bool UseSharedAppDomain { get; set; }
+
+        /// <summary>
+        /// If true, will always execute algorithm even if supplied parameters have previously been executed
+        /// </summary>
+        /// <remarks>May be used for non-deterministic execution results</remarks>
+        public bool EnableRunningDuplicateParameters { get; set; }
     }
 
     [Serializable]

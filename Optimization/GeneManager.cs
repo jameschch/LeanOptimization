@@ -7,7 +7,7 @@ using GeneticSharp.Domain.Populations;
 using GeneticSharp.Domain.Reinsertions;
 using GeneticSharp.Domain.Selections;
 using GeneticSharp.Domain.Terminations;
-using GeneticSharp.Infrastructure.Threading;
+using GeneticSharp.Infrastructure.Framework.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace Optimization
     {
         public const string Termination = "Termination Reached.";
         private IOptimizerConfiguration _config;
-        private SmartThreadPoolTaskExecutor _executor;
+        private ParallelTaskExecutor  _executor;
         private Population _population;
         private OptimizerFitness _fitness;
         private Chromosome _bestChromosome;
@@ -30,7 +30,7 @@ namespace Optimization
         {
             _config = config;
             _fitness = fitness;
-            _executor = new SmartThreadPoolTaskExecutor() { MinThreads = 1 };
+            _executor = new ParallelTaskExecutor () { MinThreads = 1 };
             _executor.MaxThreads = _config.MaxThreads > 0 ? _config.MaxThreads : 8;
         }
 

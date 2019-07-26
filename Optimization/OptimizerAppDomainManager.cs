@@ -23,7 +23,7 @@ namespace Optimization
             _resultsLocker = new object();
         }
 
-        static AppDomainSetup SetupAppDomain()
+        protected static AppDomainSetup SetupAppDomain()
         {
             // Construct and initialize settings for a second AppDomain.
             AppDomainSetup ads = new AppDomainSetup();

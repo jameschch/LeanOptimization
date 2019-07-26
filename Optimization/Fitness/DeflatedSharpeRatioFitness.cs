@@ -37,7 +37,8 @@ namespace Optimization
 
         public virtual void Initialize()
         {
-            var fullResults = OptimizerAppDomainManager.GetResults();
+            //todo: single app domain
+            var fullResults = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             //let's exclude non-trading tests and any marked as error/failure with -10 Sharpe
             var hasTraded = fullResults.Where(d => d.Value["TotalNumberOfTrades"] != 0 && d.Value["SharpeRatio"] > -10);
             SharpeData = hasTraded.ToDictionary(k => k.Key, v => (double)v.Value["SharpeRatio"]);
