@@ -59,7 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QuantConnect.Common">
-      <HintPath>..\..\Lean_Master\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Abstractions, Version=2.0.0.141, Culture=neutral, processorArchitecture=MSIL">
