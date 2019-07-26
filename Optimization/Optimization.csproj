@@ -84,25 +84,25 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QuantConnect.Algorithm">
-      <HintPath>..\..\Lean_Master\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
+      <HintPath>..\..\Lean\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Common">
-      <HintPath>..\..\Lean_Master\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Configuration">
-      <HintPath>..\..\Lean_Master\Configuration\bin\Debug\QuantConnect.Configuration.dll</HintPath>
+      <HintPath>..\..\Lean\Configuration\bin\Debug\QuantConnect.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Messaging">
-      <HintPath>..\..\Lean_Master\Messaging\bin\Debug\QuantConnect.Messaging.dll</HintPath>
+      <HintPath>..\..\Lean\Messaging\bin\Debug\QuantConnect.Messaging.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Lean.Engine">
-      <HintPath>..\..\Lean_Master\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
+      <HintPath>..\..\Lean\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Logging">
-      <HintPath>..\..\Lean_Master\Logging\bin\Debug\QuantConnect.Logging.dll</HintPath>
+      <HintPath>..\..\Lean\Logging\bin\Debug\QuantConnect.Logging.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Queues">
-      <HintPath>..\..\Lean_Master\Queues\bin\Debug\QuantConnect.Queues.dll</HintPath>
+      <HintPath>..\..\Lean\Queues\bin\Debug\QuantConnect.Queues.dll</HintPath>
     </Reference>
     <Reference Include="SharpLearning.Common.Interfaces, Version=0.30.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpLearning.Common.Interfaces.0.30.0\lib\net461\SharpLearning.Common.Interfaces.dll</HintPath>
