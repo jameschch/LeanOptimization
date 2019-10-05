@@ -27,9 +27,9 @@ The most important options:
 The default OptimizerFitness is a simple Sharpe Ratio tournament. There is also CompoundingAnnualReturnFitness to maximize raw returns. It is possible to optimize any Lean statistic using ConfiguredFitness.
 
 #### General Maximizer
-Specify the SharpeMaximizer fitness allows access to all of the optimization methods provided by the SharpLearning library. These include Random Search. Grid Search, Particle Swarm, Smac and several others.
+Specifying the SharpeMaximizer fitness allows access to all of the optimization methods provided by the SharpLearning library. These include Random Search. Grid Search, Particle Swarm, Smac and several others.
 
 #### Specialist
-The simple SharpeMaximizer has been extended in NFoldCrossSharpeMaximizer so that the succes measure is averaged over n-fold periods. This will prevent overfitting to a single in-sample period but is not guaranteed to eliminate overfitting entirely. 
+The simple SharpeMaximizer has been extended in NFoldCrossSharpeMaximizer so that the success score is measured over N-fold periods. This will prevent overfitting to a single in-sample period but is not guaranteed to eliminate overfitting entirely. 
 There are several other fitness measures that operate over mutliple periods.
 
