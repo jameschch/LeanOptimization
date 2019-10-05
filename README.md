@@ -17,7 +17,7 @@ An example algorithm is provided here: [ParameterizedAlgorithm](https://github.c
 
 ## Configuration
 
-Full documentation is provided in comments: [GeneConfiguration](https://github.com/jameschch/LeanOptimization/blob/master/Optimization/GeneConfiguration.cs)
+Full documentation is provided in comments: [OptimizerConfiguration](https://github.com/jameschch/LeanOptimization/blob/master/Optimization/OptimizerConfiguration.cs)
 
 The most important options:
 
