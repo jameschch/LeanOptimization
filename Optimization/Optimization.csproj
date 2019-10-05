@@ -86,6 +86,10 @@
     <Reference Include="QuantConnect.Algorithm">
       <HintPath>..\..\Lean\Algorithm\bin\Debug\QuantConnect.Algorithm.dll</HintPath>
     </Reference>
+    <Reference Include="QuantConnect.Api, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Lean\Api\bin\Debug\QuantConnect.Api.dll</HintPath>
+    </Reference>
     <Reference Include="QuantConnect.Common">
       <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>

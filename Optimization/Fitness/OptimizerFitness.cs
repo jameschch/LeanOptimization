@@ -32,7 +32,6 @@ namespace Optimization
 
         public virtual double Evaluate(IChromosome chromosome)
         {
-            Name = "Sharpe";
 
             try
             {

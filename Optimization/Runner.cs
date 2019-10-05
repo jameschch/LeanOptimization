@@ -1,6 +1,11 @@
 using Newtonsoft.Json;
 using QuantConnect.Configuration;
+using QuantConnect.Data.Auxiliary;
 using QuantConnect.Lean.Engine;
+using QuantConnect.Lean.Engine.DataFeeds;
+using QuantConnect.Lean.Engine.RealTime;
+using QuantConnect.Lean.Engine.Setup;
+using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Logging;
 using QuantConnect.Packets;
 using QuantConnect.Util;
@@ -110,19 +115,22 @@ namespace Optimization
 
             using (Log.LogHandler = new FileLogHandler(logFileName, true))
             {
-                LeanEngineAlgorithmHandlers leanEngineAlgorithmHandlers;
-                try
-                {
-                    //override config to use custom result handler
-                    Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
-                    leanEngineAlgorithmHandlers = LeanEngineAlgorithmHandlers.FromConfiguration(Composer.Instance);
-                    _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
-                }
-                catch (CompositionException compositionException)
-                {
-                    Log.Error("Engine.Main(): Failed to load library: " + compositionException);
-                    throw;
-                }
+                //override config to use custom result handler
+                Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
+                var map = new LocalDiskMapFileProvider();
+                var leanEngineAlgorithmHandlers = new LeanEngineAlgorithmHandlers(
+                        new OptimizerResultHandler(),
+                        new ConsoleSetupHandler(),
+                        new FileSystemDataFeed(),
+                        new BacktestingTransactionHandler(),
+                        new BacktestingRealTimeHandler(),
+                        map,
+                        new LocalDiskFactorFileProvider(map),
+                        new DefaultDataProvider(),
+                        new OptimizerAlphaHandler());
+
+                _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
+
                 string algorithmPath;
                 AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
 

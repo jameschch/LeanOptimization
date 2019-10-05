@@ -13,7 +13,7 @@ using QuantConnect.Securities;
 
 namespace Optimization
 {
-    class EmptyApiHandler : IApi
+    class EmptyApiHandler : QuantConnect.Api.Api
     {
         public void Dispose()
         {

@@ -137,7 +137,6 @@ namespace Optimization
             }
 
             Config.Set("api-handler", nameof(EmptyApiHandler));
-            Config.Set("alpha-handler", nameof(OptimizerAlphaHandler));
             Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
 
             Composer.Instance.Reset();
