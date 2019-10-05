@@ -24,7 +24,7 @@ The most important options:
 ### fitnessTypeName
 
 #### Genetic
-The default OptimizerFitness is simple Sharpe Ratio maximization. There is also CompoundingAnnualReturnFitness to maximize raw returns. It is possible to optimize any Lean statistic using ConfiguredFitness.
+The default OptimizerFitness is a simple Sharpe Ratio tournament. There is also CompoundingAnnualReturnFitness to maximize raw returns. It is possible to optimize any Lean statistic using ConfiguredFitness.
 
 #### General Maximizer
 Specify the SharpeMaximizer fitness allows access to all of the optimization methods provided by the SharpLearning library. These include Random Search. Grid Search, Particle Swarm, Smac and several others.
