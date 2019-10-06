@@ -20,7 +20,6 @@ namespace Optimization
 
         public override int GetInt(int min, int max)
         {
-
             var within = _fibonacci.Where(f => f >= min && f <= max);
 
             if (!within.Any())
@@ -41,6 +40,21 @@ namespace Optimization
             }
 
             return result;
+        }
+
+        public override int[] GetUniqueInts(int length, int min, int max)
+        {
+            var within = _fibonacci.Where(f => f >= min && f <= max).ToList();
+            var ints = new int[length];
+
+            for (int i = 0; i < length; i++)
+            {
+                var removeIndex = GetInt(0, within.Count() - 1);
+                ints[i] = within[removeIndex];
+                within.RemoveAt(removeIndex);
+            }
+
+            return ints;
         }
 
     }
