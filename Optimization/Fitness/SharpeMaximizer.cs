@@ -50,21 +50,29 @@ namespace Optimization
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
                     {
-                        optimizer = new BayesianOptimizer(parameters, maxIterations: Config.Generations, numberOfStartingPoints: Config.PopulationSize, seed: 42);
+                        optimizer = new BayesianOptimizer(parameters: parameters, iterations: Config.Generations, randomStartingPointCount: Config.PopulationSize, 
+                            functionEvaluationsPerIteration: Config.PopulationSize, seed: 42);
+                        //optimizer = new BayesianOptimizer(parameters, iterations: Config.Generations, randomStartingPointCount: Config.PopulationSize,
+                        //    functionEvaluationsPerIteration: Config.MaxThreads, seed: 42, maxDegreeOfParallelism: Config.MaxThreads, allowMultipleEvaluations: true);
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GlobalizedBoundedNelderMead.ToString())
                     {
                         optimizer = new GlobalizedBoundedNelderMeadOptimizer(parameters, maxRestarts: Config.Generations,
                             maxIterationsPrRestart: Config.PopulationSize, seed: 42, maxDegreeOfParallelism: Config.MaxThreads);
                     }
+                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Smac.ToString())
+                    {
+                        optimizer = new SmacOptimizer(parameters, iterations: Config.Generations, randomSearchPointCount: Config.PopulationSize, seed: 42);
+                    }
+                    else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.GridSearch.ToString())
+                    {
+                        optimizer = new GridSearchOptimizer(parameters);
+                    }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Genetic.ToString())
                     {
                         throw new Exception("Genetic optimizer cannot be used with Sharpe Maximizer");
                     }
                 }
-
-                //todo:
-                // GridSearchOptimizer?
 
                 Func<double[], OptimizerResult> minimize = p => Minimize(p, (Chromosome)chromosome);
 

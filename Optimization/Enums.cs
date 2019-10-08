@@ -15,7 +15,9 @@ namespace Optimization
             GridSearch = 2,
             ParticleSwarm = 3,
             Bayesian = 4,
-            GlobalizedBoundedNelderMead = 5
+            GlobalizedBoundedNelderMead = 5,
+            Smac = 6,
+
         }
 
 
