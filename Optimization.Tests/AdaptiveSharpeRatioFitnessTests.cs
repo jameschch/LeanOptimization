@@ -37,7 +37,8 @@ namespace Optimization.Tests
         public void EvaluateTest()
         {
             var originalHours = CurrentHours(_config);
-          
+            OptimizerAppDomainManager.SetResults(AppDomain.CurrentDomain, new Dictionary<string, Dictionary<string, decimal>>());
+
             OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain).Add("key", new Dictionary<string, decimal>() { { "SharpeRatio", 123m } });
 
             //will not adapt on first result

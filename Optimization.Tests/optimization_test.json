@@ -39,5 +39,7 @@
   "minimumTrades": 1,
   "enableFitnessFilter": true,
   "useActualGenesForWholeGeneration": false,
-  "transactionLog":  null
+  "transactionLog": null,
+  "useSharedAppDomain": false,
+  "enableRunningDuplicateParameters": false
 }

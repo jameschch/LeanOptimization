@@ -64,8 +64,13 @@ namespace Optimization
         public OptimizerResultHandler()
         {
             _shadow = new BacktestingResultHandler();
-
         }
+
+        public OptimizerResultHandler(BacktestingResultHandler handler)
+        {
+            _shadow = handler;
+        }
+
 
         public void SendFinalResult()
         {
@@ -75,27 +80,78 @@ namespace Optimization
                 return;
             }
 
+            //HACK: calculate statistics but not store result
             try
             {
-                ////HACK: need to calculate statistics again as full results not exposed
+
+                var shadowType = typeof(BacktestingResultHandler);
+
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+
+                //_processingFinalPacket = true;
+                shadowType.GetField("_processingFinalPacket", flags).SetValue(_shadow, true);
+
+
                 var charts = new Dictionary<string, Chart>(_shadow.Charts);
+                //var orders = new Dictionary<int, Order>(_shadow.TransactionHandler.Orders);
+                var transactionHandler = (ITransactionHandler)shadowType.GetField("TransactionHandler", flags).GetValue(_shadow);
+                var orders = new Dictionary<int, Order>(transactionHandler.Orders);
 
                 var profitLoss = new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord);
 
-                var statisticsResults = (StatisticsResults)_shadow.GetType().InvokeMember("GenerateStatisticsResults",
-                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, _shadow,
-                    new object[] { charts, profitLoss });
+                //var runtime = GetAlgorithmRuntimeStatistics();               
+                var runtime = (Dictionary<string, string>)shadowType.InvokeMember("GetAlgorithmRuntimeStatistics", flags | BindingFlags.InvokeMethod, Type.DefaultBinder, _shadow, 
+                    new object[]{ new  Dictionary<string, string>(), false });
+
+
+                //var statisticsResults = GenerateStatisticsResults(charts, profitLoss);
+                var statisticsResults = (StatisticsResults)shadowType.InvokeMember("GenerateStatisticsResults", flags | BindingFlags.InvokeMethod, null, _shadow,
+                   new object[] { charts, profitLoss });
 
                 FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
 
-                _shadow.SendFinalResult();
+                //FinalStatistics = statisticsResults.Summary;
+                shadowType.GetProperty("FinalStatistics").SetValue(_shadow, statisticsResults.Summary, flags, null, null, null);
+
+                foreach (var ap in statisticsResults.RollingPerformances.Values)
+                {
+                    ap.ClosedTrades.Clear();
+                }
+
+                //var result = new BacktestResultPacket(_job,
+                //    new BacktestResult(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance)
+                //        { AlphaRuntimeStatistics = AlphaRuntimeStatistics })
+                //{
+                //    ProcessingTime = (DateTime.UtcNow - StartTime).TotalSeconds,
+                //    DateFinished = DateTime.Now,
+                //    Progress = 1
+                //};
+                var job = (BacktestNodePacket)shadowType.GetField("_job", flags).GetValue(_shadow);
+                var startTime = (DateTime)shadowType.GetProperty("StartTime", flags).GetValue(_shadow);
+                var alphaRuntimeStatistics = (AlphaRuntimeStatistics)shadowType.GetProperty("AlphaRuntimeStatistics", flags).GetValue(_shadow);
+
+                var result = new BacktestResultPacket(job,
+                    new BacktestResult(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance)
+                    { AlphaRuntimeStatistics = alphaRuntimeStatistics })
+                {
+                    ProcessingTime = (DateTime.UtcNow - startTime).TotalSeconds,
+                    DateFinished = DateTime.Now,
+                    Progress = 1
+                };
+
+                //StoreResult(result);
+                //do not store result
+
+                //MessagingHandler.Send(result);
+                var messagingHandler = (IMessagingHandler)shadowType.GetField("MessagingHandler", flags).GetValue(_shadow);
+                messagingHandler.Send(result);
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                Program.ErrorLogger.Error(ex);
             }
+
         }
 
         #region Shadow Methods
@@ -138,6 +194,7 @@ namespace Optimization
         public void RuntimeError(string message, string stacktrace = "")
         {
             _shadow.ErrorMessage(message, stacktrace);
+            Program.ErrorLogger.Error(new Exception($"{Algorithm.AlgorithmId}:{ message }:{stacktrace}"));
             _hasError = true;
         }
 
@@ -180,7 +237,8 @@ namespace Optimization
 
         public void StoreResult(Packet packet, bool async = false)
         {
-            _shadow.StoreResult(packet, async);
+            //do not save rounded results to disk
+            //_shadow.StoreResult(packet, async);
         }
 
         public void SendStatusUpdate(AlgorithmStatus status, string message = "")
@@ -225,7 +283,8 @@ namespace Optimization
 
         public void SaveResults(string name, Result result)
         {
-            _shadow.SaveResults(name, result);
+            //do not save rounded results to disk
+            //_shadow.SaveResults(name, result);
         }
 
         public void SetAlphaRuntimeStatistics(AlphaRuntimeStatistics statistics)
