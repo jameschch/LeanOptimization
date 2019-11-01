@@ -19,7 +19,11 @@ namespace Optimization
         public override string Name { get; set; } = "Sharpe";
         public IChromosome Best { get; set; }
         private ConditionalWeakTable<OptimizerResult, string> _resultIndex;
+        private bool _hasActualValues;
+        private object _locker = new object();
         private const double ErrorFitness = 1.01;
+
+        private static bool _hasRunActual = false;
 
         public SharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
@@ -50,8 +54,8 @@ namespace Optimization
                     }
                     else if (Config.Fitness.OptimizerTypeName == Enums.OptimizerTypeOptions.Bayesian.ToString())
                     {
-                        optimizer = new BayesianOptimizer(parameters: parameters, iterations: Config.Generations, randomStartingPointCount: Config.PopulationSize, 
-                            functionEvaluationsPerIteration: Config.PopulationSize, seed: 42);
+                        optimizer = new BayesianOptimizer(parameters: parameters, iterations: Config.Generations, randomStartingPointCount: Config.PopulationSize,
+                            functionEvaluationsPerIterationCount: Config.PopulationSize, seed: 42);
                         //optimizer = new BayesianOptimizer(parameters, iterations: Config.Generations, randomStartingPointCount: Config.PopulationSize,
                         //    functionEvaluationsPerIteration: Config.MaxThreads, seed: 42, maxDegreeOfParallelism: Config.MaxThreads, allowMultipleEvaluations: true);
                     }
@@ -77,6 +81,7 @@ namespace Optimization
                 Func<double[], OptimizerResult> minimize = p => Minimize(p, (Chromosome)chromosome);
 
                 // run optimizer
+                _hasActualValues = true;
                 var result = optimizer.OptimizeBest(minimize);
 
                 Best = ToChromosome(result, chromosome);
@@ -90,26 +95,43 @@ namespace Optimization
             }
         }
 
-        protected OptimizerResult Minimize(double[] p, Chromosome configChromosome)
+        public OptimizerResult Minimize(double[] p, Chromosome configChromosome)
         {
             var id = Guid.NewGuid().ToString("N");
             try
             {
+
                 StringBuilder output = new StringBuilder();
                 var list = configChromosome.ToDictionary();
 
                 list.Add("Id", id);
                 output.Append("Id: " + id + ", ");
 
+                var isActual = false;
+                lock (_locker)
+                {
+                    isActual = !_hasRunActual ? true : false;
+                    _hasRunActual = true;
+                }
+
                 for (int i = 0; i < Config.Genes.Count(); i++)
                 {
                     var key = Config.Genes.ElementAt(i).Key;
                     var precision = Config.Genes.ElementAt(i).Precision ?? 0;
+
+                    if (isActual)
+                    {
+                        p[i] = Config.Genes[i].ActualDecimal.HasValue ? (double)Config.Genes[i].ActualDecimal.Value
+                           : Config.Genes[i].ActualInt.HasValue ? Config.Genes[i].ActualInt.Value
+                           : p[i];
+                    }
+
                     var value = Math.Round(p[i], precision);
                     list[key] = value;
 
                     output.Append(key + ": " + value.ToString() + ", ");
                 }
+                isActual = false;
 
                 if (Config.StartDate.HasValue && Config.EndDate.HasValue)
                 {
