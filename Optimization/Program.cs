@@ -13,8 +13,16 @@ namespace Optimization
 
         public static void Main(string[] args)
         {
-            new OptimizerInitializer().Initialize(args);
+            try
+            {
+                new OptimizerInitializer().Initialize(args);
 
+            }
+            catch (Exception ex)
+            {
+                ErrorLogger.Error(ex);
+                throw new Exception("Unhandled Exception", ex);
+            }
             Console.ReadKey();
         }
 

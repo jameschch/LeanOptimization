@@ -28,6 +28,7 @@ namespace Optimization
             dualConfig.EndDate = end + diff;
 
             var dualFitness = new OptimizerFitness(dualConfig, this.Filter);
+            dualFitness.Name = this.Name;
 
             var first = base.Evaluate(chromosome);
             double second = -10;
