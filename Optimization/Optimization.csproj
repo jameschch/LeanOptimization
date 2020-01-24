@@ -165,6 +165,7 @@
     <Compile Include="Fitness\FitnessFilter.cs" />
     <Compile Include="Interfaces\IOptimizerManager.cs" />
     <Compile Include="Interfaces\IRunner.cs" />
+    <Compile Include="LogProvider.cs" />
     <Compile Include="LogSingleton.cs" />
     <Compile Include="Fitness\NFoldCrossReturnMaximizer.cs" />
     <Compile Include="Fitness\NFoldCrossSharpeMaximizer.cs" />
@@ -208,9 +209,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="NLog.config">
+    <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

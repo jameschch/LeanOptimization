@@ -7,10 +7,6 @@ namespace Optimization
     public class Program
     {
 
-        public static Logger OptimizerLogger = LogManager.GetLogger("optimizer");
-        public static Logger GenerationsLogger = LogManager.GetLogger("generations");
-        public static Logger ErrorLogger = LogManager.GetLogger("error");
-
         public static void Main(string[] args)
         {
             try
@@ -20,7 +16,7 @@ namespace Optimization
             }
             catch (Exception ex)
             {
-                ErrorLogger.Error(ex);
+                LogProvider.ErrorLogger.Error(ex);
                 throw new Exception("Unhandled Exception", ex);
             }
             Console.ReadKey();

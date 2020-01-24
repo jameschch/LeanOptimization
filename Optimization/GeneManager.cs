@@ -73,7 +73,7 @@ namespace Optimization
 
         void TerminationReached(object sender, EventArgs e)
         {
-            Program.GenerationsLogger.Info(Termination);
+            LogProvider.GenerationsLogger.Info(Termination);
 
             GenerationRan(null, null);
         }
@@ -86,7 +86,7 @@ namespace Optimization
                 _bestChromosome = (Chromosome)_population.BestChromosome;
             }
 
-            Program.GenerationsLogger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
+            LogProvider.GenerationsLogger.Info("Algorithm: {0}, Generation: {1}, Fitness: {2}, {3}: {4}, {5}, Id: {6}", _config.AlgorithmTypeName, _population.GenerationsNumber, _bestChromosome.Fitness,
                 _fitness.Name, _fitness.GetValueFromFitness(_bestChromosome.Fitness), _bestChromosome.ToKeyValueString(), _bestChromosome.Id);
         }
 

@@ -90,7 +90,7 @@ namespace Optimization
             }
             catch (Exception ex)
             {
-                Program.ErrorLogger.Error(ex);
+                LogProvider.ErrorLogger.Error(ex);
                 return ErrorFitness;
             }
         }
@@ -142,7 +142,7 @@ namespace Optimization
                 var fitness = CalculateFitness(score);
 
                 output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
-                Program.OptimizerLogger.Info(output);
+                LogProvider.OptimizerLogger.Info(output);
 
                 var result = new OptimizerResult(p, fitness.Fitness);
                 _resultIndex.Add(result, id);
@@ -150,7 +150,7 @@ namespace Optimization
             }
             catch (Exception ex)
             {
-                Program.ErrorLogger.Error(ex, $"Id: {id}, Iteration failed.");
+                LogProvider.ErrorLogger.Error(ex, $"Id: {id}, Iteration failed.");
 
                 var result = new OptimizerResult(p, ErrorFitness);
                 _resultIndex.Add(result, id);

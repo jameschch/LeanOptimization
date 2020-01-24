@@ -70,7 +70,7 @@ namespace Optimization.Tests.Handlers
             transactionHandler.Verify(v => v.Orders);
             Assert.True(messagingHandler.SendWasCalled);
 
-            Assert.AreEqual(19, unit.FullResults.Count());
+            Assert.AreEqual(20, unit.FullResults.Count());
         }
     }
 
@@ -88,8 +88,9 @@ namespace Optimization.Tests.Handlers
         {
         }
 
-        public new void GetAlgorithmRuntimeStatistics(Dictionary<string, string> runtimeStatistics = null, bool addColon = false)
+        protected new Dictionary<string, string> GetAlgorithmRuntimeStatistics(Dictionary<string, string> runtimeStatistics = null, bool addColon = false)
         {
+            return runtimeStatistics;
         }
 
     }

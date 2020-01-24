@@ -204,7 +204,7 @@ namespace Optimization
 
         public string Download(string address, IEnumerable<KeyValuePair<string, string>> headers, string userName, string password)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }
