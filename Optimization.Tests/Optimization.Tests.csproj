@@ -58,11 +58,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QuantConnect.Common">
-      <HintPath>..\..\Lean\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
+      <HintPath>..\..\Lean_Latest\Common\bin\Debug\QuantConnect.Common.dll</HintPath>
     </Reference>
     <Reference Include="QuantConnect.Lean.Engine, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lean\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
+      <HintPath>..\..\Lean_Latest\Engine\bin\Debug\QuantConnect.Lean.Engine.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -97,6 +97,7 @@
     <Compile Include="GeneManagerTests.cs" />
     <Compile Include="Handlers\OptimizerResultHandlerTests.cs" />
     <Compile Include="MockGeneManagerFactory.cs" />
+    <Compile Include="WalkForwardSharpeMaximizerTests.cs" />
     <Compile Include="NFoldCrossSharpeMaximizerTests.cs" />
     <Compile Include="OptimizerFitnessTests.cs" />
     <Compile Include="OptimizerInitializerTests.cs" />

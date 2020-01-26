@@ -32,7 +32,7 @@ namespace Optimization.Example
         public override void Initialize()
         {
             SetStartDate(2013, 10, 07);
-            SetEndDate(2013, 10, 11);
+            SetEndDate(2014, 2, 11);
             SetCash(100 * 1000);
 
             AddSecurity(SecurityType.Equity, "SPY");
