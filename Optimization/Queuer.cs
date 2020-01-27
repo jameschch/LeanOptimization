@@ -135,7 +135,7 @@ namespace Optimization
             }
             catch (CompositionException compositionException)
             {
-                Log.Error("Engine.Main(): Failed to load library: " + compositionException);
+                LogProvider.ErrorLogger.Error("Engine.Main(): Failed to load library", compositionException);
                 throw;
             }
 
@@ -143,7 +143,6 @@ namespace Optimization
             AlgorithmNodePacket job = EngineContext.SystemHandlers.JobQueue.NextJob(out algorithmPath);
 
             EngineContext.Engine.Run(job, new AlgorithmManager(false), algorithmPath, WorkerThread.Instance);
-            Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
         }
 
     }

@@ -54,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InstancedConfig.cs" />
+    <Compile Include="ParameterizedSharedAppDomainAlgorithm.cs" />
     <Compile Include="ParameterizedWalkForwardAlgorithm.cs" />
     <Compile Include="ParameterizedAlgorithm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

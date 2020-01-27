@@ -46,6 +46,7 @@ namespace Optimization.Tests.Steps
             if (config.UseSharedAppDomain)
             {
                 SingleAppDomainManager.Initialize();
+                config.AlgorithmTypeName = "ParameterizedSharedAppDomainAlgorithm";
             }
             else
             {

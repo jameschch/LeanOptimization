@@ -2,9 +2,10 @@
   "genes": [
     {
       "key": "take",
-      "min": 0.02,
+      "min": 0.001,
       "max": 0.1,
-      "precision": 2
+      "precision": 3,
+      "actual": 0.001
     },
     {
       "key": "fast",

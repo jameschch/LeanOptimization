@@ -113,8 +113,6 @@ namespace Optimization
                 Config.Set("transaction-log", filename);
             }
 
-            Config.Set("api-handler", nameof(EmptyApiHandler));
-
             var systemHandlers = new LeanEngineSystemHandlers(
                 new JobQueue(),
                 new EmptyApiHandler(),
@@ -146,8 +144,10 @@ namespace Optimization
 
                 _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
 
-                string algorithmPath;
-                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+                var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out var algorithmPath);
+                //todo: pass period through job
+                //job.PeriodStart = _config.StartDate;
+                //job.PeriodFinish = _config.EndDate;
 
                 try
                 {
@@ -158,8 +158,6 @@ namespace Optimization
                 }
                 finally
                 {
-                    Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
-
                     // clean up resources
                     systemHandlers.Dispose();
                     leanEngineAlgorithmHandlers.Dispose();

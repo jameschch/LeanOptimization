@@ -34,6 +34,10 @@ namespace Optimization.Tests.Steps
             if (ScenarioContext.Current.Get<OptimizerConfiguration>().MaxThreads > 1)
             {
                 Assert.IsTrue(actual.Count > 1);
+
+                //probabilistic assert that given random input, expect more than half to produce a different result
+                var percentUnique = (double)actual.Select(s => s.Value["SharpeRatio"]).Distinct().Count() / (double)ScenarioContext.Current.Get<OptimizerConfiguration>().MaxThreads;
+                Assert.True(percentUnique >= 0.5);
             }
         }
 

@@ -173,6 +173,9 @@ namespace Optimization
             var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out var algorithmPath);
             //mark job with id. Is set on algorithm in OptimizerAlphaHandler
             job.BacktestId = id;
+            //todo: pass period through job
+            //job.PeriodStart = _config.StartDate;
+            //job.PeriodFinish = _config.EndDate;
 
             try
             {
