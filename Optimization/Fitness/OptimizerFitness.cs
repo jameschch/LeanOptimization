@@ -69,13 +69,13 @@ namespace Optimization
                 var fitness = CalculateFitness(result);
 
                 output += string.Format("{0}: {1}", Name, fitness.Value);
-                Program.OptimizerLogger.Info(output);
+                LogProvider.OptimizerLogger.Info(output);
 
                 return fitness.Fitness;
             }
             catch (Exception ex)
             {
-                Program.ErrorLogger.Error(ex);
+                LogProvider.ErrorLogger.Error(ex);
                 return 0;
             }
         }

@@ -57,17 +57,13 @@ namespace Optimization.Tests
             var unit = new GeneManager();
             unit.Initialize(config.Object, fitness.Object);
             unit.Start();
-            fitness.Verify();
-            Assert.AreEqual(actualValue, ((KeyValuePair<string, object>)actualChromose.First().GetGenes().First().Value).Value);
 
-            if (useActualGenesForWholeGeneration)
-            {
-                Assert.AreEqual(actualValue, ((KeyValuePair<string, object>)actualChromose.Last().GetGenes().First().Value).Value);
-            }
-            else
-            {
-                Assert.AreNotEqual(actualValue, ((KeyValuePair<string, object>)actualChromose.Last().GetGenes().First().Value).Value);
-            }
+            fitness.Verify();
+            CollectionAssert.IsNotEmpty(actualChromose.Where(a => (int)((KeyValuePair<string, object>)a.GetGenes().First().Value).Value == actualValue));
+
+            var actualCount = actualChromose.Where(a => (int)((KeyValuePair<string, object>)a.GetGenes().First().Value).Value == actualValue).Count();
+            Assert.AreEqual(useActualGenesForWholeGeneration ? 2 : 1, actualCount);
+
         }
 
     }

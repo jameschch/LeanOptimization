@@ -14,14 +14,11 @@ namespace Optimization
     {
 
         static AppDomainSetup _ads;
-        static object _resultsLocker;
         private static AppDomain _ad;
 
         public new static void Initialize()
         {
             _ads = SetupAppDomain();
-            _resultsLocker = new object();
-
             _ad = AppDomain.CreateDomain(Guid.NewGuid().ToString("x"), null, _ads);
             SetResults(_ad, new Dictionary<string, Dictionary<string, decimal>>());
         }
@@ -40,6 +37,11 @@ namespace Optimization
             var result = rc.Run(list, config);
 
             return result;
+        }
+
+        public new static Dictionary<string, Dictionary<string, decimal>> GetResults()
+        {
+            return SingleAppDomainManager.GetData<Dictionary<string, Dictionary<string, decimal>>>(_ad, "Results");
         }
 
     }

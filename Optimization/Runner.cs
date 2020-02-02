@@ -4,10 +4,14 @@ using QuantConnect.Data.Auxiliary;
 using QuantConnect.Lean.Engine;
 using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Lean.Engine.RealTime;
+using QuantConnect.Lean.Engine.Server;
 using QuantConnect.Lean.Engine.Setup;
+using QuantConnect.Lean.Engine.Storage;
 using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Logging;
+using QuantConnect.Messaging;
 using QuantConnect.Packets;
+using QuantConnect.Queues;
 using QuantConnect.Util;
 using System;
 using System.Collections.Generic;
@@ -26,6 +30,9 @@ namespace Optimization
 
         public Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config)
         {
+
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
             Dictionary<string, Dictionary<string, decimal>> results = OptimizerAppDomainManager.GetResults(AppDomain.CurrentDomain);
             _config = config;
 
@@ -61,7 +68,9 @@ namespace Optimization
                 }
             }
 
+            LogProvider.TraceLogger.Trace($"id: {_id} started.");
             LaunchLean();
+            LogProvider.TraceLogger.Trace($"id: {_id} finished.");
 
             if (_resultsHandler.FullResults != null && _resultsHandler.FullResults.Any())
             {
@@ -104,10 +113,12 @@ namespace Optimization
                 Config.Set("transaction-log", filename);
             }
 
-            //transaction-log
+            var systemHandlers = new LeanEngineSystemHandlers(
+                new JobQueue(),
+                new EmptyApiHandler(),
+                new Messaging(),
+                new LocalLeanManager());
 
-            Config.Set("api-handler", nameof(EmptyApiHandler));
-            var systemHandlers = LeanEngineSystemHandlers.FromConfiguration(Composer.Instance);
             systemHandlers.Initialize();
 
             //separate log uniquely named
@@ -117,6 +128,7 @@ namespace Optimization
             {
                 //override config to use custom result handler
                 Config.Set("backtesting.result-handler", nameof(OptimizerResultHandler));
+
                 var map = new LocalDiskMapFileProvider();
                 var leanEngineAlgorithmHandlers = new LeanEngineAlgorithmHandlers(
                         new OptimizerResultHandler(),
@@ -127,24 +139,25 @@ namespace Optimization
                         map,
                         new LocalDiskFactorFileProvider(map),
                         new DefaultDataProvider(),
-                        new OptimizerAlphaHandler());
+                        new OptimizerAlphaHandler(),
+                        new EmptyObjectStore());
 
                 _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
 
-                string algorithmPath;
-                AlgorithmNodePacket job = systemHandlers.JobQueue.NextJob(out algorithmPath);
+                var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out var algorithmPath);
+                //todo: pass period through job
+                //job.PeriodStart = _config.StartDate;
+                //job.PeriodFinish = _config.EndDate;
 
                 try
                 {
                     var algorithmManager = new AlgorithmManager(false);
                     systemHandlers.LeanManager.Initialize(systemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
                     var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
-                    engine.Run(job, algorithmManager, algorithmPath);
+                    engine.Run(job, algorithmManager, algorithmPath, WorkerThread.Instance);
                 }
                 finally
                 {
-                    Log.Trace("Engine.Main(): Packet removed from queue: " + job.AlgorithmId);
-
                     // clean up resources
                     systemHandlers.Dispose();
                     leanEngineAlgorithmHandlers.Dispose();

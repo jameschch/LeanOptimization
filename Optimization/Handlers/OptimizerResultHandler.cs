@@ -4,6 +4,7 @@ using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Lean.Engine.Results;
 using QuantConnect.Lean.Engine.Setup;
 using QuantConnect.Lean.Engine.TransactionHandlers;
+using QuantConnect.Logging;
 using QuantConnect.Orders;
 using QuantConnect.Packets;
 using QuantConnect.Securities;
@@ -22,7 +23,7 @@ namespace Optimization
     {
         protected IAlgorithm Algorithm { get; set; }
 
-        private IResultHandler _shadow;
+        private BacktestingResultHandler _shadow;
 
         #region Properties
         public Dictionary<string, decimal> FullResults { get; set; }
@@ -59,6 +60,9 @@ namespace Optimization
         public bool IsActive => _shadow.IsActive;
 
         private bool _hasError;
+        private static Type _shadowType = typeof(BacktestingResultHandler);
+        private static BindingFlags _flags = BindingFlags.Instance | BindingFlags.NonPublic;
+
         #endregion
 
         public OptimizerResultHandler()
@@ -71,7 +75,7 @@ namespace Optimization
             _shadow = handler;
         }
 
-
+        //HACK: calculate statistics but not store result
         public void SendFinalResult()
         {
             if (_hasError)
@@ -80,38 +84,32 @@ namespace Optimization
                 return;
             }
 
-            //HACK: calculate statistics but not store result
             try
             {
 
-                var shadowType = typeof(BacktestingResultHandler);
-
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-
                 //_processingFinalPacket = true;
-                shadowType.GetField("_processingFinalPacket", flags).SetValue(_shadow, true);
+                _shadowType.GetField("_processingFinalPacket", _flags).SetValue(_shadow, true);
 
 
                 var charts = new Dictionary<string, Chart>(_shadow.Charts);
                 //var orders = new Dictionary<int, Order>(_shadow.TransactionHandler.Orders);
-                var transactionHandler = (ITransactionHandler)shadowType.GetField("TransactionHandler", flags).GetValue(_shadow);
+                var transactionHandler = (ITransactionHandler)_shadowType.GetField("TransactionHandler", _flags).GetValue(_shadow);
                 var orders = new Dictionary<int, Order>(transactionHandler.Orders);
 
                 var profitLoss = new SortedDictionary<DateTime, decimal>(Algorithm.Transactions.TransactionRecord);
 
-                //var runtime = GetAlgorithmRuntimeStatistics();               
-                var runtime = (Dictionary<string, string>)shadowType.InvokeMember("GetAlgorithmRuntimeStatistics", flags | BindingFlags.InvokeMethod, Type.DefaultBinder, _shadow, 
-                    new object[]{ new  Dictionary<string, string>(), false });
-
-
                 //var statisticsResults = GenerateStatisticsResults(charts, profitLoss);
-                var statisticsResults = (StatisticsResults)shadowType.InvokeMember("GenerateStatisticsResults", flags | BindingFlags.InvokeMethod, null, _shadow,
+                var statisticsResults = (StatisticsResults)_shadowType.InvokeMember("GenerateStatisticsResults", _flags | BindingFlags.InvokeMethod, null, _shadow,
                    new object[] { charts, profitLoss });
+
+                //var runtime = GetAlgorithmRuntimeStatistics(statisticsResults.Summary);      
+                var runtime = (Dictionary<string, string>)typeof(BaseResultsHandler).InvokeMember("GetAlgorithmRuntimeStatistics", _flags | BindingFlags.InvokeMethod, Type.DefaultBinder, _shadow,
+                    new object[] { statisticsResults.Summary, null });
 
                 FullResults = StatisticsAdapter.Transform(statisticsResults.TotalPerformance, statisticsResults.Summary);
 
                 //FinalStatistics = statisticsResults.Summary;
-                shadowType.GetProperty("FinalStatistics").SetValue(_shadow, statisticsResults.Summary, flags, null, null, null);
+                _shadowType.GetProperty("FinalStatistics").SetValue(_shadow, statisticsResults.Summary, _flags, null, null, null);
 
                 foreach (var ap in statisticsResults.RollingPerformances.Values)
                 {
@@ -120,19 +118,19 @@ namespace Optimization
 
                 //var result = new BacktestResultPacket(_job,
                 //    new BacktestResult(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance)
-                //        { AlphaRuntimeStatistics = AlphaRuntimeStatistics })
+                //    { AlphaRuntimeStatistics = AlphaRuntimeStatistics }, Algorithm.EndDate, Algorithm.StartDate)
                 //{
                 //    ProcessingTime = (DateTime.UtcNow - StartTime).TotalSeconds,
                 //    DateFinished = DateTime.Now,
                 //    Progress = 1
                 //};
-                var job = (BacktestNodePacket)shadowType.GetField("_job", flags).GetValue(_shadow);
-                var startTime = (DateTime)shadowType.GetProperty("StartTime", flags).GetValue(_shadow);
-                var alphaRuntimeStatistics = (AlphaRuntimeStatistics)shadowType.GetProperty("AlphaRuntimeStatistics", flags).GetValue(_shadow);
+                var job = (BacktestNodePacket)_shadowType.GetField("_job", _flags).GetValue(_shadow);
+                var startTime = (DateTime)_shadowType.GetProperty("StartTime", _flags).GetValue(_shadow);
+                var alphaRuntimeStatistics = (AlphaRuntimeStatistics)_shadowType.GetProperty("AlphaRuntimeStatistics", _flags).GetValue(_shadow);
 
                 var result = new BacktestResultPacket(job,
                     new BacktestResult(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance)
-                    { AlphaRuntimeStatistics = alphaRuntimeStatistics })
+                    { AlphaRuntimeStatistics = alphaRuntimeStatistics }, Algorithm.EndDate, Algorithm.StartDate)
                 {
                     ProcessingTime = (DateTime.UtcNow - startTime).TotalSeconds,
                     DateFinished = DateTime.Now,
@@ -143,13 +141,13 @@ namespace Optimization
                 //do not store result
 
                 //MessagingHandler.Send(result);
-                var messagingHandler = (IMessagingHandler)shadowType.GetField("MessagingHandler", flags).GetValue(_shadow);
+                var messagingHandler = (IMessagingHandler)_shadowType.GetField("MessagingHandler", _flags).GetValue(_shadow);
                 messagingHandler.Send(result);
 
             }
             catch (Exception ex)
             {
-                Program.ErrorLogger.Error(ex);
+                LogProvider.ErrorLogger.Error(ex);
             }
 
         }
@@ -194,38 +192,23 @@ namespace Optimization
         public void RuntimeError(string message, string stacktrace = "")
         {
             _shadow.ErrorMessage(message, stacktrace);
-            Program.ErrorLogger.Error(new Exception($"{Algorithm.AlgorithmId}:{ message }:{stacktrace}"));
+            LogProvider.ErrorLogger.Error(new Exception($"{Algorithm.AlgorithmId}:{ message }:{stacktrace}"));
             _hasError = true;
         }
 
-        public void Sample(string chartName, string seriesName, int seriesIndex, SeriesType seriesType, DateTime time, decimal value, string unit = "$")
+        public void Sample(DateTime time, bool force = false)
         {
-            _shadow.Sample(chartName, seriesName, seriesIndex, seriesType, time, value, unit);
+            _shadow.Sample(time, force);
         }
 
         public void SampleEquity(DateTime time, decimal value)
         {
-            _shadow.SampleEquity(time, value);
-        }
-
-        public void SamplePerformance(DateTime time, decimal value)
-        {
-            _shadow.SamplePerformance(time, value);
-        }
-
-        public void SampleBenchmark(DateTime time, decimal value)
-        {
-            _shadow.SampleBenchmark(time, value);
-        }
-
-        public void SampleAssetPrices(Symbol symbol, DateTime time, decimal value)
-        {
-            _shadow.SampleAssetPrices(symbol, time, value);
+            _shadowType.InvokeMember("SampleEquity", _flags | BindingFlags.InvokeMethod, Type.DefaultBinder, _shadow, new object[] { time, value });
         }
 
         public void SampleRange(List<Chart> samples)
         {
-            _shadow.SampleRange(samples);
+            _shadowType.InvokeMember("SampleRange", _flags | BindingFlags.InvokeMethod, Type.DefaultBinder, _shadow, new object[] { samples });
         }
 
         public void SetAlgorithm(IAlgorithm algorithm, decimal startingPortfolioValue)
@@ -246,11 +229,6 @@ namespace Optimization
             _shadow.SendStatusUpdate(status, message);
         }
 
-        public void SetChartSubscription(string symbol)
-        {
-            _shadow.SetChartSubscription(symbol);
-        }
-
         public void RuntimeStatistic(string key, string value)
         {
             _shadow.RuntimeStatistic(key, value);
@@ -263,7 +241,15 @@ namespace Optimization
 
         public void Exit()
         {
-            _shadow.Exit();
+            //don't save logs
+            var field = _shadowType.GetField("ExitTriggered", _flags);
+            var exitTriggered = (bool)field.GetValue(_shadow);
+            if (!exitTriggered)
+            {
+                ProcessSynchronousEvents(true);
+            }
+
+            field.SetValue(_shadow, true);
         }
 
         public void PurgeQueue()
@@ -276,9 +262,11 @@ namespace Optimization
             _shadow.ProcessSynchronousEvents(forceProcess);
         }
 
-        public string SaveLogs(string id, IEnumerable<string> logs)
+        public string SaveLogs(string id, List<LogEntry> logs)
         {
-            return _shadow.SaveLogs(id, logs);
+            //do not use log file due to parallel locking
+            //return _shadow.SaveLogs(id, logs);
+            return null;
         }
 
         public void SaveResults(string name, Result result)

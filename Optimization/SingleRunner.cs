@@ -6,6 +6,7 @@ using QuantConnect.Lean.Engine.DataFeeds;
 using QuantConnect.Lean.Engine.RealTime;
 using QuantConnect.Lean.Engine.Server;
 using QuantConnect.Lean.Engine.Setup;
+using QuantConnect.Lean.Engine.Storage;
 using QuantConnect.Lean.Engine.TransactionHandlers;
 using QuantConnect.Logging;
 using QuantConnect.Packets;
@@ -35,8 +36,10 @@ namespace Optimization
 
         public Dictionary<string, decimal> Run(Dictionary<string, object> items, IOptimizerConfiguration config)
         {
-            _config = config;
 
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
+
+            _config = config;
 
             var id = (items.ContainsKey("Id") ? items["Id"] : Guid.NewGuid().ToString("N")).ToString();
 
@@ -75,7 +78,10 @@ namespace Optimization
             //todo: cleanup
             SingleAppDomainManager.SetData(AppDomain.CurrentDomain, id, filteredConfig);
 
+            LogProvider.TraceLogger.Trace($"id: {id} started.");
             LaunchLean(id);
+            LogProvider.TraceLogger.Trace($"id: {id} finished.");
+
 
             AddToResults(config, jsonKey);
 
@@ -105,9 +111,6 @@ namespace Optimization
                 }
             }
         }
-
-        private void AddToResults()
-        { }
 
         private void LaunchLean(string id)
         {
@@ -163,19 +166,24 @@ namespace Optimization
                     map,
                     new LocalDiskFactorFileProvider(map),
                     new DefaultDataProvider(),
-                    new OptimizerAlphaHandler());
+                    new OptimizerAlphaHandler(),
+                    new EmptyObjectStore());
             _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
 
             var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out var algorithmPath);
             //mark job with id. Is set on algorithm in OptimizerAlphaHandler
             job.BacktestId = id;
+            //todo: pass period through job
+            //job.PeriodStart = _config.StartDate;
+            //job.PeriodFinish = _config.EndDate;
 
             try
             {
                 var algorithmManager = new AlgorithmManager(false);
                 systemHandlers.LeanManager.Initialize(systemHandlers, leanEngineAlgorithmHandlers, job, algorithmManager);
                 var engine = new Engine(systemHandlers, leanEngineAlgorithmHandlers, false);
-                engine.Run(job, algorithmManager, algorithmPath);
+
+                engine.Run(job, algorithmManager, algorithmPath, new MultipleWorkerThread());
             }
             finally
             {
@@ -184,6 +192,14 @@ namespace Optimization
                 leanEngineAlgorithmHandlers.Dispose();
             }
 
+        }
+
+        //due to single app domain, multiple instances of worker thread are needed.
+        private class MultipleWorkerThread : WorkerThread
+        {
+            public MultipleWorkerThread() : base()
+            {
+            }
         }
 
     }

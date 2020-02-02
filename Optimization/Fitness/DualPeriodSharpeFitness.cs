@@ -28,6 +28,7 @@ namespace Optimization
             dualConfig.EndDate = end + diff;
 
             var dualFitness = new OptimizerFitness(dualConfig, this.Filter);
+            dualFitness.Name = this.Name;
 
             var first = base.Evaluate(chromosome);
             double second = -10;
@@ -44,7 +45,7 @@ namespace Optimization
 
             var output = string.Format($"Start: {Config.StartDate}, End: {Config.EndDate}, Start: {dualConfig.StartDate}, End: {dualConfig.EndDate}, "
             + $"Id: {((Chromosome)chromosome).Id}, Dual Period {this.Name}: {fitness.Value}");
-            Program.GenerationsLogger.Info(output);
+            LogProvider.GenerationsLogger.Info(output);
 
             Config.StartDate = start;
             Config.EndDate = end;

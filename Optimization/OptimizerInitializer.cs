@@ -60,9 +60,15 @@ namespace Optimization
 
             if (_manager == null)
             {
-                if (new[] { typeof(SharpeMaximizer), typeof(NFoldCrossReturnMaximizer), typeof(NestedCrossSharpeMaximizer), typeof(NestedCrossSharpeMaximizer) }.Contains(fitness.GetType()))
+                if (new[] { typeof(SharpeMaximizer), typeof(NFoldCrossReturnMaximizer), typeof(NestedCrossSharpeMaximizer),
+                    typeof(NestedCrossSharpeMaximizer), typeof(WalkForwardSharpeMaximizer) }.Contains(fitness.GetType()))
                 {
                     _manager = new MaximizerManager();
+                    if (fitness.GetType() == typeof(OptimizerFitness))
+                    {
+                        LogProvider.ErrorLogger.Info("Fitness for shared app domain was switched to the default: SharpeMaximizer.");
+                        fitness = new SharpeMaximizer(_config, new FitnessFilter());
+                    }
                 }
                 else
                 {

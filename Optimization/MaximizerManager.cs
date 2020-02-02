@@ -31,14 +31,14 @@ namespace Optimization
             var chromosome = new Chromosome(false, GeneFactory.Config);
             _fitness.Evaluate(chromosome);
 
-            Program.GenerationsLogger.Info(Termination);
+            LogProvider.GenerationsLogger.Info(Termination);
 
             var best = ((Chromosome)((SharpeMaximizer)_fitness).Best);
 
             var info = $"Algorithm: {_config.AlgorithmTypeName}, Fitness: {chromosome.Fitness}, {_fitness.Name}: " +
             $"{_fitness.GetValueFromFitness(chromosome.Fitness).ToString("F")}, {best.ToKeyValueString()}";
 
-            Program.GenerationsLogger.Info(info);
+            LogProvider.GenerationsLogger.Info(info);
         }
 
     }

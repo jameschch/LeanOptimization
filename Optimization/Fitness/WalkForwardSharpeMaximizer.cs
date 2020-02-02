@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GeneticSharp.Domain.Chromosomes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,70 +10,71 @@ namespace Optimization
     public class WalkForwardSharpeMaximizer : SharpeMaximizer
     {
 
-        private int _folds = 2;
         public override string Name { get; set; } = "WalkForwardSharpe";
+        private WalkForwardPeriodCalculator _calculator = new WalkForwardPeriodCalculator();
 
         public WalkForwardSharpeMaximizer(IOptimizerConfiguration config, IFitnessFilter filter) : base(config, filter)
         {
-            var folds = config.Fitness?.Folds ?? 2;
-            if (folds > 0)
+            if (config.Fitness == null)
             {
-                _folds = folds;
+                config.Fitness = new FitnessConfiguration { OptimizerTypeName = Enums.OptimizerTypeOptions.RandomSearch.ToString() };
             }
+            config.Fitness.Folds = config.Fitness?.Folds ?? 2;
         }
 
-        public override Dictionary<string, decimal> GetScore(Dictionary<string, object> list, IOptimizerConfiguration config)
+        public override double Evaluate(IChromosome chromosome)
         {
-            var firstConfig = Clone((OptimizerConfiguration)Config);
+            var AllScores = new List<FitnessResult>();
 
-            firstConfig.EndDate = firstConfig.EndDate.Value.Date.AddDays(1);
-            firstConfig.StartDate = firstConfig.StartDate.Value.Date;
-            var period = (int)(firstConfig.EndDate.Value - firstConfig.StartDate.Value).TotalDays;
-            var minimumPeriod = TimeSpan.FromDays(1);
-
-            var foldSize = DeriveLength(period, config.Fitness.Folds);
-
-            firstConfig.EndDate = firstConfig.StartDate.Value.AddDays(foldSize);
-
-            var score = base.GetScore(list, firstConfig);
-            //early stopping
-            if (CalculateFitness(score).Value == ErrorRatio)
+            foreach (var item in _calculator.Calculate(Config))
             {
-                return score;
-            }
+                var inSampleConfig = Clone((OptimizerConfiguration)Config);
+                inSampleConfig.StartDate = item.Value[0];
+                inSampleConfig.EndDate = item.Value[1];
+                var inSampleOptimizer = new SharpeMaximizer(inSampleConfig, Filter);
+                inSampleOptimizer.Evaluate(chromosome);
+                Best = inSampleOptimizer.Best;
+                chromosome = Best;
 
-            var previousConfig = firstConfig;
-
-            for (int i = 0; i < _folds - 1; i++)
-            {
-                var iterationConfig = Clone(previousConfig);
-                //iterationConfig.StartDate = iterationConfig.StartDate.Value.AddTicks(1).AddTicks(foldSize / 2);
-                //iterationConfig.EndDate = iterationConfig.StartDate.Value.AddTicks(foldSize);
-
-                var foldScore = base.GetScore(list, iterationConfig);
-                //early stopping
-                if (CalculateFitness(foldScore).Value == ErrorRatio)
+                //keep new actual in config
+                foreach (var actual in ((Chromosome)Best).ToDictionary())
                 {
-                    return foldScore;
+                    var bestActual  = Config.Genes.Single(g => g.Key == actual.Key);
+                    if ((bestActual.Precision ?? 0) > 0)
+                    {
+                        bestActual.ActualDecimal = (decimal)actual.Value;
+                    }
+                    else
+                    {
+                        bestActual.ActualInt = (int)actual.Value;
+                    }
                 }
 
-                score = foldScore.ToDictionary(k => k.Key, v => score[v.Key] += v.Value);
+                var list = ((Chromosome)Best).ToDictionary();
+                var id = Guid.NewGuid().ToString("N");
+                list.Add("Id", id);
 
-                previousConfig = iterationConfig;
+                var outSampleConfig = Clone((OptimizerConfiguration)Config);
+                outSampleConfig.StartDate = item.Value[2];
+                outSampleConfig.EndDate = item.Value[3];
+                var score = base.GetScore(list, outSampleConfig);
+
+                var fitness = CalculateFitness(score);
+
+                AllScores.Add(fitness);
+
+                var output = new StringBuilder();
+                output.Append("Id: " + id + ", ");
+                output.Append(((Chromosome)Best).ToKeyValueString());
+                output.Append(", ");
+                output.AppendFormat("Start: {0}, End: {1}, ", outSampleConfig.StartDate, outSampleConfig.EndDate);
+                output.AppendFormat("{0}: {1}", Name, fitness.Value.ToString("0.##"));
+                LogProvider.GenerationsLogger.Info(output);
             }
 
-            var average = score.ToDictionary(d => d.Key, d => d.Value / _folds);
-
-            return average;
+            return (double)AllScores.Average(a => a.Value);
         }
 
-        private int DeriveLength(int days, int folds)
-        {
-
-            var foldSize = (days / folds);
-
-
-        }
 
     }
 }

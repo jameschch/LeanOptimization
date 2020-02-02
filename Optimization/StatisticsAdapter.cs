@@ -12,10 +12,10 @@ namespace Optimization
     {
         private static Dictionary<string, string> _binding = new Dictionary<string, string>
         {
-            {"Total Trades", "TotalNumberOfTrades"},
+            {"Total Trades","TotalNumberOfTrades"},
             {"Average Win","AverageWinRate"},
             {"Average Loss","AverageLossRate"},
-            {"Compounding Annual Return ","CompoundingAnnualReturn"},
+            {"Compounding Annual Return","CompoundingAnnualReturn"},
             {"Drawdown","Drawdown"},
             {"Expectancy","Expectancy"},
             {"Net Profit","TotalNetProfit"},
@@ -30,7 +30,8 @@ namespace Optimization
             {"Information Ratio","InformationRatio"},
             {"Tracking Error","TrackingError"},
             {"Treynor Ratio","TreynorRatio"},
-            {"Total Fees","TotalFees"}
+            {"Total Fees","TotalFees"},
+            {"Probabilistic Sharpe Ratio","ProbabilisticSharpeRatio" }
         };
 
         public static decimal Translate(string key, Dictionary<string, decimal> list)
