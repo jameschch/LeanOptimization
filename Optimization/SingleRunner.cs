@@ -167,7 +167,7 @@ namespace Optimization
                     new LocalDiskFactorFileProvider(map),
                     new DefaultDataProvider(),
                     new OptimizerAlphaHandler(),
-                    new LocalObjectStore());
+                    new EmptyObjectStore());
             _resultsHandler = (OptimizerResultHandler)leanEngineAlgorithmHandlers.Results;
 
             var job = (BacktestNodePacket)systemHandlers.JobQueue.NextJob(out var algorithmPath);
