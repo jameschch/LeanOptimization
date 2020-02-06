@@ -1,6 +1,10 @@
 # LeanOptimization
 Parameter optimization for LEAN
 
+This project has now moved here:
+
+[https://github.com/jameschch/LeanParameterOptimization](https://github.com/jameschch/LeanParameterOptimization)
+
 This toolset allows you to execute multiple parallel backtests using a local Lean clone. It is possible to configure several different optimization methods to fit your trading algorithm to an array of different success measures. 
 
 You must edit the config file [optimization.json](https://github.com/jameschch/LeanOptimization/blob/master/Optimization/optimization.json) to define parameters and other settings. The gene values are fed into the Lean config and can be accessed in an algorithm using the QuantConnect.Configuration.Config methods.
@@ -31,5 +35,5 @@ Specifying the SharpeMaximizer fitness allows access to all of the optimization 
 
 #### Specialist
 The simple SharpeMaximizer has been extended in NFoldCrossSharpeMaximizer so that the success score is measured over N-fold periods. This will prevent overfitting to a single in-sample period but is not guaranteed to eliminate overfitting entirely. 
-There are several other fitness measures that operate over mutliple periods.
+There are several other fitness measures that operate over multiple periods.
 
