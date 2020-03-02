@@ -55,10 +55,6 @@ namespace Optimization
             }
         }
 
-        public TimeSpan ResamplePeriod => _shadow.ResamplePeriod;
-
-        public TimeSpan NotificationPeriod => _shadow.NotificationPeriod;
-
         public bool IsActive => _shadow.IsActive;
 
         private bool _hasError;
@@ -153,7 +149,7 @@ namespace Optimization
                 var alphaRuntimeStatistics = (AlphaRuntimeStatistics)_shadowType.GetProperty("AlphaRuntimeStatistics", _flags).GetValue(_shadow);
 
                 var result = new BacktestResultPacket(job,
-                    new BacktestResult(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance)
+                    new BacktestResult(new BacktestResultParameters(charts, orders, profitLoss, statisticsResults.Summary, runtime, statisticsResults.RollingPerformances, statisticsResults.TotalPerformance))
                     { AlphaRuntimeStatistics = alphaRuntimeStatistics }, Algorithm.EndDate, Algorithm.StartDate)
                 {
                     ProcessingTime = (DateTime.UtcNow - startTime).TotalSeconds,
@@ -276,10 +272,6 @@ namespace Optimization
             field.SetValue(_shadow, true);
         }
 
-        public void PurgeQueue()
-        {
-            _shadow.PurgeQueue();
-        }
 
         public void ProcessSynchronousEvents(bool forceProcess = false)
         {
