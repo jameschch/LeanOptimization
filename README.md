@@ -1,9 +1,8 @@
+# This project has now moved here:
+[https://github.com/jameschch/LeanParameterOptimization](https://github.com/jameschch/LeanParameterOptimization)
+
 # LeanOptimization
 Parameter optimization for LEAN
-
-This project has now moved here:
-
-[https://github.com/jameschch/LeanParameterOptimization](https://github.com/jameschch/LeanParameterOptimization)
 
 This toolset allows you to execute multiple parallel backtests using a local Lean clone. It is possible to configure several different optimization methods to fit your trading algorithm to an array of different success measures. 
 
